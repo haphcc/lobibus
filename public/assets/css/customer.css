@@ -1,0 +1,28 @@
+.booking-hero {
+    background: #f5f8f6;
+    padding: 48px 0;
+}
+
+.seat-map-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 12px;
+    max-width: 560px;
+}
+
+.seat-button {
+    min-height: 48px;
+    border: 1px solid #d6ded8;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.seat-button.booked {
+    background: #e9ecef;
+    color: #777;
+}
+
+.seat-button.selected {
+    background: #198754;
+    color: #fff;
+}
