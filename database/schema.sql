@@ -92,7 +92,6 @@ CREATE TABLE bookings (
     customer_email VARCHAR(150),
     total_amount DECIMAL(12, 2) NOT NULL,
 
-    //thêm expired vào status để tự động hủy booking nếu khách không thanh toán quá lâu
     status ENUM('pending','confirmed','cancelled','completed','expired') NOT NULL DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -127,7 +126,6 @@ CREATE TABLE payments (
     booking_id INT NOT NULL,
     method ENUM('cash','bank_transfer','momo','zalopay','card') NOT NULL DEFAULT 'cash',
     amount DECIMAL(12, 2) NOT NULL,
-    //thêm cancelled nếu người dùng hủy thanh toán trước khi trả tiền
     status ENUM('pending','paid','failed','refunded','cancelled') NOT NULL DEFAULT 'pending',
     transaction_code VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -155,7 +153,6 @@ CREATE TABLE chatbot_questions (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-//thêm trip_id vào booking_details để đảm bảo mỗi chỗ chỉ được đặt một lần cho mỗi chuyến
 ALTER TABLE booking_details
 ADD COLUMN trip_id INT NOT NULL AFTER booking_id;
 
@@ -166,7 +163,6 @@ FOREIGN KEY (trip_id) REFERENCES trips(id);
 ALTER TABLE booking_details
 ADD UNIQUE KEY uq_trip_seat (trip_id, seat_id);
 
-//thêm check
 ALTER TABLE reviews
 ADD CONSTRAINT chk_reviews_rating CHECK (rating BETWEEN 1 AND 5);
 
@@ -185,8 +181,6 @@ ADD CONSTRAINT chk_booking_details_price CHECK (price >= 0);
 ALTER TABLE payments
 ADD CONSTRAINT chk_payments_amount CHECK (amount >= 0);
 
-//thêm index
-//tìm chuyến xe
 CREATE INDEX idx_routes_from_to_status
 ON routes(from_location_id, to_location_id, status);
 
@@ -196,7 +190,6 @@ ON trips(route_id, departure_time, status);
 CREATE INDEX idx_trips_bus_departure
 ON trips(bus_id, departure_time);
 
-//tìm booking
 CREATE INDEX idx_tickets_booking
 ON tickets(booking_id);
 
@@ -206,16 +199,5 @@ ON payments(booking_id, status);
 CREATE INDEX idx_payments_transaction_code
 ON payments(transaction_code);
 
-//tìm vé/ttoan
-CREATE INDEX idx_tickets_booking
-ON tickets(booking_id);
-
-CREATE INDEX idx_payments_booking_status
-ON payments(booking_id, status);
-
-CREATE INDEX idx_payments_transaction_code
-ON payments(transaction_code);
-
-//chatbot
 CREATE INDEX idx_chatbot_keyword
 ON chatbot_questions(keyword);
