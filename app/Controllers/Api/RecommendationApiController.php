@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Controllers\Api;
 
 use App\Core\Controller;
-use App\Models\Recommendation;
+use App\Services\RecommendationService;
 
 final class RecommendationApiController extends Controller
 {
     public function suggest(): void
     {
-        $this->json(['data' => (new Recommendation())->suggestTrips($_GET)]);
+        $this->json(['data' => (new RecommendationService())->suggest($_GET)]);
     }
 }

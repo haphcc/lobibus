@@ -12,7 +12,7 @@ use App\Controllers\PaymentController;
 use App\Controllers\RecommendationController;
 use App\Controllers\TicketController;
 use App\Controllers\TripController;
-use App\Controllers\Admin\DashboardController;
+use App\Controllers\Admin\StatisticController;
 use App\Controllers\Api\BookingApiController;
 use App\Controllers\Api\ChatbotApiController;
 use App\Controllers\Api\RecommendationApiController;
@@ -55,7 +55,8 @@ $router->get('/payment/method', [PaymentController::class, 'method']);
 $router->get('/payment/result', [PaymentController::class, 'result']);
 $router->get('/chatbot', [ChatbotController::class, 'index']);
 $router->get('/recommendations', [RecommendationController::class, 'index']);
-$router->get('/admin', [DashboardController::class, 'index']);
+$router->get('/admin', [StatisticController::class, 'index']);
+$router->get('/admin/statistics', [StatisticController::class, 'index']);
 
 $router->get('/api/trips/search', [TripApiController::class, 'search']);
 $router->get('/api/seats', [SeatApiController::class, 'getByTrip']);
