@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Controllers\Admin;
 
-use App\Core\Controller;
+use App\Models\Statistic;
 
-final class DashboardController extends Controller
+final class DashboardController extends AdminController
 {
     public function index(): void
     {
-        $this->view('admin.dashboard.index', ['title' => 'Admin Dashboard'], 'admin');
+        $this->view('admin.dashboard.index', [
+            'title' => 'Admin Dashboard',
+            'summary' => (new Statistic())->dashboardSummary(),
+        ], 'admin');
     }
 }

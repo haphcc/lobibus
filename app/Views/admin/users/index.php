@@ -1,1 +1,29 @@
-<h1>Quản lý người dùng</h1><p>TODO: danh sách người dùng.</p><a href="/">Quay về trang chủ</a>
+<div class="admin-page-header">
+    <h1>Người dùng</h1>
+    <a class="btn btn-primary" href="<?= url('/admin/users/create') ?>">Thêm người dùng</a>
+</div>
+<?php require dirname(__DIR__) . '/partials/messages.php'; ?>
+<div class="admin-card">
+    <table class="table table-striped align-middle">
+        <thead><tr><th>ID</th><th>Họ tên</th><th>Email</th><th>Số điện thoại</th><th>Vai trò</th><th>Trạng thái</th><th class="text-end">Thao tác</th></tr></thead>
+        <tbody>
+        <?php foreach ($users as $user): ?>
+            <tr>
+                <td><?= e($user['id']) ?></td>
+                <td><?= e($user['name']) ?></td>
+                <td><?= e($user['email']) ?></td>
+                <td><?= e($user['phone']) ?></td>
+                <td><?= e($user['role_name']) ?></td>
+                <td><span class="badge text-bg-secondary"><?= e(admin_label($user['status'])) ?></span></td>
+                <td class="text-end">
+                    <a class="btn btn-sm btn-outline-primary" href="<?= url('/admin/users/edit?id=' . $user['id']) ?>">Sửa</a>
+                    <form class="d-inline" method="post" action="<?= url('/admin/users/delete') ?>" onsubmit="return confirm('Khóa người dùng này?')">
+                        <input type="hidden" name="id" value="<?= e($user['id']) ?>">
+                        <button class="btn btn-sm btn-outline-danger" type="submit">Khóa</button>
+                    </form>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>

@@ -5,5 +5,9 @@ use App\Core\Model;
 
 final class Role extends Model
 {
-    public function all(): array { return []; }
+    public function all(): array
+    {
+        $stmt = $this->db()->query('SELECT * FROM roles ORDER BY name ASC');
+        return $stmt->fetchAll();
+    }
 }
