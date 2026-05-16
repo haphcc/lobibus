@@ -1,13 +1,14 @@
-<section>
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">Admin Dashboard</h1>
-        <a class="btn btn-success" href="<?= url('/admin/statistics') ?>">Thống kê</a>
+<?php
+$statisticsHeading = 'Dashboard LobiBus';
+$statisticsShowDashboardLink = false;
+require dirname(__DIR__) . '/statistics/index.php';
+?>
+
+<div class="admin-card mt-4">
+    <h2>Thao tác nhanh</h2>
+    <div class="admin-actions">
+        <a class="btn btn-primary" href="<?= url('/admin/trips/create') ?>">Thêm chuyến</a>
+        <a class="btn btn-outline-primary" href="<?= url('/admin/bookings') ?>">Xem đơn đặt vé</a>
+        <a class="btn btn-outline-primary" href="<?= url('/admin/payments') ?>">Cập nhật thanh toán</a>
     </div>
-    <div class="row g-3">
-        <div class="col-md-3"><div class="metric-card">Users <strong>0</strong></div></div>
-        <div class="col-md-3"><div class="metric-card">Trips <strong>0</strong></div></div>
-        <div class="col-md-3"><div class="metric-card">Bookings <strong>0</strong></div></div>
-        <div class="col-md-3"><div class="metric-card">Revenue <strong>0đ</strong></div></div>
-    </div>
-    <p class="mt-4">TODO: nối Statistic model và biểu đồ doanh thu.</p>
-</section>
+</div>

@@ -4,10 +4,28 @@ declare(strict_types=1);
 
 namespace App\Controllers\Admin;
 
-use App\Core\Controller;
+use App\Models\Payment;
 
-final class PaymentController extends Controller
+final class PaymentController extends AdminController
 {
-    public function index(): void { $this->view('admin.payments.index', ['title' => 'Quản lý thanh toán'], 'admin'); }
-    public function updateStatus(): void { header('Location: /admin'); }
+    private Payment $payments;
+
+    public function __construct()
+    {
+        $this->payments = new Payment();
+    }
+
+    public function index(): void
+    {
+        $this->view('admin.payments.index', [
+            'title' => 'Quan ly thanh toan',
+            'payments' => $this->payments->allWithBooking(),
+        ], 'admin');
+    }
+
+    public function updateStatus(): void
+    {
+        $this->payments->updateStatus($this->postInt('id'), $this->postString('status', 'pending'));
+        $this->redirect('/admin/payments', 'success', 'Payment status updated.');
+    }
 }
