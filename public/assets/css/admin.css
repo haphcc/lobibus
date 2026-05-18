@@ -408,21 +408,38 @@ a {
         z-index: 100;
         width: 100%;
         height: auto;
-        padding: 12px 14px;
+        padding: 10px 14px !important;
         border-right: 0;
         border-bottom: 1px solid var(--admin-border);
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
+        display: grid !important;
+        grid-template-areas:
+            "brand footer"
+            "nav nav" !important;
+        grid-template-columns: 1fr auto !important;
+        align-items: center !important;
+        gap: 10px 16px !important;
+        background: var(--admin-card);
+    }
+
+    .admin-sidebar-top {
+        display: contents !important;
+    }
+
+    .admin-brand {
+        grid-area: brand;
+        margin-bottom: 0 !important;
+        padding: 4px 0 !important;
     }
 
     .admin-nav {
+        grid-area: nav;
         display: flex;
         gap: 8px;
         overflow-x: auto;
         padding-bottom: 4px;
         scroll-snap-type: x proximity;
         -webkit-overflow-scrolling: touch;
+        width: 100%;
     }
 
     .admin-nav::-webkit-scrollbar {
@@ -466,17 +483,60 @@ a {
     }
 
     .admin-sidebar-footer {
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 16px;
-        margin-top: 0;
-        border-top: 1px solid var(--admin-border);
-        padding-top: 12px;
+        grid-area: footer;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 10px !important;
+        margin-top: 0 !important;
+        border-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    .admin-sidebar-footer .admin-footer-link {
+        padding: 8px !important;
+        border-radius: 50% !important;
+        width: 38px !important;
+        height: 38px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    .admin-sidebar-footer .admin-footer-link span {
+        display: none !important;
+    }
+
+    .admin-sidebar-footer .admin-footer-link.home-link {
+        color: #0d9488 !important;
+        background: rgba(13, 148, 136, 0.08) !important;
+    }
+
+    .admin-sidebar-footer .admin-footer-link.home-link:hover {
+        background: rgba(13, 148, 136, 0.16) !important;
+        transform: scale(1.05) !important;
+    }
+
+    .admin-sidebar-footer .admin-footer-link.logout-link {
+        color: #e11d48 !important;
+        background: rgba(225, 29, 72, 0.08) !important;
+    }
+
+    .admin-sidebar-footer .admin-footer-link.logout-link:hover {
+        background: rgba(225, 29, 72, 0.16) !important;
+        transform: scale(1.05) !important;
+    }
+
+    .admin-sidebar-footer .admin-footer-link .sidebar-icon {
+        width: 18px !important;
+        height: 18px !important;
+        margin: 0 !important;
+        transform: none !important;
     }
 
     .sidebar-divider {
-        display: none;
+        display: none !important;
     }
 
     .admin-main {
@@ -850,4 +910,110 @@ a {
 .admin-footer-link.logout-link:hover .sidebar-icon {
     transform: translateX(3px) scale(1.05);
 }
+
+/* ==========================================================================
+   RESPONSIVE TABLES & CARDS FOR MOBILE SCREENS (MAX-WIDTH: 768PX)
+   ========================================================================= */
+@media (max-width: 768px) {
+    .table-responsive {
+        overflow-x: visible !important;
+        border: 0 !important;
+    }
+
+    .table,
+    .statistics-table {
+        min-width: 100% !important;
+        display: block !important;
+        width: 100% !important;
+        border: 0 !important;
+    }
+    
+    .table thead,
+    .statistics-table thead {
+        display: none !important;
+    }
+    
+    .table tbody,
+    .statistics-table tbody {
+        display: block !important;
+        width: 100% !important;
+    }
+    
+    .table tbody tr,
+    .statistics-table tbody tr {
+        display: block !important;
+        background: var(--admin-card) !important;
+        border: 1px solid var(--admin-border) !important;
+        border-radius: 12px !important;
+        padding: 14px 16px !important;
+        margin-bottom: 16px !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+        transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+    }
+    
+    .table tbody tr:hover,
+    .statistics-table tbody tr:hover {
+        background: var(--admin-card) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: var(--admin-shadow-hover) !important;
+        border-color: rgba(39, 174, 96, 0.2) !important;
+    }
+    
+    .table-striped > tbody > tr:nth-of-type(odd) > * {
+        --bs-table-bg-type: transparent !important;
+    }
+    
+    .table tbody tr td,
+    .statistics-table tbody tr td {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 10px 0 !important;
+        border-bottom: 1px dashed var(--admin-border) !important;
+        background: transparent !important;
+        text-align: right !important;
+        font-size: 0.9rem !important;
+        color: var(--admin-text) !important;
+        min-height: 40px !important;
+    }
+    
+    .table tbody tr td:last-child,
+    .statistics-table tbody tr td:last-child {
+        border-bottom: 0 !important;
+        padding-bottom: 0 !important;
+        margin-top: 6px !important;
+        justify-content: flex-end !important;
+    }
+    
+    .table tbody tr td::before,
+    .statistics-table tbody tr td::before {
+        content: attr(data-label);
+        font-weight: 700 !important;
+        color: var(--admin-muted) !important;
+        text-align: left !important;
+        font-size: 0.8rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.04em !important;
+        margin-right: auto !important;
+        padding-right: 16px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .table tbody tr td.text-end,
+    .statistics-table tbody tr td.text-end {
+        text-align: right !important;
+        justify-content: flex-end !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+    }
+    
+    .table tbody tr td .btn,
+    .statistics-table tbody tr td .btn {
+        margin: 2px 0 2px 4px !important;
+        font-size: 0.78rem !important;
+        padding: 4px 8px !important;
+        min-height: auto !important;
+    }
+}
+
 
