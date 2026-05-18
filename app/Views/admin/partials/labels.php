@@ -27,6 +27,12 @@ if (!function_exists('admin_label')) {
             'vnpay' => 'VNPAY',
             'admin' => 'Quản trị viên',
             'customer' => 'Khách hàng',
+            'vip_customer' => 'Khách VIP',
+            'developer' => 'Lập trình viên',
+            'support' => 'Hỗ trợ',
+            'manager' => 'Quản lý',
+            'driver' => 'Tài xế',
+            'staff' => 'Nhân viên',
         ];
 
         return $labels[$value ?? ''] ?? (string) $value;

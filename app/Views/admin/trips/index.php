@@ -18,7 +18,7 @@
                 <td><span class="badge text-bg-secondary"><?= e(admin_label($trip['status'])) ?></span></td>
                 <td class="text-end">
                     <a class="btn btn-sm btn-outline-primary" href="<?= url('/admin/trips/edit?id=' . $trip['id']) ?>">Sửa</a>
-                    <form class="d-inline" method="post" action="<?= url('/admin/trips/delete') ?>" onsubmit="return confirm('Xóa chuyến này?')">
+                    <form class="d-inline" method="post" action="<?= url('/admin/trips/delete') ?>" data-confirm="Xóa chuyến này?">
                         <input type="hidden" name="id" value="<?= e($trip['id']) ?>">
                         <button class="btn btn-sm btn-outline-danger" type="submit">Xóa</button>
                     </form>

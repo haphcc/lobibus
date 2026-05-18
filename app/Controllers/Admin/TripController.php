@@ -37,24 +37,27 @@ final class TripController extends AdminController
     public function store(): void
     {
         if ($error = $this->requireFields([
-            'route_id' => 'Route',
-            'bus_id' => 'Bus',
-            'departure_time' => 'Departure time',
-            'arrival_time' => 'Arrival time',
-            'price' => 'Price',
+            'route_id' => 'tuyến',
+            'bus_id' => 'xe',
+            'departure_time' => 'giờ khởi hành',
+            'arrival_time' => 'giờ đến',
+            'price' => 'giá vé',
         ])) {
+            $this->redirect('/admin/trips/create', 'error', $error);
+        }
+        if ($error = $this->validatePayload()) {
             $this->redirect('/admin/trips/create', 'error', $error);
         }
 
         $this->trips->create($this->normalizedPost());
-        $this->redirect('/admin/trips', 'success', 'Trip created.');
+        $this->redirect('/admin/trips', 'success', 'Đã thêm chuyến.');
     }
 
     public function edit(): void
     {
         $trip = $this->trips->find($this->queryInt('id'));
         if ($trip === null) {
-            $this->redirect('/admin/trips', 'error', 'Trip not found.');
+            $this->redirect('/admin/trips', 'error', 'Không tìm thấy chuyến.');
         }
 
         $this->view('admin.trips.edit', [
@@ -69,28 +72,31 @@ final class TripController extends AdminController
     {
         $id = $this->postInt('id');
         if ($error = $this->requireFields([
-            'route_id' => 'Route',
-            'bus_id' => 'Bus',
-            'departure_time' => 'Departure time',
-            'arrival_time' => 'Arrival time',
-            'price' => 'Price',
+            'route_id' => 'tuyến',
+            'bus_id' => 'xe',
+            'departure_time' => 'giờ khởi hành',
+            'arrival_time' => 'giờ đến',
+            'price' => 'giá vé',
         ])) {
+            $this->redirect('/admin/trips/edit?id=' . $id, 'error', $error);
+        }
+        if ($error = $this->validatePayload()) {
             $this->redirect('/admin/trips/edit?id=' . $id, 'error', $error);
         }
 
         $this->trips->update($id, $this->normalizedPost());
-        $this->redirect('/admin/trips', 'success', 'Trip updated.');
+        $this->redirect('/admin/trips', 'success', 'Đã cập nhật chuyến.');
     }
 
     public function delete(): void
     {
         $id = $this->postInt('id');
         if ($this->trips->isBooked($id)) {
-            $this->redirect('/admin/trips', 'error', 'Cannot delete a trip that has bookings.');
+            $this->redirect('/admin/trips', 'error', 'Không thể xóa chuyến đã có đơn đặt vé.');
         }
 
         $this->trips->delete($id);
-        $this->redirect('/admin/trips', 'success', 'Trip deleted.');
+        $this->redirect('/admin/trips', 'success', 'Đã xóa chuyến.');
     }
 
     private function normalizedPost(): array
@@ -99,5 +105,25 @@ final class TripController extends AdminController
         $data['departure_time'] = str_replace('T', ' ', $this->postString('departure_time')) . ':00';
         $data['arrival_time'] = str_replace('T', ' ', $this->postString('arrival_time')) . ':00';
         return $data;
+    }
+
+    private function validatePayload(): ?string
+    {
+        $dateError = $this->requireDateTime('departure_time', 'Giờ khởi hành')
+            ?? $this->requireDateTime('arrival_time', 'Giờ đến');
+        if ($dateError !== null) {
+            return $dateError;
+        }
+
+        $departure = new \DateTimeImmutable($this->postString('departure_time'));
+        $arrival = new \DateTimeImmutable($this->postString('arrival_time'));
+        if ($arrival <= $departure) {
+            return 'Giờ đến phải sau giờ khởi hành.';
+        }
+
+        return $this->requireInteger('route_id', 'Tuyến', 1)
+            ?? $this->requireInteger('bus_id', 'Xe', 1)
+            ?? $this->requireNumber('price', 'Giá vé', 0)
+            ?? $this->requireAllowed('status', 'Trạng thái', ['scheduled', 'running', 'completed', 'cancelled']);
     }
 }

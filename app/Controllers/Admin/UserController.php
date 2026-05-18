@@ -35,22 +35,29 @@ final class UserController extends AdminController
     public function store(): void
     {
         if ($error = $this->requireFields([
-            'name' => 'Name',
+            'name' => 'họ tên',
             'email' => 'Email',
-            'password' => 'Password',
+            'password' => 'mật khẩu',
         ])) {
             $this->redirect('/admin/users/create', 'error', $error);
         }
 
+        if (!filter_var($this->postString('email'), FILTER_VALIDATE_EMAIL)) {
+            $this->redirect('/admin/users/create', 'error', 'Email không đúng định dạng.');
+        }
+        if ($error = $this->requireAllowed('status', 'Trạng thái', ['active', 'locked'])) {
+            $this->redirect('/admin/users/create', 'error', $error);
+        }
+
         $this->users->create($_POST);
-        $this->redirect('/admin/users', 'success', 'User created.');
+        $this->redirect('/admin/users', 'success', 'Đã thêm người dùng.');
     }
 
     public function edit(): void
     {
         $user = $this->users->find($this->queryInt('id'));
         if ($user === null) {
-            $this->redirect('/admin/users', 'error', 'User not found.');
+            $this->redirect('/admin/users', 'error', 'Không tìm thấy người dùng.');
         }
 
         $this->view('admin.users.edit', [
@@ -64,19 +71,43 @@ final class UserController extends AdminController
     {
         $id = $this->postInt('id');
         if ($error = $this->requireFields([
-            'name' => 'Name',
+            'name' => 'họ tên',
             'email' => 'Email',
         ])) {
             $this->redirect('/admin/users/edit?id=' . $id, 'error', $error);
         }
 
+        if (!filter_var($this->postString('email'), FILTER_VALIDATE_EMAIL)) {
+            $this->redirect('/admin/users/edit?id=' . $id, 'error', 'Email không đúng định dạng.');
+        }
+        if ($error = $this->requireAllowed('status', 'Trạng thái', ['active', 'locked'])) {
+            $this->redirect('/admin/users/edit?id=' . $id, 'error', $error);
+        }
+
         $this->users->update($id, $_POST);
-        $this->redirect('/admin/users', 'success', 'User updated.');
+        $this->redirect('/admin/users', 'success', 'Đã cập nhật người dùng.');
     }
 
     public function delete(): void
     {
+        $id = $this->postInt('id');
+        if ($this->users->isUsed($id)) {
+            $this->redirect('/admin/users', 'error', 'Không thể xóa người dùng đã có dữ liệu đặt vé hoặc đánh giá.');
+        }
+
+        $this->users->delete($id);
+        $this->redirect('/admin/users', 'success', 'Đã xóa người dùng.');
+    }
+
+    public function lock(): void
+    {
         $this->users->lock($this->postInt('id'));
-        $this->redirect('/admin/users', 'success', 'User locked.');
+        $this->redirect('/admin/users', 'success', 'Đã khóa người dùng.');
+    }
+
+    public function unlock(): void
+    {
+        $this->users->unlock($this->postInt('id'));
+        $this->redirect('/admin/users', 'success', 'Đã mở khóa người dùng.');
     }
 }

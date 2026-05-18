@@ -30,19 +30,22 @@ final class LocationController extends AdminController
 
     public function store(): void
     {
-        if ($error = $this->requireFields(['name' => 'Name'])) {
+        if ($error = $this->requireFields(['name' => 'tên địa điểm'])) {
+            $this->redirect('/admin/locations/create', 'error', $error);
+        }
+        if ($error = $this->validateCoordinates('/admin/locations/create')) {
             $this->redirect('/admin/locations/create', 'error', $error);
         }
 
         $this->locations->create($_POST);
-        $this->redirect('/admin/locations', 'success', 'Location created.');
+        $this->redirect('/admin/locations', 'success', 'Đã thêm địa điểm.');
     }
 
     public function edit(): void
     {
         $location = $this->locations->find($this->queryInt('id'));
         if ($location === null) {
-            $this->redirect('/admin/locations', 'error', 'Location not found.');
+            $this->redirect('/admin/locations', 'error', 'Không tìm thấy địa điểm.');
         }
 
         $this->view('admin.locations.edit', [
@@ -54,22 +57,32 @@ final class LocationController extends AdminController
     public function update(): void
     {
         $id = $this->postInt('id');
-        if ($error = $this->requireFields(['name' => 'Name'])) {
+        if ($error = $this->requireFields(['name' => 'tên địa điểm'])) {
+            $this->redirect('/admin/locations/edit?id=' . $id, 'error', $error);
+        }
+        if ($error = $this->validateCoordinates('/admin/locations/edit?id=' . $id)) {
             $this->redirect('/admin/locations/edit?id=' . $id, 'error', $error);
         }
 
         $this->locations->update($id, $_POST);
-        $this->redirect('/admin/locations', 'success', 'Location updated.');
+        $this->redirect('/admin/locations', 'success', 'Đã cập nhật địa điểm.');
     }
 
     public function delete(): void
     {
         $id = $this->postInt('id');
         if ($this->locations->isUsed($id)) {
-            $this->redirect('/admin/locations', 'error', 'Cannot delete a location used by routes.');
+            $this->redirect('/admin/locations', 'error', 'Không thể xóa địa điểm đang được dùng trong tuyến xe.');
         }
 
         $this->locations->delete($id);
-        $this->redirect('/admin/locations', 'success', 'Location deleted.');
+        $this->redirect('/admin/locations', 'success', 'Đã xóa địa điểm.');
+    }
+
+    private function validateCoordinates(string $path): ?string
+    {
+        unset($path);
+        return $this->requireOptionalNumber('latitude', 'Vĩ độ', -90, 90)
+            ?? $this->requireOptionalNumber('longitude', 'Kinh độ', -180, 180);
     }
 }

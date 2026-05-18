@@ -16,7 +16,7 @@
                 <td><?= e($location['latitude']) ?>, <?= e($location['longitude']) ?></td>
                 <td class="text-end">
                     <a class="btn btn-sm btn-outline-primary" href="<?= url('/admin/locations/edit?id=' . $location['id']) ?>">Sửa</a>
-                    <form class="d-inline" method="post" action="<?= url('/admin/locations/delete') ?>" onsubmit="return confirm('Xóa địa điểm này?')">
+                    <form class="d-inline" method="post" action="<?= url('/admin/locations/delete') ?>" data-confirm="Xóa địa điểm này?">
                         <input type="hidden" name="id" value="<?= e($location['id']) ?>">
                         <button class="btn btn-sm btn-outline-danger" type="submit">Xóa</button>
                     </form>

@@ -70,6 +70,8 @@ $router->get('/admin/users/create', [UserController::class, 'create']);
 $router->post('/admin/users/store', [UserController::class, 'store']);
 $router->get('/admin/users/edit', [UserController::class, 'edit']);
 $router->post('/admin/users/update', [UserController::class, 'update']);
+$router->post('/admin/users/lock', [UserController::class, 'lock']);
+$router->post('/admin/users/unlock', [UserController::class, 'unlock']);
 $router->post('/admin/users/delete', [UserController::class, 'delete']);
 $router->get('/admin/locations', [LocationController::class, 'index']);
 $router->get('/admin/locations/create', [LocationController::class, 'create']);

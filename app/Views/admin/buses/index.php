@@ -18,7 +18,7 @@
                 <td class="text-end">
                     <a class="btn btn-sm btn-outline-secondary" href="<?= url('/admin/seats?bus_id=' . $bus['id']) ?>">Ghế</a>
                     <a class="btn btn-sm btn-outline-primary" href="<?= url('/admin/buses/edit?id=' . $bus['id']) ?>">Sửa</a>
-                    <form class="d-inline" method="post" action="<?= url('/admin/buses/delete') ?>" onsubmit="return confirm('Xóa xe này?')">
+                    <form class="d-inline" method="post" action="<?= url('/admin/buses/delete') ?>" data-confirm="Xóa xe này?">
                         <input type="hidden" name="id" value="<?= e($bus['id']) ?>">
                         <button class="btn btn-sm btn-outline-danger" type="submit">Xóa</button>
                     </form>

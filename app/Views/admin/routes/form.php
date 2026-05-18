@@ -17,11 +17,11 @@
     </div>
     <div class="col-md-4">
         <label class="form-label">Quãng đường (km)</label>
-        <input class="form-control" name="distance_km" value="<?= e($route['distance_km'] ?? '') ?>">
+        <input class="form-control" type="number" step="0.01" min="0" name="distance_km" value="<?= e($route['distance_km'] ?? '') ?>">
     </div>
     <div class="col-md-4">
         <label class="form-label">Thời gian dự kiến (phút)</label>
-        <input class="form-control" name="duration_minutes" value="<?= e($route['duration_minutes'] ?? '') ?>">
+        <input class="form-control" type="number" step="1" min="1" name="duration_minutes" value="<?= e($route['duration_minutes'] ?? '') ?>">
     </div>
     <div class="col-md-4">
         <label class="form-label">Trạng thái</label>
