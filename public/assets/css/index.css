@@ -708,56 +708,65 @@ header.site-header {
 
 .site-header .container {
   align-items: center;
-  display: flex !important;
+  display: grid !important;
   gap: 1rem;
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
   min-height: 64px;
   max-width: none !important;
   padding-left: 10px !important;
   padding-right: 10px !important;
-  position: relative;
+  width: 100%;
 }
 
-.site-header .logo-wrap,
-.site-header .actions,
-.site-header .main-nav {
-  transform: none !important;
+.site-header .container > a {
+  display: inline-flex;
+  justify-self: start;
+  min-width: 0;
+  position: relative;
+  z-index: 2;
 }
 
 .site-header .logo-wrap {
-  left: 10px !important;
   padding-left: 0 !important;
-  position: absolute !important;
-  top: 50%;
-  transform: translateY(-50%) !important;
+  position: static !important;
+  transform: none !important;
   white-space: nowrap;
-  z-index: 1050;
 }
 
 .site-header .main-nav {
-  flex: 1 1 auto;
   gap: 1.15rem;
   justify-content: center;
+  justify-self: center;
   min-width: 0;
-  padding-left: 170px;
-  padding-right: 220px;
+  padding-left: 0;
+  padding-right: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .site-header .actions {
-  flex: 0 0 auto;
   gap: 0.5rem;
+  justify-self: end;
   max-width: 420px;
   padding-right: 0 !important;
-  position: absolute !important;
-  right: 10px !important;
-  top: 50%;
-  transform: translateY(-50%) !important;
-  z-index: 1050;
+  pointer-events: auto;
+  position: static !important;
+  transform: none !important;
+  z-index: 2;
+  white-space: nowrap;
 }
 
 .site-header .user-name {
+  background: #ecfdf5;
+  border: 1px solid #b9e6d1;
+  border-radius: 999px;
+  color: #0f766e;
   display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 700;
   max-width: 150px;
   overflow: hidden;
+  padding: 0.34rem 0.7rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -785,12 +794,13 @@ header.site-header {
 
 @media (max-width: 991.98px) {
   .site-header .container {
-    flex-wrap: wrap;
+    grid-template-columns: max-content minmax(0, 1fr) max-content;
   }
 
   .site-header .main-nav {
     justify-content: flex-start;
-    order: 3;
+    grid-column: 1 / -1;
+    justify-self: stretch;
     overflow-x: auto;
     padding-left: 0;
     padding-right: 0;
@@ -809,15 +819,14 @@ header.site-header {
   }
 
   .site-header .container {
-    display: flex !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) max-content;
     padding-left: 12px !important;
     padding-right: 12px !important;
   }
 
   .site-header .logo-wrap {
-    left: auto !important;
     position: static !important;
-    top: auto;
     transform: none !important;
   }
 
@@ -825,8 +834,6 @@ header.site-header {
     flex-wrap: wrap;
     justify-content: flex-end;
     position: static !important;
-    right: auto !important;
-    top: auto;
     transform: none !important;
   }
 
@@ -912,4 +919,122 @@ header.site-header {
   border: 1px solid #cfe7dc;
   border-radius: 8px;
   padding: 1rem;
+}
+
+/* Member 1 register phone validation and mobile auth responsiveness */
+.auth-card .form-text {
+  color: #5f766e;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.auth-card .form-control:focus {
+  border-color: #7ee0a4;
+  box-shadow: 0 0 0 0.2rem rgba(126, 224, 164, 0.24);
+}
+
+.auth-page h1,
+.auth-card .form-label {
+  color: #7ee0a4;
+}
+
+@media (max-width: 575.98px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  header.site-header {
+    padding: 0.45rem 0;
+  }
+
+  .site-header .container {
+    gap: 0.45rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-height: 54px;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  .site-header .logo {
+    height: 40px;
+    width: 40px;
+  }
+
+  .site-header .brand-name {
+    font-size: 1.05rem;
+  }
+
+  .site-header .actions {
+    gap: 0.35rem;
+    justify-content: flex-end;
+    min-width: 0;
+  }
+
+  .site-header .actions .btn {
+    border-radius: 8px;
+    font-size: 0.82rem;
+    min-height: 38px;
+    padding: 0.34rem 0.5rem;
+  }
+
+  .site-header .user-name {
+    max-width: 118px;
+  }
+
+  .auth-page {
+    max-width: 100% !important;
+    padding-bottom: 1.5rem !important;
+    padding-top: 1.5rem !important;
+  }
+
+  .auth-page h1 {
+    font-size: 1.65rem;
+    margin-bottom: 1rem !important;
+  }
+
+  .auth-card {
+    border-radius: 8px;
+    padding: 1rem !important;
+  }
+
+  .auth-card .form-label {
+    font-size: 0.92rem;
+  }
+
+  .auth-card .form-control {
+    font-size: 16px;
+    min-height: 44px;
+    padding: 0.64rem 0.72rem;
+  }
+
+  .auth-card .btn {
+    min-height: 44px;
+    width: 100%;
+  }
+
+  .auth-links {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.45rem !important;
+  }
+
+  .auth-links a {
+    text-align: center;
+  }
+
+  .temporary-password-panel {
+    padding: 0.85rem;
+  }
+}
+
+@media (max-width: 390px) {
+  .site-header .brand-name {
+    display: none;
+  }
+
+  .site-header .actions .btn {
+    font-size: 0.78rem;
+    padding-left: 0.42rem;
+    padding-right: 0.42rem;
+  }
 }

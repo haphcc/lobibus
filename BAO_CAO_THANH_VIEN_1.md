@@ -300,3 +300,23 @@ php %TEMP%\composer.phar require phpmailer/phpmailer
 - Test nhanh `MailService` che do `log` thanh cong: tra ve `mail log ok`.
 - Chua test end-to-end voi database/MySQL trong trinh duyet o luot nay; can chay XAMPP va lam theo `tests/auth-test.md`.
 
+### 7. Lam lai kiem tra so dien thoai khi dang ky va responsive mobile
+
+#### Da lam
+
+- Them validate so dien thoai o backend truoc khi tao user: `app/Services/AuthService.php`.
+- Bat buoc nhap so dien thoai khi dang ky; chap nhan so di dong Viet Nam dang `0912345678`, `+84912345678` hoac `84912345678`.
+- Chuan hoa so co ma quoc gia `+84`/`84` ve dang bat dau bang `0` truoc khi luu vao bang `users`.
+- Them input `type="tel"`, `inputmode`, `pattern`, `title` va dong huong dan cho o so dien thoai: `app/Views/auth/register.php`.
+- Them CSS responsive cho trang auth tren mobile: form rong 100%, input/toi thieu 44px, button full width, link xep doc, header gon hon tren man hinh nho: `public/assets/css/index.css`.
+- Cap nhat test case thu cong cho dang ky so dien thoai trong `tests/auth-test.md`.
+
+#### Cach kiem chung
+
+1. Mo `http://localhost/lobibus-1/public/register` tren desktop va mobile width nho.
+2. Bo trong so dien thoai: trinh duyet phai yeu cau nhap hoac server bao `Vui long nhap so dien thoai`.
+3. Nhap `12345` hoac `0212345678`: form phai chan gui hoac hien loi so dien thoai khong dung so di dong Viet Nam.
+4. Nhap `0912345678` hoac `+84912345678`: dang ky thanh cong neu email chua ton tai va mat khau dung policy.
+5. Kiem tra DB: so co `+84` phai duoc luu ve dang `0912345678`.
+6. Thu tren dien thoai: form khong tran ngang, input de bam, nut dang ky full width, link `Da co tai khoan` va `Quay ve trang chu` xep doc.
+
