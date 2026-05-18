@@ -21,7 +21,13 @@ final class User extends Model
 
     public function find(int $id): ?array
     {
-        $stmt = $this->db()->prepare('SELECT * FROM users WHERE id = :id');
+        $stmt = $this->db()->prepare(
+            'SELECT u.*, r.name AS role
+             FROM users u
+             JOIN roles r ON r.id = u.role_id
+             WHERE u.id = :id
+             LIMIT 1'
+        );
         $stmt->execute(['id' => $id]);
         $user = $stmt->fetch();
         return $user ?: null;
@@ -43,6 +49,11 @@ final class User extends Model
 
     public function create(array $data): int
     {
+        $passwordHash = (string) ($data['password_hash'] ?? '');
+        if ($passwordHash === '') {
+            $passwordHash = password_hash((string) ($data['password'] ?? ''), PASSWORD_DEFAULT);
+        }
+
         $stmt = $this->db()->prepare(
             'INSERT INTO users (role_id, name, email, phone, password, status)
              VALUES (:role_id, :name, :email, :phone, :password, :status)'
@@ -50,9 +61,9 @@ final class User extends Model
         $stmt->execute([
             'role_id' => (int) ($data['role_id'] ?? 2),
             'name' => trim((string) ($data['name'] ?? '')),
-            'email' => trim((string) ($data['email'] ?? '')),
+            'email' => strtolower(trim((string) ($data['email'] ?? ''))),
             'phone' => $this->nullable($data['phone'] ?? null),
-            'password' => password_hash((string) ($data['password'] ?? ''), PASSWORD_DEFAULT),
+            'password' => $passwordHash,
             'status' => (string) ($data['status'] ?? 'active'),
         ]);
         return (int) $this->db()->lastInsertId();
@@ -64,7 +75,7 @@ final class User extends Model
             'id' => $id,
             'role_id' => (int) ($data['role_id'] ?? 2),
             'name' => trim((string) ($data['name'] ?? '')),
-            'email' => trim((string) ($data['email'] ?? '')),
+            'email' => strtolower(trim((string) ($data['email'] ?? ''))),
             'phone' => $this->nullable($data['phone'] ?? null),
             'status' => (string) ($data['status'] ?? 'active'),
         ];
@@ -116,12 +127,27 @@ final class User extends Model
         return (int) $stmt->fetchColumn() > 0;
     }
 
-    public function verifyLogin(string $email, string $password): bool
+    public function verifyLogin(string $email, string $password): ?array
     {
         $user = $this->findByEmail($email);
-        return $user !== null
-            && ($user['status'] ?? '') === 'active'
-            && password_verify($password, (string) $user['password']);
+        if (
+            $user === null
+            || ($user['status'] ?? '') !== 'active'
+            || !password_verify($password, (string) $user['password'])
+        ) {
+            return null;
+        }
+
+        return $user;
+    }
+
+    public function updatePasswordHash(int $id, string $passwordHash): bool
+    {
+        $stmt = $this->db()->prepare('UPDATE users SET password = :password WHERE id = :id');
+        return $stmt->execute([
+            'id' => $id,
+            'password' => $passwordHash,
+        ]);
     }
 
     private function nullable(mixed $value): ?string
