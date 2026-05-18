@@ -21,13 +21,13 @@ $isAdmin = \App\Core\Auth::isAdmin();
 
         <div class="actions d-flex align-items-center gap-2">
             <?php if ($currentUser !== null): ?>
-                <span class="user-name d-none d-lg-inline text-muted small" title="<?= e($currentUser['name'] ?: $currentUser['email']) ?>">
+                <span class="user-name d-none d-lg-inline" title="<?= e($currentUser['name'] ?: $currentUser['email']) ?>">
                     <?= e($currentUser['name'] ?: $currentUser['email']) ?>
                 </span>
                 <?php if ($isAdmin): ?>
                     <a class="btn btn-outline-primary btn-sm" href="<?= url('/admin') ?>">Quản trị</a>
                 <?php endif; ?>
-                <a class="btn btn-outline-secondary btn-sm" href="<?= url('/logout') ?>">Đăng xuất</a>
+                <a class="btn btn-success btn-sm" href="<?= url('/logout') ?>">Đăng xuất</a>
             <?php else: ?>
                 <a class="btn btn-outline-secondary btn-sm" href="<?= url('/login') ?>">Đăng nhập</a>
                 <a class="btn btn-success btn-sm" href="<?= url('/register') ?>">Đăng ký</a>

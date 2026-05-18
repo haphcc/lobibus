@@ -18,10 +18,28 @@
 2. Nhập email mới và mật khẩu `Lobibus123`.
 3. Kết quả mong đợi: form báo lỗi `Mật khẩu phải có ít nhất 1 ký tự đặc biệt`.
 
+## Đăng ký thiếu số điện thoại
+
+1. Mở `http://localhost/lobibus-1/public/register`.
+2. Nhập họ tên, email mới, bỏ trống ô số điện thoại và nhập mật khẩu `Lobibus@123`.
+3. Kết quả mong đợi: trình duyệt yêu cầu nhập số điện thoại; nếu gửi được lên server thì form báo lỗi `Vui lòng nhập số điện thoại.`.
+
+## Đăng ký sai định dạng số điện thoại
+
+1. Mở `http://localhost/lobibus-1/public/register`.
+2. Nhập số điện thoại `12345` hoặc `0212345678`, các thông tin còn lại hợp lệ.
+3. Kết quả mong đợi: form không cho gửi hoặc server báo số điện thoại phải là số di động Việt Nam bắt đầu bằng `03`, `05`, `07`, `08`, `09`.
+
+## Đăng ký với số điện thoại hợp lệ
+
+1. Mở `http://localhost/lobibus-1/public/register`.
+2. Nhập số điện thoại `0912345678` hoặc `+84912345678`, các thông tin còn lại hợp lệ.
+3. Kết quả mong đợi: hệ thống chấp nhận số điện thoại; trong bảng `users`, số `+84912345678` được lưu chuẩn hóa thành `0912345678`.
+
 ## Đăng ký thành công
 
 1. Mở `http://localhost/lobibus-1/public/register`.
-2. Nhập email mới và mật khẩu `Lobibus@123`.
+2. Nhập email mới, số điện thoại hợp lệ và mật khẩu `Lobibus@123`.
 3. Kết quả mong đợi: hệ thống chuyển về trang đăng nhập và hiện thông báo đăng ký thành công.
 4. Kiểm tra bảng `users`: cột `password` là hash, không phải `Lobibus@123`.
 
