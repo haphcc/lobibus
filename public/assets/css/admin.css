@@ -52,6 +52,9 @@ a {
     border-right: 1px solid var(--admin-border);
     border-top: 4px solid var(--admin-brand);
     box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .admin-brand {
@@ -392,10 +395,27 @@ a {
         height: auto;
         border-right: 0;
         border-bottom: 1px solid var(--admin-border);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
     }
 
     .admin-nav {
         grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    }
+
+    .admin-sidebar-footer {
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 16px;
+        margin-top: 0;
+        border-top: 1px solid var(--admin-border);
+        padding-top: 12px;
+    }
+
+    .sidebar-divider {
+        display: none;
     }
 
     .admin-main {
@@ -611,3 +631,63 @@ a {
         grid-template-columns: 1fr;
     }
 }
+
+/* ==========================================================================
+   ADMIN SIDEBAR FOOTER & SPECIAL BUTTONS
+   ========================================================================== */
+
+.admin-sidebar-footer {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sidebar-divider {
+    margin: 16px 0 8px;
+    border: 0;
+    height: 1px;
+    background: radial-gradient(circle at left, var(--admin-border) 0%, rgba(233, 236, 239, 0.2) 100%);
+}
+
+.admin-footer-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--admin-muted);
+    font-weight: 600;
+    font-size: 14.5px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-footer-link .sidebar-icon {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* "Xem trang chính" link styles */
+.admin-footer-link.home-link:hover {
+    color: #0d9488; /* Emerald / Teal */
+    background: rgba(13, 148, 136, 0.08);
+}
+
+.admin-footer-link.home-link:hover .sidebar-icon {
+    transform: translateX(-3px) scale(1.05);
+}
+
+/* "Đăng xuất" link styles */
+.admin-footer-link.logout-link {
+    color: #e11d48; /* Rose exit */
+}
+
+.admin-footer-link.logout-link:hover {
+    color: #be123c;
+    background: rgba(225, 29, 72, 0.08);
+}
+
+.admin-footer-link.logout-link:hover .sidebar-icon {
+    transform: translateX(3px) scale(1.05);
+}
+
