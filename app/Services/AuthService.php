@@ -123,6 +123,10 @@ final class AuthService
             return false;
         }
 
+        if (($user['role'] ?? '') === 'admin') {
+            throw new InvalidArgumentException('Tài khoản quản trị viên không được phép khôi phục mật khẩu trực tuyến để bảo mật.');
+        }
+
         $temporaryPassword = $this->generateTemporaryPassword();
         $newHash = password_hash($temporaryPassword, PASSWORD_DEFAULT);
         $oldHash = (string) ($user['password'] ?? '');
