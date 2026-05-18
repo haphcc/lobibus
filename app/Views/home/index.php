@@ -4,6 +4,7 @@ $pageJs = ['trip-search.js', 'recommendation.js', 'chatbot.js'];
 ?>
 <section class="booking-hero">
     <div class="booking-form-wrapper">
+        <div class="container">
         <form id="tripSearchForm" class="booking-form">
             <div class="trip-type-selector">
                 <div class="trip-type-group">
@@ -17,20 +18,19 @@ $pageJs = ['trip-search.js', 'recommendation.js', 'chatbot.js'];
                 <div class="form-col-half">
                     <label class="form-label" for="from">Điểm đi</label>
                     <select id="from" name="from" class="form-select form-select-lg" required>
-                        <option value="Hà Nội">Hà Nội</option>
-                        <option value="Hải Phòng">Hải Phòng</option>
-                        <option value="Nam Định">Nam Định</option>
-                        <option value="Ninh Bình">Ninh Bình</option>
-                        <option value="Thanh Hóa">Thanh Hóa</option>
+                        <option value="">-- Chọn điểm đi --</option>
+                        <?php foreach ($locations as $loc): ?>
+                        <option value="<?= e($loc['name']) ?>"><?= e($loc['name']) ?></option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="form-col-half">
                     <label class="form-label" for="to">Điểm đến</label>
                     <select id="to" name="to" class="form-select form-select-lg" required>
-                        <option value="Hải Phòng">Hải Phòng</option>
-                        <option value="Hà Nội">Hà Nội</option>
-                        <option value="Ninh Bình">Ninh Bình</option>
-                        <option value="Thanh Hóa">Thanh Hóa</option>
+                        <option value="">-- Chọn điểm đến --</option>
+                        <?php foreach ($locations as $loc): ?>
+                        <option value="<?= e($loc['name']) ?>"><?= e($loc['name']) ?></option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
             </div>
@@ -52,9 +52,16 @@ $pageJs = ['trip-search.js', 'recommendation.js', 'chatbot.js'];
                 </div>
             </div>
         </form>
+        </div>
     </div>
 </section>
 <section class="container my-5">
     <h2 class="mb-4">Chuyến gợi ý</h2>
-    <div id="tripResults" class="row g-4"></div>
+</section>
+<section class="booking-hero">
+    <div class="booking-form-wrapper">
+        <div class="container">
+            <div id="tripResults" class="row g-4"></div>
+        </div>
+    </div>
 </section>

@@ -10,9 +10,19 @@ final class StatisticController extends AdminController
 {
     public function index(): void
     {
+        $statistic = new Statistic();
+
         $this->view('admin.statistics.index', [
-            'title' => 'Statistics',
-            'summary' => (new Statistic())->dashboardSummary(),
+            'title' => 'Thống kê',
+            'summary' => $statistic->dashboardSummary(),
+            'revenueByDay' => $statistic->revenueByDay(),
+            'bookingStatusBreakdown' => $statistic->bookingStatusBreakdown(),
+            'paymentMethodBreakdown' => $statistic->paymentMethodBreakdown(),
+            'tripStatusBreakdown' => $statistic->tripStatusBreakdown(),
+            'usersByRole' => $statistic->usersByRole(),
+            'topRoutes' => $statistic->topRoutes(),
+            'upcomingTrips' => $statistic->upcomingTrips(),
+            'recentBookings' => $statistic->recentBookings(),
         ], 'admin');
     }
 }

@@ -19,7 +19,6 @@ use App\Controllers\Admin\LocationController;
 use App\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Controllers\Admin\RouteController;
 use App\Controllers\Admin\SeatController;
-use App\Controllers\Admin\StatisticController;
 use App\Controllers\Admin\TripController as AdminTripController;
 use App\Controllers\Admin\UserController;
 use App\Controllers\Api\BookingApiController;
@@ -27,6 +26,11 @@ use App\Controllers\Api\ChatbotApiController;
 use App\Controllers\Api\RecommendationApiController;
 use App\Controllers\Api\SeatApiController;
 use App\Controllers\Api\TripApiController;
+
+$composerAutoload = dirname(__DIR__) . '/vendor/autoload.php';
+if (is_file($composerAutoload)) {
+    require_once $composerAutoload;
+}
 
 require_once dirname(__DIR__) . '/app/Core/Helper.php';
 
@@ -51,6 +55,8 @@ $router->get('/login', [AuthController::class, 'login']);
 $router->post('/login', [AuthController::class, 'login']);
 $router->get('/register', [AuthController::class, 'register']);
 $router->post('/register', [AuthController::class, 'register']);
+$router->get('/forgot-password', [AuthController::class, 'forgotPassword']);
+$router->post('/forgot-password', [AuthController::class, 'forgotPassword']);
 $router->get('/logout', [AuthController::class, 'logout']);
 $router->get('/trips/search', [TripController::class, 'search']);
 $router->get('/trips/detail', [TripController::class, 'detail']);
@@ -106,7 +112,6 @@ $router->get('/admin/bookings/detail', [AdminBookingController::class, 'detail']
 $router->post('/admin/bookings/update-status', [AdminBookingController::class, 'updateStatus']);
 $router->get('/admin/payments', [AdminPaymentController::class, 'index']);
 $router->post('/admin/payments/update-status', [AdminPaymentController::class, 'updateStatus']);
-$router->get('/admin/statistics', [StatisticController::class, 'index']);
 
 $router->get('/api/trips/search', [TripApiController::class, 'search']);
 $router->get('/api/seats', [SeatApiController::class, 'getByTrip']);
