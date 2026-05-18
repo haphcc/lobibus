@@ -20,23 +20,16 @@
             type="tel"
             inputmode="tel"
             autocomplete="tel"
-            class="form-control"
+            class="form-control mb-3"
             value="<?= e($old['phone'] ?? '') ?>"
             pattern="(\+84|84|0)[ .-]?(3|5|7|8|9)([ .-]?[0-9]){8}"
             maxlength="18"
-            aria-describedby="phoneHelp"
             title="Nhập số di động Việt Nam, ví dụ 0912345678 hoặc +84912345678."
             required
         >
-        <div id="phoneHelp" class="form-text mb-3">
-            Nhập số di động Việt Nam bắt đầu bằng 03, 05, 07, 08, 09 hoặc dùng mã quốc gia +84.
-        </div>
 
         <label class="form-label" for="password">Mật khẩu</label>
-        <input id="password" name="password" type="password" class="form-control" minlength="8" required>
-        <div class="form-text mb-3">
-            Mật khẩu cần tối thiểu 8 ký tự, gồm chữ in hoa, chữ thường, chữ số và ký tự đặc biệt như !@#$%^&amp;*.
-        </div>
+        <input id="password" name="password" type="password" class="form-control mb-3" minlength="8" required>
 
         <label class="form-label" for="password_confirmation">Xác nhận mật khẩu</label>
         <input id="password_confirmation" name="password_confirmation" type="password" class="form-control mb-3" minlength="8" required>
