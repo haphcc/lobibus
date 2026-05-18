@@ -27,6 +27,11 @@ use App\Controllers\Api\RecommendationApiController;
 use App\Controllers\Api\SeatApiController;
 use App\Controllers\Api\TripApiController;
 
+$composerAutoload = dirname(__DIR__) . '/vendor/autoload.php';
+if (is_file($composerAutoload)) {
+    require_once $composerAutoload;
+}
+
 require_once dirname(__DIR__) . '/app/Core/Helper.php';
 
 spl_autoload_register(function (string $class): void {
@@ -50,6 +55,8 @@ $router->get('/login', [AuthController::class, 'login']);
 $router->post('/login', [AuthController::class, 'login']);
 $router->get('/register', [AuthController::class, 'register']);
 $router->post('/register', [AuthController::class, 'register']);
+$router->get('/forgot-password', [AuthController::class, 'forgotPassword']);
+$router->post('/forgot-password', [AuthController::class, 'forgotPassword']);
 $router->get('/logout', [AuthController::class, 'logout']);
 $router->get('/trips/search', [TripController::class, 'search']);
 $router->get('/trips/detail', [TripController::class, 'detail']);
