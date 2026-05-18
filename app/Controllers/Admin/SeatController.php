@@ -43,14 +43,18 @@ final class SeatController extends AdminController
     public function store(): void
     {
         if ($error = $this->requireFields([
-            'bus_id' => 'Bus',
-            'seat_number' => 'Seat number',
+            'bus_id' => 'xe',
+            'seat_number' => 'số ghế',
         ])) {
+            $this->redirect('/admin/seats/create', 'error', $error);
+        }
+        if ($error = $this->requireInteger('bus_id', 'Xe', 1)
+            ?? $this->requireAllowed('seat_type', 'Loại ghế', ['standard', 'sleeper', 'vip'])) {
             $this->redirect('/admin/seats/create', 'error', $error);
         }
 
         $this->seats->create($_POST);
-        $this->redirect('/admin/seats?bus_id=' . $this->postInt('bus_id'), 'success', 'Seat created.');
+        $this->redirect('/admin/seats?bus_id=' . $this->postInt('bus_id'), 'success', 'Đã thêm ghế.');
     }
 
     public function delete(): void
@@ -60,10 +64,10 @@ final class SeatController extends AdminController
         $busId = (int) ($seat['bus_id'] ?? 0);
 
         if ($this->seats->isBooked($id)) {
-            $this->redirect('/admin/seats?bus_id=' . $busId, 'error', 'Cannot delete a booked seat.');
+            $this->redirect('/admin/seats?bus_id=' . $busId, 'error', 'Không thể xóa ghế đã có đơn đặt vé.');
         }
 
         $this->seats->delete($id);
-        $this->redirect('/admin/seats?bus_id=' . $busId, 'success', 'Seat deleted.');
+        $this->redirect('/admin/seats?bus_id=' . $busId, 'success', 'Đã xóa ghế.');
     }
 }

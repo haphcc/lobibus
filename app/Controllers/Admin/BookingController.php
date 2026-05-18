@@ -27,7 +27,7 @@ final class BookingController extends AdminController
     {
         $booking = $this->bookings->findWithDetails($this->queryInt('id'));
         if ($booking === null) {
-            $this->redirect('/admin/bookings', 'error', 'Booking not found.');
+            $this->redirect('/admin/bookings', 'error', 'Không tìm thấy đơn đặt vé.');
         }
 
         $this->view('admin.bookings.detail', [
@@ -38,7 +38,12 @@ final class BookingController extends AdminController
 
     public function updateStatus(): void
     {
-        $this->bookings->updateStatus($this->postInt('id'), $this->postString('status', 'pending'));
-        $this->redirect('/admin/bookings/detail?id=' . $this->postInt('id'), 'success', 'Booking status updated.');
+        $id = $this->postInt('id');
+        if ($error = $this->requireAllowed('status', 'Trạng thái đặt vé', ['pending', 'confirmed', 'cancelled', 'completed', 'expired'])) {
+            $this->redirect('/admin/bookings/detail?id=' . $id, 'error', $error);
+        }
+
+        $this->bookings->updateStatus($id, $this->postString('status', 'pending'));
+        $this->redirect('/admin/bookings/detail?id=' . $id, 'success', 'Đã cập nhật trạng thái đặt vé.');
     }
 }

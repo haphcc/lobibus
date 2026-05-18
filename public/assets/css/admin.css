@@ -110,14 +110,16 @@ a {
 }
 
 .admin-nav a:hover,
-.admin-nav a:focus {
+.admin-nav a:focus,
+.admin-nav a.active {
     color: var(--admin-brand);
     background: linear-gradient(90deg, rgba(39, 174, 96, .12) 0%, rgba(39, 174, 96, .03) 100%);
     padding-left: 22px;
 }
 
 .admin-nav a:hover::before,
-.admin-nav a:focus::before {
+.admin-nav a:focus::before,
+.admin-nav a.active::before {
     height: 70%;
 }
 
@@ -309,22 +311,74 @@ a {
     border: 1px solid rgba(39, 174, 96, .22);
 }
 
-.alert {
+.admin-notice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding: 14px 16px;
     border-radius: 8px;
-    border-width: 1px;
+    border: 1px solid;
     box-shadow: var(--admin-shadow);
 }
 
-.alert-success {
+.admin-notice strong {
+    font-weight: 750;
+}
+
+.admin-notice-success {
     background: #e9f8ef;
     border-color: rgba(39, 174, 96, .25);
     color: var(--admin-green-dark);
 }
 
-.alert-danger {
+.admin-notice-danger {
     background: #fff0f0;
     border-color: rgba(239, 68, 68, .25);
     color: #b42318;
+}
+
+.admin-confirm-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(16, 24, 40, .48);
+}
+
+.admin-confirm-modal.show {
+    display: flex;
+}
+
+.admin-confirm-dialog {
+    width: min(440px, 100%);
+    background: #fff;
+    border: 1px solid rgba(39, 174, 96, .18);
+    border-radius: 8px;
+    box-shadow: 0 20px 40px rgba(16, 24, 40, .22);
+    padding: 22px;
+}
+
+.admin-confirm-dialog h2 {
+    margin: 0 0 10px;
+    color: var(--admin-green);
+    font-size: 20px;
+    font-weight: 750;
+}
+
+.admin-confirm-dialog p {
+    margin: 0;
+    color: #334;
+}
+
+.admin-confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 22px;
 }
 
 @media (max-width: 900px) {

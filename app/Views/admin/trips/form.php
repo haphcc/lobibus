@@ -33,7 +33,7 @@ $arrivalValue = !empty($trip['arrival_time']) ? date('Y-m-d\TH:i', strtotime((st
     </div>
     <div class="col-md-6">
         <label class="form-label">Giá vé</label>
-        <input class="form-control" type="number" min="0" name="price" value="<?= e($trip['price'] ?? '') ?>" required>
+        <input class="form-control" type="number" step="1000" min="0" name="price" value="<?= e($trip['price'] ?? '') ?>" required>
     </div>
     <div class="col-md-6">
         <label class="form-label">Trạng thái</label>

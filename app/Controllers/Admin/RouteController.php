@@ -35,24 +35,27 @@ final class RouteController extends AdminController
     public function store(): void
     {
         if ($error = $this->requireFields([
-            'from_location_id' => 'From location',
-            'to_location_id' => 'To location',
+            'from_location_id' => 'điểm đi',
+            'to_location_id' => 'điểm đến',
         ])) {
             $this->redirect('/admin/routes/create', 'error', $error);
         }
         if ($this->postInt('from_location_id') === $this->postInt('to_location_id')) {
-            $this->redirect('/admin/routes/create', 'error', 'From and to locations must be different.');
+            $this->redirect('/admin/routes/create', 'error', 'Điểm đi và điểm đến phải khác nhau.');
+        }
+        if ($error = $this->validatePayload()) {
+            $this->redirect('/admin/routes/create', 'error', $error);
         }
 
         $this->routes->create($_POST);
-        $this->redirect('/admin/routes', 'success', 'Route created.');
+        $this->redirect('/admin/routes', 'success', 'Đã thêm tuyến.');
     }
 
     public function edit(): void
     {
         $route = $this->routes->find($this->queryInt('id'));
         if ($route === null) {
-            $this->redirect('/admin/routes', 'error', 'Route not found.');
+            $this->redirect('/admin/routes', 'error', 'Không tìm thấy tuyến.');
         }
 
         $this->view('admin.routes.edit', [
@@ -66,21 +69,31 @@ final class RouteController extends AdminController
     {
         $id = $this->postInt('id');
         if ($this->postInt('from_location_id') === $this->postInt('to_location_id')) {
-            $this->redirect('/admin/routes/edit?id=' . $id, 'error', 'From and to locations must be different.');
+            $this->redirect('/admin/routes/edit?id=' . $id, 'error', 'Điểm đi và điểm đến phải khác nhau.');
+        }
+        if ($error = $this->validatePayload()) {
+            $this->redirect('/admin/routes/edit?id=' . $id, 'error', $error);
         }
 
         $this->routes->update($id, $_POST);
-        $this->redirect('/admin/routes', 'success', 'Route updated.');
+        $this->redirect('/admin/routes', 'success', 'Đã cập nhật tuyến.');
     }
 
     public function delete(): void
     {
         $id = $this->postInt('id');
         if ($this->routes->isUsed($id)) {
-            $this->redirect('/admin/routes', 'error', 'Cannot delete a route used by trips.');
+            $this->redirect('/admin/routes', 'error', 'Không thể xóa tuyến đang được dùng trong chuyến xe.');
         }
 
         $this->routes->delete($id);
-        $this->redirect('/admin/routes', 'success', 'Route deleted.');
+        $this->redirect('/admin/routes', 'success', 'Đã xóa tuyến.');
+    }
+
+    private function validatePayload(): ?string
+    {
+        return $this->requireOptionalNumber('distance_km', 'Quãng đường', 0)
+            ?? $this->requireOptionalNumber('duration_minutes', 'Thời gian dự kiến', 1)
+            ?? $this->requireAllowed('status', 'Trạng thái', ['active', 'inactive']);
     }
 }
