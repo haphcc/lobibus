@@ -33,7 +33,7 @@ $showTemporaryPasswordInput = $showTemporaryPasswordInput ?? false;
                     autocomplete="one-time-code"
                     required
                 >
-                <button class="btn btn-outline-primary w-100" type="submit" form="temporary-password-form">
+                <button class="btn btn-confirm w-100" type="submit" form="temporary-password-form">
                     Xác nhận và đăng nhập
                 </button>
             </div>
