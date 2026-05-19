@@ -29,7 +29,8 @@
         >
 
         <label class="form-label" for="password">Mật khẩu</label>
-        <input id="password" name="password" type="password" class="form-control mb-3" minlength="8" required>
+        <input id="password" name="password" type="password" class="form-control" minlength="8" required>
+        <div class="form-text mb-3">Mật khẩu cần có ít nhất 8 ký tự.</div>
 
         <label class="form-label" for="password_confirmation">Xác nhận mật khẩu</label>
         <input id="password_confirmation" name="password_confirmation" type="password" class="form-control mb-3" minlength="8" required>

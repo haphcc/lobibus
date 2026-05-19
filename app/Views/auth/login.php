@@ -18,6 +18,13 @@ $redirect = (string) ($_GET['redirect'] ?? $_POST['redirect'] ?? '');
             <input type="hidden" name="redirect" value="<?= e($redirect) ?>">
         <?php endif; ?>
 
+        <a class="btn-google-auth" href="<?= url('/auth/google/redirect' . ($redirect !== '' ? '?redirect=' . rawurlencode($redirect) : '')) ?>">
+            <span class="google-mark">G</span>
+            <span>Đăng nhập bằng Google</span>
+        </a>
+
+        <div class="auth-divider"><span>hoặc đăng nhập bằng email</span></div>
+
         <label class="form-label" for="email">Email</label>
         <input id="email" name="email" type="email" class="form-control mb-3" value="<?= e($old['email'] ?? '') ?>" required>
 

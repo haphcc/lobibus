@@ -320,3 +320,21 @@ php %TEMP%\composer.phar require phpmailer/phpmailer
 5. Kiem tra DB: so co `+84` phai duoc luu ve dang `0912345678`.
 6. Thu tren dien thoai: form khong tran ngang, input de bam, nut dang ky full width, link `Da co tai khoan` va `Quay ve trang chu` xep doc.
 
+### 8. Them trang tai khoan, OTP doi mat khau va Google login
+
+#### Da lam
+
+- Ha rule mat khau con toi thieu 8 ky tu trong `AuthService`.
+- Them trang `/account` cho user dang nhap de sua ho ten va so dien thoai, email chi hien thi.
+- Them luong gui OTP qua email de doi mat khau, OTP 6 so het han sau 10 phut va toi da 5 lan nhap sai.
+- Them route Google OAuth `/auth/google/redirect` va `/auth/google/callback`, khop user bang email, tu tao customer moi neu email Google chua ton tai.
+- Them config `config/google.php`, mau `.env.example`, nut `Dang nhap bang Google` va link `Tai khoan` trong navbar.
+- Cap nhat test case trong `tests/auth-test.md`.
+
+#### Cach kiem chung
+
+1. Dang ky voi mat khau `1234567`: phai bi bao loi toi thieu 8 ky tu.
+2. Dang ky voi `12345678` hoac `abcdefgh`: khong con loi thieu chu hoa/chu thuong/so/ky tu dac biet.
+3. Dang nhap va mo `/account`, cap nhat ten + so dien thoai hop le: DB va navbar phai doi theo.
+4. Bam gui OTP, lay ma trong email hoac `public/uploads/mail.log`, nhap OTP dung va mat khau moi toi thieu 8 ky tu: doi mat khau thanh cong.
+5. Cau hinh Google OAuth trong `.env`, bam `Dang nhap bang Google`: email active dang nhap duoc, email locked bi chan, email moi tao customer moi.
