@@ -1596,7 +1596,8 @@ header.site-header {
 }
 
 .auth-card .btn-confirm {
-  background: #0f766e !important; /* Deep elegant teal that pops perfectly against the light green panel */
+  background: #0f766e !important;
+  /* Deep elegant teal that pops perfectly against the light green panel */
   color: #ffffff !important;
   border: none !important;
   font-weight: 700;
