@@ -70,6 +70,11 @@ final class UserController extends AdminController
     public function update(): void
     {
         $id = $this->postInt('id');
+        $user = $this->users->find($id);
+        if ($user === null) {
+            $this->redirect('/admin/users', 'error', 'Không tìm thấy người dùng.');
+        }
+
         if ($error = $this->requireFields([
             'name' => 'họ tên',
             'email' => 'Email',
@@ -84,7 +89,12 @@ final class UserController extends AdminController
             $this->redirect('/admin/users/edit?id=' . $id, 'error', $error);
         }
 
-        $this->users->update($id, $_POST);
+        $data = $_POST;
+        if (!empty($user['is_google'])) {
+            unset($data['password']);
+        }
+
+        $this->users->update($id, $data);
         $this->redirect('/admin/users', 'success', 'Đã cập nhật người dùng.');
     }
 

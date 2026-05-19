@@ -66,6 +66,11 @@ final class AccountController extends Controller
     {
         $user = $this->requireUser();
 
+        if (!empty($user['is_google'])) {
+            Session::flash('password_error', 'Tài khoản liên kết Google không cần sử dụng mã OTP đổi mật khẩu.');
+            $this->redirect('/account');
+        }
+
         try {
             $this->auth->requestPasswordChangeOtp((int) $user['id']);
             Session::flash('password_success', 'Mã OTP đã được gửi tới email tài khoản của bạn.');
@@ -82,10 +87,15 @@ final class AccountController extends Controller
     {
         $user = $this->requireUser();
 
+        if (!empty($user['is_google'])) {
+            Session::flash('password_error', 'Tài khoản liên kết Google không được phép đổi mật khẩu.');
+            $this->redirect('/account');
+        }
+
         try {
-            $this->auth->changePasswordWithOtp(
+            $this->auth->changePassword(
                 (int) $user['id'],
-                (string) ($_POST['otp'] ?? ''),
+                (string) ($_POST['current_password'] ?? ''),
                 (string) ($_POST['password'] ?? ''),
                 (string) ($_POST['password_confirmation'] ?? '')
             );

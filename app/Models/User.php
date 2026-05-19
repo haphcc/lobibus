@@ -55,8 +55,8 @@ final class User extends Model
         }
 
         $stmt = $this->db()->prepare(
-            'INSERT INTO users (role_id, name, email, phone, password, status)
-             VALUES (:role_id, :name, :email, :phone, :password, :status)'
+            'INSERT INTO users (role_id, name, email, phone, password, status, is_google)
+             VALUES (:role_id, :name, :email, :phone, :password, :status, :is_google)'
         );
         $stmt->execute([
             'role_id' => (int) ($data['role_id'] ?? 2),
@@ -65,6 +65,7 @@ final class User extends Model
             'phone' => $this->nullable($data['phone'] ?? null),
             'password' => $passwordHash,
             'status' => (string) ($data['status'] ?? 'active'),
+            'is_google' => (int) ($data['is_google'] ?? 0),
         ]);
         return (int) $this->db()->lastInsertId();
     }

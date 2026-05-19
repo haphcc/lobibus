@@ -194,6 +194,33 @@ final class AuthService
         Session::forget(self::PASSWORD_OTP_SESSION_KEY);
     }
 
+    public function changePassword(int $userId, string $currentPassword, string $password, string $passwordConfirmation): void
+    {
+        $user = $this->users->find($userId);
+        if ($user === null || ($user['status'] ?? '') !== 'active') {
+            throw new InvalidArgumentException('Tài khoản không tồn tại hoặc đã bị khóa.');
+        }
+
+        $currentPassword = trim($currentPassword);
+        if ($currentPassword === '') {
+            throw new InvalidArgumentException('Vui lòng nhập mật khẩu hiện tại.');
+        }
+
+        if (!password_verify($currentPassword, (string) ($user['password'] ?? ''))) {
+            throw new InvalidArgumentException('Mật khẩu hiện tại không chính xác.');
+        }
+
+        $this->validatePasswordPolicy($password);
+
+        if ($password !== $passwordConfirmation) {
+            throw new InvalidArgumentException('Xác nhận mật khẩu không khớp.');
+        }
+
+        if (!$this->users->updatePasswordHash($userId, password_hash($password, PASSWORD_DEFAULT))) {
+            throw new RuntimeException('Không thể cập nhật mật khẩu mới.');
+        }
+    }
+
     public function hasActivePasswordOtp(int $userId): bool
     {
         return $this->passwordOtpRemainingSeconds($userId) > 0;
@@ -249,6 +276,7 @@ final class AuthService
             'phone' => null,
             'password_hash' => password_hash(bin2hex(random_bytes(32)), PASSWORD_DEFAULT),
             'status' => 'active',
+            'is_google' => 1,
         ]);
 
         $user = $this->users->find($userId);
@@ -267,10 +295,6 @@ final class AuthService
             throw new InvalidArgumentException('Vui lòng nhập số điện thoại.');
         }
 
-        if (!preg_match('/^\+?[0-9\s.\-()]+$/', $phone)) {
-            throw new InvalidArgumentException('Số điện thoại chỉ được gồm chữ số, dấu cách, dấu chấm, dấu gạch ngang hoặc mã quốc gia +84.');
-        }
-
         $phone = preg_replace('/[\s.\-()]+/', '', $phone) ?? $phone;
 
         if (str_starts_with($phone, '+84')) {
@@ -279,12 +303,8 @@ final class AuthService
             $phone = '0' . substr($phone, 2);
         }
 
-        if (!preg_match('/^0[0-9]{9}$/', $phone)) {
-            throw new InvalidArgumentException('Số điện thoại phải có 10 chữ số, ví dụ 0912345678 hoặc +84912345678.');
-        }
-
-        if (!preg_match('/^0(3|5|7|8|9)[0-9]{8}$/', $phone)) {
-            throw new InvalidArgumentException('Số điện thoại phải là số di động Việt Nam, bắt đầu bằng 03, 05, 07, 08 hoặc 09.');
+        if (!preg_match('/^[0-9]{10}$/', $phone)) {
+            throw new InvalidArgumentException('Số điện thoại phải gồm đúng 10 chữ số.');
         }
 
         return $phone;
@@ -370,7 +390,7 @@ final class AuthService
         $name = trim((string) ($user['name'] ?? ''));
         $displayName = $name !== '' ? \e($name) : 'quý khách';
         $password = \e($temporaryPassword);
-        $loginUrl = \e('localhost/lobibus/public/login');
+        $loginUrl = \e('localhost/lobibus-1/public/login');
         $year = date('Y');
 
         return <<<HTML

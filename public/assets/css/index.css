@@ -1863,37 +1863,43 @@ header.site-header .actions .btn-register:hover {
 .btn-google-auth {
   align-items: center;
   background: #ffffff;
-  border: 1px solid #d7e2dc;
-  border-radius: 8px;
-  color: #1f2937;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  color: #334155;
   display: flex;
-  font-weight: 700;
-  gap: 0.65rem;
+  font-weight: 600;
+  gap: 0.75rem;
   justify-content: center;
-  min-height: 46px;
-  padding: 0.68rem 0.9rem;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  min-height: 48px;
+  padding: 0.68rem 1.2rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   width: 100%;
+  text-decoration: none;
+  font-size: 0.95rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .btn-google-auth:hover,
 .btn-google-auth:focus {
-  border-color: #7ee0a4;
-  box-shadow: 0 10px 24px rgba(15, 118, 110, 0.12);
-  color: #0f766e;
-  transform: translateY(-1px);
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.02);
+  color: #0f172a;
+  transform: translateY(-2px);
 }
 
-.google-mark {
-  align-items: center;
-  border: 1px solid #d7e2dc;
-  border-radius: 50%;
-  display: inline-flex;
-  font-size: 0.95rem;
-  font-weight: 800;
-  height: 28px;
-  justify-content: center;
-  width: 28px;
+.btn-google-auth:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.google-icon {
+  flex-shrink: 0;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-google-auth:hover .google-icon {
+  transform: scale(1.15) rotate(8deg);
 }
 
 .auth-divider {
