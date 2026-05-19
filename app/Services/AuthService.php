@@ -2,13 +2,19 @@
 declare(strict_types=1);
 namespace App\Services;
 
+use App\Core\Session;
 use App\Models\Role;
 use App\Models\User;
 use InvalidArgumentException;
 use RuntimeException;
+use Throwable;
 
 final class AuthService
 {
+    private const PASSWORD_OTP_SESSION_KEY = 'account_password_otp';
+    private const PASSWORD_OTP_TTL_SECONDS = 600;
+    private const PASSWORD_OTP_MAX_ATTEMPTS = 5;
+
     private User $users;
     private Role $roles;
     private MailService $mail;
@@ -78,6 +84,179 @@ final class AuthService
         }
 
         return $this->users->verifyLogin($email, $password);
+    }
+
+    public function findUser(int $id): ?array
+    {
+        return $this->users->find($id);
+    }
+
+    public function updateProfile(int $userId, array $data): array
+    {
+        $name = trim((string) ($data['name'] ?? ''));
+        $phone = trim((string) ($data['phone'] ?? ''));
+
+        if ($name === '') {
+            throw new InvalidArgumentException('Vui lòng nhập họ tên.');
+        }
+
+        $phone = $this->normalizeVietnamesePhone($phone);
+
+        if (!$this->users->updateProfile($userId, $name, $phone)) {
+            throw new RuntimeException('Không thể cập nhật thông tin tài khoản.');
+        }
+
+        $user = $this->users->find($userId);
+        if ($user === null) {
+            throw new RuntimeException('Không thể tải lại tài khoản vừa cập nhật.');
+        }
+
+        return $user;
+    }
+
+    public function requestPasswordChangeOtp(int $userId): void
+    {
+        $user = $this->users->find($userId);
+        if ($user === null || ($user['status'] ?? '') !== 'active') {
+            throw new InvalidArgumentException('Tài khoản không tồn tại hoặc đã bị khóa.');
+        }
+
+        $email = (string) ($user['email'] ?? '');
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException('Email tài khoản không hợp lệ.');
+        }
+
+        $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        Session::set(self::PASSWORD_OTP_SESSION_KEY, [
+            'user_id' => $userId,
+            'hash' => password_hash($otp, PASSWORD_DEFAULT),
+            'expires_at' => time() + self::PASSWORD_OTP_TTL_SECONDS,
+            'attempts' => 0,
+        ]);
+
+        try {
+            $sent = $this->mail->send(
+                $email,
+                'Mã OTP đổi mật khẩu LobiBus',
+                $this->passwordChangeOtpEmailBody($user, $otp)
+            );
+        } catch (Throwable $exception) {
+            Session::forget(self::PASSWORD_OTP_SESSION_KEY);
+            throw $exception;
+        }
+
+        if (!$sent) {
+            Session::forget(self::PASSWORD_OTP_SESSION_KEY);
+            throw new RuntimeException('Không thể gửi mã OTP đổi mật khẩu.');
+        }
+    }
+
+    public function changePasswordWithOtp(int $userId, string $otp, string $password, string $passwordConfirmation): void
+    {
+        $this->validatePasswordPolicy($password);
+
+        if ($password !== $passwordConfirmation) {
+            throw new InvalidArgumentException('Xác nhận mật khẩu không khớp.');
+        }
+
+        $otpData = Session::get(self::PASSWORD_OTP_SESSION_KEY);
+        if (!is_array($otpData) || (int) ($otpData['user_id'] ?? 0) !== $userId) {
+            throw new InvalidArgumentException('Vui lòng gửi mã OTP trước khi đổi mật khẩu.');
+        }
+
+        if ((int) ($otpData['expires_at'] ?? 0) < time()) {
+            Session::forget(self::PASSWORD_OTP_SESSION_KEY);
+            throw new InvalidArgumentException('Mã OTP đã hết hạn. Vui lòng gửi mã mới.');
+        }
+
+        $attempts = (int) ($otpData['attempts'] ?? 0);
+        if ($attempts >= self::PASSWORD_OTP_MAX_ATTEMPTS) {
+            Session::forget(self::PASSWORD_OTP_SESSION_KEY);
+            throw new InvalidArgumentException('Bạn đã nhập sai OTP quá nhiều lần. Vui lòng gửi mã mới.');
+        }
+
+        $otp = trim($otp);
+        if (!preg_match('/^[0-9]{6}$/', $otp) || !password_verify($otp, (string) ($otpData['hash'] ?? ''))) {
+            $otpData['attempts'] = $attempts + 1;
+            if ($otpData['attempts'] >= self::PASSWORD_OTP_MAX_ATTEMPTS) {
+                Session::forget(self::PASSWORD_OTP_SESSION_KEY);
+            } else {
+                Session::set(self::PASSWORD_OTP_SESSION_KEY, $otpData);
+            }
+
+            throw new InvalidArgumentException('Mã OTP không đúng.');
+        }
+
+        if (!$this->users->updatePasswordHash($userId, password_hash($password, PASSWORD_DEFAULT))) {
+            throw new RuntimeException('Không thể cập nhật mật khẩu mới.');
+        }
+
+        Session::forget(self::PASSWORD_OTP_SESSION_KEY);
+    }
+
+    public function hasActivePasswordOtp(int $userId): bool
+    {
+        return $this->passwordOtpRemainingSeconds($userId) > 0;
+    }
+
+    public function passwordOtpRemainingSeconds(int $userId): int
+    {
+        $otpData = Session::get(self::PASSWORD_OTP_SESSION_KEY);
+        if (!is_array($otpData) || (int) ($otpData['user_id'] ?? 0) !== $userId) {
+            return 0;
+        }
+
+        $remainingSeconds = (int) ($otpData['expires_at'] ?? 0) - time();
+        if ($remainingSeconds <= 0) {
+            Session::forget(self::PASSWORD_OTP_SESSION_KEY);
+            return 0;
+        }
+
+        return $remainingSeconds;
+    }
+
+    public function loginOrCreateGoogleUser(string $email, string $name): array
+    {
+        $email = strtolower(trim($email));
+        $name = trim($name);
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException('Google không trả về email hợp lệ.');
+        }
+
+        $user = $this->users->findByEmail($email);
+        if ($user !== null) {
+            if (($user['status'] ?? '') !== 'active') {
+                throw new InvalidArgumentException('Tài khoản này đã bị khóa.');
+            }
+
+            return $user;
+        }
+
+        $customerRole = $this->roles->findByName('customer');
+        if ($customerRole === null) {
+            throw new RuntimeException('Không tìm thấy vai trò khách hàng trong database.');
+        }
+
+        if ($name === '') {
+            $name = strstr($email, '@', true) ?: $email;
+        }
+
+        $userId = $this->users->create([
+            'role_id' => (int) $customerRole['id'],
+            'name' => $name,
+            'email' => $email,
+            'phone' => null,
+            'password_hash' => password_hash(bin2hex(random_bytes(32)), PASSWORD_DEFAULT),
+            'status' => 'active',
+        ]);
+
+        $user = $this->users->find($userId);
+        if ($user === null) {
+            throw new RuntimeException('Không thể tải lại tài khoản Google vừa tạo.');
+        }
+
+        return $user;
     }
 
     private function normalizeVietnamesePhone(string $phone): string
@@ -157,22 +336,6 @@ final class AuthService
         if (strlen($password) < 8) {
             throw new InvalidArgumentException('Mật khẩu phải có ít nhất 8 ký tự.');
         }
-
-        if (!preg_match('/[A-Z]/', $password)) {
-            throw new InvalidArgumentException('Mật khẩu phải có ít nhất 1 chữ in hoa.');
-        }
-
-        if (!preg_match('/[a-z]/', $password)) {
-            throw new InvalidArgumentException('Mật khẩu phải có ít nhất 1 chữ thường.');
-        }
-
-        if (!preg_match('/\d/', $password)) {
-            throw new InvalidArgumentException('Mật khẩu phải có ít nhất 1 chữ số.');
-        }
-
-        if (!preg_match('/[!@#$%^&*]/', $password)) {
-            throw new InvalidArgumentException('Mật khẩu phải có ít nhất 1 ký tự đặc biệt, ví dụ !@#$%^&*.');
-        }
     }
 
     private function generateTemporaryPassword(): string
@@ -247,6 +410,61 @@ final class AuthService
                             </p>
                             <p style="font-size:13px;line-height:1.6;color:#6b7f77;margin:0;">
                                 Nếu bạn không yêu cầu khôi phục mật khẩu, vui lòng bỏ qua email này hoặc liên hệ bộ phận hỗ trợ LobiBus để được kiểm tra tài khoản.
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background:#f7fbf9;border-top:1px solid #e4efea;padding:16px 28px;color:#6b7f77;font-size:12px;line-height:1.5;">
+                            Email này được gửi tự động từ hệ thống LobiBus. Vui lòng không trả lời trực tiếp email này.<br>
+                            &copy; {$year} LobiBus. Đã đăng ký bản quyền.
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+HTML;
+    }
+
+    private function passwordChangeOtpEmailBody(array $user, string $otp): string
+    {
+        $name = trim((string) ($user['name'] ?? ''));
+        $displayName = $name !== '' ? \e($name) : 'quý khách';
+        $safeOtp = \e($otp);
+        $year = date('Y');
+
+        return <<<HTML
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <title>Mã OTP đổi mật khẩu LobiBus</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f7f6;font-family:Arial,Helvetica,sans-serif;color:#18352d;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f4f7f6;padding:28px 12px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:620px;background:#ffffff;border:1px solid #dcebe4;border-radius:8px;overflow:hidden;">
+                    <tr>
+                        <td style="background:#0f766e;padding:22px 28px;color:#ffffff;">
+                            <div style="font-size:22px;font-weight:800;">LobiBus</div>
+                            <div style="font-size:14px;opacity:.9;margin-top:4px;">Xác nhận đổi mật khẩu</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:28px;">
+                            <p style="font-size:16px;line-height:1.6;margin:0 0 16px;">Xin chào {$displayName},</p>
+                            <p style="font-size:15px;line-height:1.7;margin:0 0 18px;">
+                                Bạn vừa yêu cầu đổi mật khẩu tài khoản LobiBus. Vui lòng nhập mã OTP dưới đây trên trang tài khoản.
+                            </p>
+                            <div style="background:#ecfdf5;border:1px solid #b9e6d1;border-radius:8px;padding:18px;text-align:center;margin:22px 0;">
+                                <div style="font-size:13px;font-weight:700;color:#0f766e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Mã OTP</div>
+                                <div style="font-family:'Courier New',monospace;font-size:32px;font-weight:800;color:#18352d;letter-spacing:4px;">{$safeOtp}</div>
+                            </div>
+                            <p style="font-size:14px;line-height:1.7;color:#6b7f77;margin:0;">
+                                Mã này có hiệu lực trong 10 phút. Nếu bạn không yêu cầu đổi mật khẩu, vui lòng bỏ qua email này.
                             </p>
                         </td>
                     </tr>

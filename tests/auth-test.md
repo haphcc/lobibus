@@ -3,20 +3,14 @@
 ## Đăng ký với policy mật khẩu mới
 
 1. Mở `http://localhost/lobibus-1/public/register`.
-2. Nhập họ tên, email mới và mật khẩu `Lobi1!`.
+2. Nhập họ tên, email mới, số điện thoại hợp lệ và mật khẩu `1234567`.
 3. Kết quả mong đợi: form báo lỗi `Mật khẩu phải có ít nhất 8 ký tự.`.
 
-## Đăng ký thiếu chữ in hoa
+## Đăng ký với mật khẩu 8 ký tự
 
 1. Mở `http://localhost/lobibus-1/public/register`.
-2. Nhập email mới và mật khẩu `lobibus@123`.
-3. Kết quả mong đợi: form báo lỗi `Mật khẩu phải có ít nhất 1 chữ in hoa.`.
-
-## Đăng ký thiếu ký tự đặc biệt
-
-1. Mở `http://localhost/lobibus-1/public/register`.
-2. Nhập email mới và mật khẩu `Lobibus123`.
-3. Kết quả mong đợi: form báo lỗi `Mật khẩu phải có ít nhất 1 ký tự đặc biệt`.
+2. Nhập email mới, số điện thoại hợp lệ và mật khẩu `12345678` hoặc `abcdefgh`.
+3. Kết quả mong đợi: không còn lỗi thiếu chữ hoa, chữ thường, chữ số hoặc ký tự đặc biệt.
 
 ## Đăng ký thiếu số điện thoại
 
@@ -39,9 +33,40 @@
 ## Đăng ký thành công
 
 1. Mở `http://localhost/lobibus-1/public/register`.
-2. Nhập email mới, số điện thoại hợp lệ và mật khẩu `Lobibus@123`.
+2. Nhập email mới, số điện thoại hợp lệ và mật khẩu `12345678`.
 3. Kết quả mong đợi: hệ thống chuyển về trang đăng nhập và hiện thông báo đăng ký thành công.
-4. Kiểm tra bảng `users`: cột `password` là hash, không phải `Lobibus@123`.
+4. Kiểm tra bảng `users`: cột `password` là hash, không phải `12345678`.
+
+## Cập nhật thông tin tài khoản
+
+1. Đăng nhập bằng tài khoản customer.
+2. Mở `http://localhost/lobibus-1/public/account`.
+3. Sửa họ tên và số điện thoại thành `0912345678`, bấm `Lưu thông tin`.
+4. Kết quả mong đợi: hiện thông báo cập nhật thành công, navbar/session hiển thị tên mới.
+5. Nhập số điện thoại `12345` hoặc `0212345678`.
+6. Kết quả mong đợi: form báo lỗi số điện thoại không hợp lệ.
+
+## Đổi mật khẩu bằng OTP
+
+1. Đăng nhập và mở `http://localhost/lobibus-1/public/account`.
+2. Bấm `Gửi mã OTP`.
+3. Kết quả mong đợi: trang hiển thị bộ đếm ngược từ khoảng `10:00`; reload trang thì thời gian còn lại vẫn tiếp tục giảm đúng.
+4. Nếu `MAIL_MAILER=log`, mở `public/uploads/mail.log` để lấy OTP.
+5. Nhập OTP sai.
+6. Kết quả mong đợi: form báo `Mã OTP không đúng.`.
+7. Nhập OTP đúng, mật khẩu mới `87654321` và xác nhận khớp.
+8. Kết quả mong đợi: đổi mật khẩu thành công; đăng xuất và đăng nhập lại bằng mật khẩu mới được.
+
+## Đăng nhập bằng Google
+
+1. Cấu hình `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` trong `.env`.
+2. Trong Google Cloud Console, thêm redirect URI đúng bằng `GOOGLE_REDIRECT_URI`.
+3. Mở `http://localhost/lobibus-1/public/login`, bấm `Đăng nhập bằng Google`.
+4. Nếu email Google trùng user active: đăng nhập vào user đó.
+5. Nếu email Google trùng user locked: hệ thống báo tài khoản bị khóa.
+6. Nếu email Google chưa tồn tại: hệ thống tạo customer mới và đăng nhập.
+7. Xóa cấu hình Google và thử lại.
+8. Kết quả mong đợi: login page hiển thị lỗi cấu hình thân thiện, không crash.
 
 ## Quên mật khẩu
 
