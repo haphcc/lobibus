@@ -21,14 +21,20 @@ final class Router
 
     public function dispatch(string $method, string $uri): void
     {
+        $method = strtoupper($method);
         $path = $this->normalize($this->stripBasePath(parse_url($uri, PHP_URL_PATH) ?: '/'));
+        if ($method === 'POST' && !Csrf::validateRequest()) {
+            $this->rejectInvalidCsrf($path);
+            return;
+        }
+
         if ($this->isAdminPath($path) && !Auth::isAdmin()) {
             Session::flash('error', 'Bạn cần đăng nhập bằng tài khoản quản trị để vào trang quản trị.');
             header('Location: ' . \url('/login?redirect=' . rawurlencode($path)));
             return;
         }
 
-        $handler = $this->routes[strtoupper($method)][$path] ?? null;
+        $handler = $this->routes[$method][$path] ?? null;
 
         if ($handler === null) {
             http_response_code(404);
@@ -70,5 +76,20 @@ final class Router
     private function isAdminPath(string $path): bool
     {
         return $path === '/admin' || str_starts_with($path, '/admin/');
+    }
+
+    private function rejectInvalidCsrf(string $path): void
+    {
+        http_response_code(419);
+
+        if (str_starts_with($path, '/api/')) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'error' => 'CSRF token khong hop le hoac da het han.',
+            ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            return;
+        }
+
+        echo '419 - CSRF token khong hop le hoac da het han. Vui long tai lai trang va thu lai.';
     }
 }

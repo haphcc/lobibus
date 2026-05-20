@@ -21,11 +21,13 @@ abstract class Controller
 
         $layoutFile = dirname(__DIR__) . '/Views/layouts/' . $layout . '.php';
         if (is_file($layoutFile)) {
+            ob_start();
             require $layoutFile;
+            echo Csrf::injectIntoForms((string) ob_get_clean());
             return;
         }
 
-        echo $content;
+        echo Csrf::injectIntoForms($content);
     }
 
     protected function json(array $payload, int $status = 200): void

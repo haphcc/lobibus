@@ -61,7 +61,7 @@ $router->get('/forgot-password', [AuthController::class, 'forgotPassword']);
 $router->post('/forgot-password', [AuthController::class, 'forgotPassword']);
 $router->get('/auth/google/redirect', [AuthController::class, 'googleRedirect']);
 $router->get('/auth/google/callback', [AuthController::class, 'googleCallback']);
-$router->get('/logout', [AuthController::class, 'logout']);
+$router->post('/logout', [AuthController::class, 'logout']);
 $router->get('/account', [AccountController::class, 'index']);
 $router->post('/account/profile', [AccountController::class, 'updateProfile']);
 $router->post('/account/password/request-otp', [AccountController::class, 'requestPasswordOtp']);

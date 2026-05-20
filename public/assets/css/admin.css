@@ -874,12 +874,17 @@ a {
     display: flex;
     align-items: center;
     gap: 12px;
+    width: 100%;
+    border: 0;
+    background: transparent;
     color: var(--admin-muted);
     font-weight: 600;
     font-size: 14.5px;
+    font-family: inherit;
     padding: 10px 14px;
     border-radius: 8px;
     text-decoration: none;
+    cursor: pointer;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

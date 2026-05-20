@@ -81,7 +81,10 @@
     try {
       const response = await fetch(`${base}/api/chatbot/reply`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': window.CSRF_TOKEN || '',
+        },
         body: JSON.stringify({ message }),
       });
       const payload = await response.json();
