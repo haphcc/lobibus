@@ -2,6 +2,7 @@
   const form = document.getElementById('tripSearchForm') || document.getElementById('bookingForm');
   const results = document.getElementById('tripResults');
   const base = window.APP_BASE_URL || '';
+  const autoLoadScheduledTrips = !!(form && form.dataset && form.dataset.autoLoad === '1');
   // Return date toggle for round-trip: run after DOM ready to ensure elements exist
   window.addEventListener('DOMContentLoaded', () => {
     const roundTripRadio = document.getElementById('roundTrip');
@@ -212,4 +213,8 @@
     results.innerHTML = renderSection('Kết quả', payload.data || []);
     if (resultsSection) resultsSection.style.display = '';
   });
+
+  if (autoLoadScheduledTrips) {
+    form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  }
 })();

@@ -9,12 +9,27 @@ $currentPath = parse_url($currentUri, PHP_URL_PATH) ?: '';
 // Helper to check if a nav link is active
 if (!function_exists('isNavActive')) {
     function isNavActive($path, $currentPath) {
-        $targetUrl = url($path);
-        $targetPath = parse_url($targetUrl, PHP_URL_PATH) ?: '';
-        if ($targetPath === '/' || $targetPath === '') {
-            return ($currentPath === $targetPath || $currentPath === $targetPath . '/') ? 'active' : '';
+        $basePath = base_path();
+        $relativeCurrentPath = $currentPath;
+
+        if ($basePath !== '' && str_starts_with($relativeCurrentPath, $basePath)) {
+            $relativeCurrentPath = substr($relativeCurrentPath, strlen($basePath));
         }
-        return str_starts_with($currentPath, $targetPath) ? 'active' : '';
+
+        if ($relativeCurrentPath === '') {
+            $relativeCurrentPath = '/';
+        }
+
+        $targetPath = $path === '' ? '/' : $path;
+        if ($targetPath !== '/' && !str_starts_with($targetPath, '/')) {
+            $targetPath = '/' . $targetPath;
+        }
+
+        if ($targetPath === '/') {
+            return $relativeCurrentPath === '/' ? 'active' : '';
+        }
+
+        return ($relativeCurrentPath === $targetPath || str_starts_with($relativeCurrentPath, $targetPath . '/')) ? 'active' : '';
     }
 }
 ?>
@@ -36,8 +51,8 @@ if (!function_exists('isNavActive')) {
 
         <!-- Desktop Navigation Links (Hidden on Mobile) -->
         <nav class="main-nav d-none d-md-flex align-items-center" aria-label="Điều hướng chính">
-            <a class="nav-link px-3 <?= isNavActive('/trips/search', $currentPath) ?>" href="<?= url('/trips/search') ?>">Đặt chuyến</a>
-            <a class="nav-link px-3 <?= isNavActive('/trips/schedule', $currentPath) ?>" href="<?= url('/trips/search') ?>">Lịch trình</a>
+            <a class="nav-link px-3 <?= isNavActive('/', $currentPath) ?>" href="<?= url('/') ?>">Đặt chuyến</a>
+            <a class="nav-link px-3 <?= isNavActive('/trips/schedule', $currentPath) ?>" href="<?= url('/trips/schedule') ?>">Lịch trình</a>
             <a class="nav-link px-3 <?= isNavActive('/booking/history', $currentPath) ?>" href="<?= url('/booking/history') ?>">Tra cứu vé</a>
             <a class="nav-link px-3 <?= isNavActive('/recommendations', $currentPath) ?>" href="<?= url('/recommendations') ?>">Gợi ý chuyến</a>
             <a class="nav-link px-3 <?= isNavActive('/news', $currentPath) ?>" href="<?= url('/news') ?>">Tin tức</a>
@@ -109,8 +124,8 @@ if (!function_exists('isNavActive')) {
     </div>
     <div class="drawer-body p-3">
         <nav class="d-flex flex-column gap-2">
-            <a class="drawer-link p-3 rounded text-decoration-none <?= isNavActive('/trips/search', $currentPath) ?>" href="<?= url('/trips/search') ?>">Đặt chuyến</a>
-            <a class="drawer-link p-3 rounded text-decoration-none <?= isNavActive('/trips/schedule', $currentPath) ?>" href="<?= url('/trips/search') ?>">Lịch trình</a>
+            <a class="drawer-link p-3 rounded text-decoration-none <?= isNavActive('/', $currentPath) ?>" href="<?= url('/') ?>">Đặt chuyến</a>
+            <a class="drawer-link p-3 rounded text-decoration-none <?= isNavActive('/trips/schedule', $currentPath) ?>" href="<?= url('/trips/schedule') ?>">Lịch trình</a>
             <a class="drawer-link p-3 rounded text-decoration-none <?= isNavActive('/booking/history', $currentPath) ?>" href="<?= url('/booking/history') ?>">Tra cứu vé</a>
             <a class="drawer-link p-3 rounded text-decoration-none <?= isNavActive('/recommendations', $currentPath) ?>" href="<?= url('/recommendations') ?>">Gợi ý chuyến</a>
             <a class="drawer-link p-3 rounded text-decoration-none <?= isNavActive('/news', $currentPath) ?>" href="<?= url('/news') ?>">Tin tức</a>

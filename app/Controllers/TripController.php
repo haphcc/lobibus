@@ -5,12 +5,23 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\Models\Location;
 
 final class TripController extends Controller
 {
     public function search(): void
     {
-        $this->view('trips.search', ['title' => 'Tìm chuyến']);
+        $this->view('trips.search', ['title' => 'Đặt chuyến']);
+    }
+
+    public function schedule(): void
+    {
+        $locations = (new Location())->all();
+
+        $this->view('trips.schedule', [
+            'title' => 'Lịch trình chuyến đi',
+            'locations' => $locations,
+        ]);
     }
 
     public function detail(): void

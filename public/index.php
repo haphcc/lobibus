@@ -67,6 +67,7 @@ $router->post('/account/profile', [AccountController::class, 'updateProfile']);
 $router->post('/account/password/request-otp', [AccountController::class, 'requestPasswordOtp']);
 $router->post('/account/password', [AccountController::class, 'updatePassword']);
 $router->get('/trips/search', [TripController::class, 'search']);
+$router->get('/trips/schedule', [TripController::class, 'schedule']);
 $router->get('/trips/detail', [TripController::class, 'detail']);
 $router->get('/booking/select-seat', [BookingController::class, 'selectSeat']);
 $router->post('/booking/checkout', [BookingController::class, 'checkout']);

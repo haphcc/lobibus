@@ -112,6 +112,29 @@
   color: #27ae60;
 }
 
+.trip-schedule-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #d0d0d0;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+  color: #666;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.trip-schedule-link:hover {
+  border-color: #27ae60;
+  color: #27ae60;
+}
+
 /* Booking Form */
 .booking-form {
   display: flex;
@@ -481,6 +504,11 @@
   }
 
   .trip-type-label {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .trip-schedule-link {
     padding: 0.5rem 0.8rem;
     font-size: 0.85rem;
   }
