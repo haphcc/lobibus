@@ -57,6 +57,20 @@ $pageJs = ['recommendation.js'];
                             <input class="form-check-input" type="checkbox" id="price3">
                             <label class="form-check-label" for="price3">Trên 500,000đ</label>
                         </div>
+                        
+                        <!-- Thanh kéo 2 bên tùy chọn -->
+                        <div class="mt-4 price-slider-wrapper">
+                            <label class="form-label text-muted fw-bold mb-2" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Hoặc tự chỉnh khoảng giá:</label>
+                            <div class="price-slider-display d-flex justify-content-between mb-2">
+                                <span id="priceMinLabel" class="fw-bold text-success" style="font-size: 14px;">0đ</span>
+                                <span id="priceMaxLabel" class="fw-bold text-success" style="font-size: 14px;">1,000,000đ</span>
+                            </div>
+                            <div class="range-slider-container">
+                                <div class="slider-track" id="sliderTrack"></div>
+                                <input type="range" id="priceMinInput" min="0" max="1000000" value="0" step="10000">
+                                <input type="range" id="priceMaxInput" min="0" max="1000000" value="1000000" step="10000">
+                            </div>
+                        </div>
                     </div>
 
                     <hr class="my-4 text-muted">
