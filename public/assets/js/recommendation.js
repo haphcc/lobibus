@@ -31,13 +31,96 @@
     });
   }
 
+  function getTripAmenities(price) {
+    const p = Number(price || 0);
+    const amenitiesList = [
+      { icon: 'bi-wifi', label: 'Wifi' },
+      { icon: 'bi-usb-plug', label: 'Sạc USB' },
+      { icon: 'bi-droplet-fill', label: 'Nước suối' },
+      { icon: 'bi-snow', label: 'Điều hòa' }
+    ];
+    if (p > 300000) {
+      return amenitiesList;
+    } else if (p > 200000) {
+      return [amenitiesList[0], amenitiesList[2], amenitiesList[3]];
+    } else {
+      return [amenitiesList[2], amenitiesList[3]];
+    }
+  }
+
+  function renderSkeleton() {
+    list.innerHTML = '';
+    for (let i = 0; i < 4; i++) {
+      const card = document.createElement('div');
+      card.className = 'skeleton-card';
+      card.innerHTML = `
+        <div class="skeleton-header">
+          <div class="skeleton-shimmer skeleton-badge"></div>
+          <div class="skeleton-shimmer skeleton-price"></div>
+        </div>
+        <div class="skeleton-shimmer skeleton-title"></div>
+        <div class="skeleton-shimmer skeleton-bus"></div>
+        <div class="skeleton-meta">
+          <div class="skeleton-timeline-point">
+            <div class="skeleton-shimmer skeleton-icon"></div>
+            <div class="skeleton-details">
+              <div class="skeleton-shimmer skeleton-label"></div>
+              <div class="skeleton-shimmer skeleton-time"></div>
+            </div>
+          </div>
+          <div class="skeleton-timeline-point mt-3">
+            <div class="skeleton-shimmer skeleton-icon"></div>
+            <div class="skeleton-details">
+              <div class="skeleton-shimmer skeleton-label"></div>
+              <div class="skeleton-shimmer skeleton-time"></div>
+            </div>
+          </div>
+          <div class="skeleton-shimmer skeleton-seats mt-3"></div>
+        </div>
+        <div class="skeleton-footer">
+          <div class="skeleton-shimmer skeleton-left"></div>
+          <div class="skeleton-shimmer skeleton-button"></div>
+        </div>
+      `;
+      list.appendChild(card);
+    }
+  }
+
   function renderTrip(item) {
     const card = document.createElement('article');
     card.className = 'recommendation-card';
+    
+    // Add smooth fade-in transition on load
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(12px)';
+    card.style.transition = 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
 
     const header = document.createElement('div');
     header.className = 'recommendation-card-header';
-    appendText(header, 'span', item.reason || 'Gợi ý', 'recommendation-badge');
+    
+    // Build recommendation badge with custom icon and specific class
+    const badge = document.createElement('span');
+    let badgeClass = 'recommendation-badge';
+    let iconHTML = '<i class="bi bi-stars me-1"></i>';
+    
+    if (item.reason === 'Chuyến rẻ nhất') {
+      badgeClass += ' recommendation-badge-cheap';
+      iconHTML = '<i class="bi bi-tag-fill me-1"></i>';
+    } else if (item.reason === 'Khởi hành sớm nhất') {
+      badgeClass += ' recommendation-badge-fast';
+      iconHTML = '<i class="bi bi-clock-fill me-1"></i>';
+    } else if (item.reason === 'Còn nhiều ghế nhất') {
+      badgeClass += ' recommendation-badge-manyseats';
+      iconHTML = '<i class="bi bi-person-fill-check me-1"></i>';
+    } else if (item.reason === 'Phổ biến nhất') {
+      badgeClass += ' recommendation-badge-popular';
+      iconHTML = '<i class="bi bi-fire me-1"></i>';
+    }
+    
+    badge.className = badgeClass;
+    badge.innerHTML = iconHTML + (item.reason || 'Gợi ý');
+    header.appendChild(badge);
+    
     appendText(header, 'strong', formatMoney(item.price), 'recommendation-price');
     card.appendChild(header);
 
@@ -89,6 +172,20 @@
     `;
     card.appendChild(meta);
 
+    // Amenities Badges based on price or randomly selected for a premium realistic look
+    const amenitiesDiv = document.createElement('div');
+    amenitiesDiv.className = 'recommendation-amenities';
+    
+    const selectedAmenities = getTripAmenities(item.price);
+
+    selectedAmenities.forEach(am => {
+      const amBadge = document.createElement('span');
+      amBadge.className = 'amenity-badge';
+      amBadge.innerHTML = `<i class="bi ${am.icon}"></i>${am.label}`;
+      amenitiesDiv.appendChild(amBadge);
+    });
+    card.appendChild(amenitiesDiv);
+
     const footer = document.createElement('div');
     footer.className = 'recommendation-card-footer';
     appendText(footer, 'span', `${Number(item.booking_count || 0)} lượt đặt`);
@@ -100,6 +197,12 @@
     footer.appendChild(link);
     card.appendChild(footer);
 
+    // Trigger smooth fade-in after appending to DOM
+    setTimeout(() => {
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, 50);
+
     return card;
   }
 
@@ -109,6 +212,10 @@
   const time1 = document.getElementById('time1');
   const time2 = document.getElementById('time2');
   const time3 = document.getElementById('time3');
+  const amenityWifi = document.getElementById('amenityWifi');
+  const amenityUsb = document.getElementById('amenityUsb');
+  const amenityWater = document.getElementById('amenityWater');
+  const amenityAc = document.getElementById('amenityAc');
 
   function getHour(dateTimeStr) {
     if (!dateTimeStr) return 0;
@@ -144,6 +251,18 @@
       });
     }
 
+    // Filter by Amenities
+    if (amenityWifi?.checked || amenityUsb?.checked || amenityWater?.checked || amenityAc?.checked) {
+      visibleTrips = visibleTrips.filter((item) => {
+        const tripAmLabels = getTripAmenities(item.price).map(am => am.label);
+        if (amenityWifi?.checked && !tripAmLabels.includes('Wifi')) return false;
+        if (amenityUsb?.checked && !tripAmLabels.includes('Sạc USB')) return false;
+        if (amenityWater?.checked && !tripAmLabels.includes('Nước suối')) return false;
+        if (amenityAc?.checked && !tripAmLabels.includes('Điều hòa')) return false;
+        return true;
+      });
+    }
+
     list.innerHTML = '';
 
     if (visibleTrips.length === 0) {
@@ -155,7 +274,7 @@
   }
 
   // Add event listeners to checkboxes
-  [price1, price2, price3, time1, time2, time3].forEach(cb => {
+  [price1, price2, price3, time1, time2, time3, amenityWifi, amenityUsb, amenityWater, amenityAc].forEach(cb => {
     if (cb) cb.addEventListener('change', render);
   });
 
@@ -167,6 +286,9 @@
       render();
     });
   });
+
+  // Show skeleton loading initially
+  renderSkeleton();
 
   fetch(`${base}/api/recommendations`)
     .then((response) => response.json())

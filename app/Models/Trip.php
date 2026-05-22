@@ -12,6 +12,7 @@ final class Trip extends Model
     {
         $sql = 'SELECT t.*, b.name AS bus_name, b.total_seats,
                        fl.name AS `from`, tl.name AS `to`,
+                       r.distance_km, r.duration_minutes,
                        (b.total_seats - COUNT(booked.id)) AS available_seats
                 FROM trips t
                 JOIN routes r ON r.id = t.route_id
@@ -40,7 +41,7 @@ final class Trip extends Model
             $params['date'] = $filters['date'];
         }
 
-        $sql .= ' GROUP BY t.id, b.name, b.total_seats, fl.name, tl.name ORDER BY t.departure_time ASC';
+        $sql .= ' GROUP BY t.id, b.name, b.total_seats, fl.name, tl.name, r.distance_km, r.duration_minutes ORDER BY t.departure_time ASC';
         $stmt = $this->db()->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll();

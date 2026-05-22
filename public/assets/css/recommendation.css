@@ -121,34 +121,53 @@
 .recommendation-filter {
     background: transparent;
     border: 1px solid transparent;
-    border-radius: 8px;
+    border-radius: 10px;
     color: #475569;
     font-weight: 600;
-    padding: 10px 16px;
-    transition: all 0.2s ease;
+    padding: 12px 16px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
+    gap: 8px;
 }
 
 .recommendation-filter:hover {
     background: #f1f5f9;
     color: #0f172a;
+    transform: translateX(4px);
 }
 
 .recommendation-filter.active {
-    background: #ecfdf5;
+    background: linear-gradient(135deg, #ccfbf1 0%, #ecfdf5 100%);
     color: #0f766e;
     border-color: #a7f3d0;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.08);
+}
+
+.form-check-input {
+    border-radius: 4px;
+    border: 1.5px solid #cbd5e1;
+    transition: all 0.2s ease;
 }
 
 .form-check-input:checked {
     background-color: #0f766e;
     border-color: #0f766e;
+    transform: scale(1.1);
 }
 
 .form-check-label {
     color: #475569;
     font-size: 15px;
+    font-weight: 500;
+    padding-left: 4px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.form-check-input:hover + .form-check-label,
+.form-check-input:checked + .form-check-label {
+    color: #0f766e;
 }
 
 /* Main Grid */
@@ -160,21 +179,21 @@
 
 .recommendation-card {
     background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.02);
     display: flex;
     flex-direction: column;
     padding: 24px;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
 }
 
 .recommendation-card:hover {
-    box-shadow: 0 12px 35px rgba(15, 118, 110, 0.1);
-    transform: translateY(-4px);
-    border-color: #cbd5e1;
+    box-shadow: 0 20px 40px rgba(15, 118, 110, 0.12);
+    transform: translateY(-6px);
+    border-color: rgba(15, 118, 110, 0.2);
 }
 
 .recommendation-card::before {
@@ -182,10 +201,9 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 4px;
-    height: 100%;
-    background: #0f766e;
-    border-radius: 16px 0 0 16px;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #0f766e, #2ecc71);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -202,20 +220,49 @@
 }
 
 .recommendation-badge {
-    background: #dcfce7;
-    color: #166534;
-    font-size: 13px;
+    background: #ccfbf1;
+    color: #0f766e;
+    font-size: 12.5px;
     font-weight: 800;
-    padding: 6px 12px;
+    padding: 6px 14px;
     border-radius: 999px;
     display: inline-flex;
     align-items: center;
+    border: 1px solid rgba(15, 118, 110, 0.15);
+    transition: all 0.3s ease;
+}
+
+.recommendation-badge-cheap {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.recommendation-badge-fast {
+    background: #eff6ff;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+}
+
+.recommendation-badge-popular {
+    background: #fff5f5;
+    color: #9b1c1c;
+    border: 1px solid #feb2b2;
+}
+
+.recommendation-badge-manyseats {
+    background: #fffbeb;
+    color: #92400e;
+    border: 1px solid #fde68a;
 }
 
 .recommendation-price {
-    color: #ef4444;
-    font-size: 24px;
-    font-weight: 800;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 25px;
+    font-weight: 850;
+    letter-spacing: -0.5px;
 }
 
 .recommendation-card h2 {
@@ -223,6 +270,11 @@
     font-size: 20px;
     font-weight: 800;
     margin-bottom: 4px;
+    transition: color 0.3s ease;
+}
+
+.recommendation-card:hover h2 {
+    color: #0f766e;
 }
 
 .recommendation-bus {
@@ -235,33 +287,47 @@
 /* Premium Journey Timeline */
 .recommendation-meta-new {
     background: #f8fafc;
-    border-radius: 12px;
-    padding: 18px;
+    border-radius: 16px;
+    padding: 20px;
     margin-bottom: 20px;
     border: 1px solid #f1f5f9;
     flex-grow: 1;
+    transition: all 0.3s ease;
+}
+
+.recommendation-card:hover .recommendation-meta-new {
+    background: #ffffff;
+    box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.01);
+    border-color: #e2e8f0;
 }
 
 .journey-timeline {
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    padding-left: 4px;
-    margin-bottom: 16px;
+    gap: 16px;
+    padding-left: 6px;
+    margin-bottom: 18px;
 }
 
 .timeline-point {
     display: flex;
     align-items: flex-start;
-    gap: 14px;
+    gap: 16px;
     position: relative;
     z-index: 2;
 }
 
 .timeline-icon {
-    font-size: 10px;
+    font-size: 11px;
     margin-top: 6px;
+    background: #ffffff;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+.recommendation-card:hover .timeline-icon {
+    transform: scale(1.2);
 }
 
 .timeline-details {
@@ -274,9 +340,9 @@
     text-transform: uppercase;
     color: #94a3b8;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
     line-height: 1;
-    margin-bottom: 3px;
+    margin-bottom: 4px;
 }
 
 .time-and-date {
@@ -286,7 +352,7 @@
 }
 
 .time-highlight {
-    font-size: 19px;
+    font-size: 20px;
     font-weight: 850;
     color: #0f172a;
     line-height: 1.1;
@@ -294,18 +360,60 @@
 
 .date-highlight {
     font-size: 13.5px;
-    color: #475569;
+    color: #64748b;
     font-weight: 600;
 }
 
 .timeline-line {
     position: absolute;
-    left: 8px;
+    left: 10px;
     top: 18px;
     bottom: 18px;
     width: 2px;
-    background: #e2e8f0;
+    background: repeating-linear-gradient(
+        to bottom,
+        #cbd5e1,
+        #cbd5e1 4px,
+        transparent 4px,
+        transparent 8px
+    );
     z-index: 1;
+}
+
+/* Amenities Badges */
+.recommendation-amenities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.amenity-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #ffffff;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.01);
+}
+
+.amenity-badge i {
+    font-size: 12px;
+    color: #0f766e;
+}
+
+.recommendation-card:hover .amenity-badge {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
 }
 
 /* Seats Info Badge */
@@ -313,12 +421,12 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: #ecfdf5;
-    border: 1px solid #a7f3d0;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
     padding: 8px 14px;
-    border-radius: 10px;
+    border-radius: 12px;
     font-size: 14px;
-    color: #065f46;
+    color: #166534;
     font-weight: 700;
     width: 100%;
 }
@@ -348,28 +456,155 @@
 }
 
 .recommendation-card .btn-success {
-    background: #0f766e;
+    background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
     border: none;
-    padding: 8px 24px;
-    border-radius: 8px;
+    padding: 10px 24px;
+    border-radius: 10px;
     font-weight: 700;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.15);
 }
 
 .recommendation-card .btn-success:hover {
-    background: #0d655e;
+    background: linear-gradient(135deg, #0d655e 0%, #0b7c73 100%);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
+    box-shadow: 0 6px 16px rgba(15, 118, 110, 0.3);
 }
 
-.recommendation-loading,
+/* Skeleton Loading CSS */
+@keyframes shimmerPulse {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.skeleton-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton-shimmer {
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: shimmerPulse 1.5s infinite;
+    border-radius: 6px;
+}
+
+.skeleton-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.skeleton-badge {
+    width: 90px;
+    height: 26px;
+    border-radius: 999px;
+}
+
+.skeleton-price {
+    width: 100px;
+    height: 30px;
+}
+
+.skeleton-title {
+    width: 75%;
+    height: 24px;
+    margin-bottom: 8px;
+}
+
+.skeleton-bus {
+    width: 45%;
+    height: 18px;
+    margin-bottom: 18px;
+}
+
+.skeleton-meta {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-grow: 1;
+}
+
+.skeleton-timeline-point {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.skeleton-icon {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.skeleton-details {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-grow: 1;
+}
+
+.skeleton-label {
+    width: 40px;
+    height: 10px;
+}
+
+.skeleton-time {
+    width: 60%;
+    height: 18px;
+}
+
+.skeleton-seats {
+    width: 100%;
+    height: 36px;
+    border-radius: 10px;
+}
+
+.skeleton-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px dashed #e2e8f0;
+    padding-top: 20px;
+}
+
+.skeleton-left {
+    width: 70px;
+    height: 16px;
+}
+
+.skeleton-button {
+    width: 110px;
+    height: 40px;
+    border-radius: 10px;
+}
+
 .recommendation-empty {
     grid-column: 1 / -1;
     text-align: center;
     padding: 60px 20px;
     background: #ffffff;
-    border-radius: 16px;
-    border: 1px dashed #cbd5e1;
+    border-radius: 20px;
+    border: 2px dashed #cbd5e1;
+    color: #64748b;
+    font-weight: 500;
 }
 
 @media (max-width: 991.98px) {
