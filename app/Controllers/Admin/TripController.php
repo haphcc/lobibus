@@ -19,9 +19,27 @@ final class TripController extends AdminController
 
     public function index(): void
     {
+        $page = max(1, $this->queryInt('page', 1));
+        $perPage = 25;
+        $filters = [
+            'q' => trim((string) ($_GET['q'] ?? '')),
+        ];
+        $totalTrips = $this->trips->countForAdmin($filters);
+        $totalPages = max(1, (int) ceil($totalTrips / $perPage));
+        if ($page > $totalPages) {
+            $page = $totalPages;
+        }
+
         $this->view('admin.trips.index', [
             'title' => 'Quan ly chuyen',
-            'trips' => $this->trips->allWithDetails(),
+            'trips' => $this->trips->adminList($filters, $perPage, ($page - 1) * $perPage),
+            'filters' => $filters,
+            'pagination' => [
+                'page' => $page,
+                'per_page' => $perPage,
+                'total' => $totalTrips,
+                'total_pages' => $totalPages,
+            ],
         ], 'admin');
     }
 

@@ -74,6 +74,44 @@ final class Trip extends Model
         return $stmt->fetchAll();
     }
 
+    public function adminList(array $filters = [], int $limit = 25, int $offset = 0): array
+    {
+        $limit = max(1, min($limit, 100));
+        $offset = max(0, $offset);
+        [$where, $params] = $this->adminWhere($filters);
+
+        $stmt = $this->db()->prepare(
+            'SELECT t.*, b.name AS bus_name, fl.name AS from_name, tl.name AS to_name
+             FROM trips t
+             JOIN routes r ON r.id = t.route_id
+             JOIN locations fl ON fl.id = r.from_location_id
+             JOIN locations tl ON tl.id = r.to_location_id
+             JOIN buses b ON b.id = t.bus_id
+             ' . $where . '
+             ORDER BY t.departure_time DESC, t.id DESC
+             LIMIT ' . $limit . ' OFFSET ' . $offset
+        );
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    public function countForAdmin(array $filters = []): int
+    {
+        [$where, $params] = $this->adminWhere($filters);
+
+        $stmt = $this->db()->prepare(
+            'SELECT COUNT(*)
+             FROM trips t
+             JOIN routes r ON r.id = t.route_id
+             JOIN locations fl ON fl.id = r.from_location_id
+             JOIN locations tl ON tl.id = r.to_location_id
+             JOIN buses b ON b.id = t.bus_id
+             ' . $where
+        );
+        $stmt->execute($params);
+        return (int) $stmt->fetchColumn();
+    }
+
     public function find(int $id): ?array
     {
         $stmt = $this->db()->prepare('SELECT * FROM trips WHERE id = :id');
@@ -147,5 +185,24 @@ final class Trip extends Model
             'price' => (float) ($data['price'] ?? 0),
             'status' => (string) ($data['status'] ?? 'scheduled'),
         ];
+    }
+
+    private function adminWhere(array $filters): array
+    {
+        $where = [];
+        $params = [];
+        $query = trim((string) ($filters['q'] ?? ''));
+
+        if ($query !== '') {
+            if (preg_match('/^\d+$/', $query)) {
+                $where[] = 't.id = :trip_id';
+                $params['trip_id'] = (int) $query;
+            } else {
+                $where[] = '(fl.name LIKE :query OR tl.name LIKE :query OR b.name LIKE :query)';
+                $params['query'] = '%' . $query . '%';
+            }
+        }
+
+        return [$where === [] ? '' : 'WHERE ' . implode(' AND ', $where), $params];
     }
 }
