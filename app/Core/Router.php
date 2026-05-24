@@ -85,11 +85,11 @@ final class Router
         if (str_starts_with($path, '/api/')) {
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode([
-                'error' => 'CSRF token khong hop le hoac da het han.',
+                'error' => 'CSRF token không hợp lệ hoặc đã hết hạn.',
             ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
             return;
         }
 
-        echo '419 - CSRF token khong hop le hoac da het han. Vui long tai lai trang va thu lai.';
+        echo '419 - CSRF token không hợp lệ hoặc đã hết hạn. Vui lòng tải lại trang và thử lại.';
     }
 }

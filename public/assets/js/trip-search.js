@@ -4,6 +4,7 @@
   const selectedContainer = document.getElementById('selectedTickets');
   const base = window.APP_BASE_URL || '';
   const STORAGE_KEY = 'lobibus_selected_tickets';
+  const GROUP_KEY = 'lobibus_roundtrip_group_code';
 
   let allOutboundTrips = []; // Raw outbound trips from API
   let allReturnTrips = []; // Raw return trips from API
@@ -29,12 +30,32 @@
     renderSelected();
   }
 
+  function roundTripGroupCode() {
+    let code = localStorage.getItem(GROUP_KEY) || '';
+    if (!code) {
+      code = `RT-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(16).slice(2, 8).toUpperCase()}`;
+      localStorage.setItem(GROUP_KEY, code);
+    }
+    return code;
+  }
+
   function addSelected(trip) {
     const list = loadSelected();
-    if (!list.find(t => String(t.id) === String(trip.id))) {
-      list.push(trip);
-      saveSelected(list);
+    const tripType = document.querySelector('input[name="tripType"]:checked')?.value || 'oneway';
+    const direction = trip.direction || 'outbound';
+    const enriched = {
+      ...trip,
+      trip_type: tripType,
+      direction: tripType === 'roundtrip' ? direction : 'outbound',
+      booking_group_code: tripType === 'roundtrip' ? roundTripGroupCode() : ''
+    };
+
+    let next = list.filter(t => String(t.id) !== String(enriched.id));
+    if (tripType === 'roundtrip') {
+      next = next.filter(t => t.direction !== enriched.direction);
     }
+    next.push(enriched);
+    saveSelected(next);
   }
 
   function removeSelected(tripId) {
@@ -59,9 +80,16 @@
               const depDate = new Date(t.departure_time);
               const depTimeStr = depDate.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
               const depDateStr = depDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+              const directionLabel = t.trip_type === 'roundtrip'
+                ? (t.direction === 'return' ? 'Chiều về' : 'Chiều đi')
+                : 'Một chiều';
+              const nextTrip = t.trip_type === 'roundtrip'
+                ? list.find(item => item.direction && item.direction !== t.direction)
+                : null;
               return `
                 <div class="list-group-item d-flex justify-content-between align-items-center py-3">
                   <div>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle mb-2">${directionLabel}</span>
                     <strong class="fs-6 text-dark">${t.from} <i class="bi bi-arrow-right mx-1 text-muted"></i> ${t.to}</strong>
                     <div class="mt-1">
                       <small class="text-secondary">
@@ -70,7 +98,14 @@
                     </div>
                   </div>
                   <div class="btn-group">
-                    <button class="btn btn-sm btn-success js-go-seat" data-trip-id="${t.id}" style="background-color: #0f766e; border-color: #0f766e;">Chọn ghế</button>
+                    <button class="btn btn-sm btn-success js-go-seat"
+                            data-trip-id="${t.id}"
+                            data-trip-type="${t.trip_type || 'oneway'}"
+                            data-direction="${t.direction || 'outbound'}"
+                            data-booking-group-code="${t.booking_group_code || ''}"
+                            data-next-trip-id="${nextTrip ? nextTrip.id : ''}"
+                            data-next-direction="${nextTrip ? nextTrip.direction : ''}"
+                            style="background-color: #0f766e; border-color: #0f766e;">Chọn ghế</button>
                     <button class="btn btn-sm btn-outline-danger js-remove-ticket" data-trip-id="${t.id}">Xóa</button>
                   </div>
                 </div>
@@ -84,6 +119,7 @@
 
   function clearSelected() {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(GROUP_KEY);
     renderSelected();
   }
 
@@ -302,7 +338,18 @@
     if (goSeatBtn) {
       const tripId = goSeatBtn.getAttribute('data-trip-id');
       if (tripId) {
-        window.location.href = `${base}/booking/select-seat?trip_id=${tripId}`;
+        const params = new URLSearchParams({ trip_id: tripId });
+        const tripType = goSeatBtn.getAttribute('data-trip-type') || 'oneway';
+        if (tripType === 'roundtrip') {
+          params.set('trip_type', 'roundtrip');
+          params.set('direction', goSeatBtn.getAttribute('data-direction') || 'outbound');
+          params.set('booking_group_code', goSeatBtn.getAttribute('data-booking-group-code') || roundTripGroupCode());
+          if (goSeatBtn.getAttribute('data-next-trip-id')) {
+            params.set('next_trip_id', goSeatBtn.getAttribute('data-next-trip-id'));
+            params.set('next_direction', goSeatBtn.getAttribute('data-next-direction') || '');
+          }
+        }
+        window.location.href = `${base}/booking/select-seat?${params.toString()}`;
       }
       return;
     }
@@ -546,7 +593,7 @@
         emptyOutbound.innerText = 'Không tìm thấy chuyến đi nào cho chiều đi.';
         resultsContainer.appendChild(emptyOutbound);
       } else {
-        renderGroupsToContainer(selectVisibleGroups(outboundGroups));
+        renderGroupsToContainer(selectVisibleGroups(outboundGroups), 'outbound');
       }
 
       // Return Section
@@ -562,16 +609,16 @@
         emptyReturn.innerText = 'Không tìm thấy chuyến đi nào cho chiều về.';
         resultsContainer.appendChild(emptyReturn);
       } else {
-        renderGroupsToContainer(selectVisibleGroups(returnGroups));
+        renderGroupsToContainer(selectVisibleGroups(returnGroups), 'return');
       }
     } else {
       // Oneway Section
       const outboundGroups = groupTripsByRoute(outboundProcessed);
-      renderGroupsToContainer(selectVisibleGroups(outboundGroups));
+      renderGroupsToContainer(selectVisibleGroups(outboundGroups), 'outbound');
     }
   }
 
-  function renderGroupsToContainer(groups) {
+  function renderGroupsToContainer(groups, direction = 'outbound') {
     groups.forEach((route, index) => {
       let durationStr = 'Đang cập nhật';
       if (route.duration_minutes) {
@@ -657,6 +704,7 @@
                     id: trip.id,
                     from: trip.from,
                     to: trip.to,
+                    direction,
                     departure_time: trip.departure_time,
                     price: trip.price
                   }));

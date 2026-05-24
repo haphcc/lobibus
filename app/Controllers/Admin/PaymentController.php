@@ -18,7 +18,7 @@ final class PaymentController extends AdminController
     public function index(): void
     {
         $this->view('admin.payments.index', [
-            'title' => 'Quan ly thanh toan',
+            'title' => 'Quản lý thanh toán',
             'payments' => $this->payments->allWithBooking(),
         ], 'admin');
     }

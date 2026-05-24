@@ -19,7 +19,7 @@ final class UserController extends AdminController
     public function index(): void
     {
         $this->view('admin.users.index', [
-            'title' => 'Quan ly nguoi dung',
+            'title' => 'Quản lý người dùng',
             'users' => $this->users->allWithRoles(),
         ], 'admin');
     }

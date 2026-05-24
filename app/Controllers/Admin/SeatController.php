@@ -24,7 +24,7 @@ final class SeatController extends AdminController
         $selectedBusId = (int) ($selectedBus['id'] ?? 0);
 
         $this->view('admin.seats.index', [
-            'title' => 'Quan ly ghe',
+            'title' => 'Quản lý ghế',
             'buses' => $buses,
             'selectedBus' => $selectedBus,
             'seats' => $selectedBusId > 0 ? $this->seats->getByBus($selectedBusId) : [],
@@ -34,7 +34,7 @@ final class SeatController extends AdminController
     public function create(): void
     {
         $this->view('admin.seats.create', [
-            'title' => 'Them ghe',
+            'title' => 'Thêm ghế',
             'buses' => (new Bus())->all(),
             'busId' => $this->queryInt('bus_id'),
         ], 'admin');

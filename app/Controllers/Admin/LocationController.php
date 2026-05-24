@@ -18,7 +18,7 @@ final class LocationController extends AdminController
     public function index(): void
     {
         $this->view('admin.locations.index', [
-            'title' => 'Quan ly dia diem',
+            'title' => 'Quản lý địa điểm',
             'locations' => $this->locations->all(),
         ], 'admin');
     }
