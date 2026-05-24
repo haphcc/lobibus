@@ -1,14 +1,553 @@
 <?php
-$pageCss = ['datchuyen.css'];
-$pageJs = ['trip-search.js', 'recommendation.js'];
-// Ensure $locations is defined to avoid "Undefined variable" notices
+$pageCss = ['schedule.css'];
+$pageJs = ['trip-search.js'];
 $locations = isset($locations) && is_array($locations) ? $locations : [];
+$featuredTrips = isset($featuredTrips) && is_array($featuredTrips) ? $featuredTrips : [];
+$featuredNews = isset($featuredNews) && is_array($featuredNews) ? $featuredNews : [];
 ?>
-<section class="booking-hero">
-    <div class="booking-form-wrapper">
-        <div class="container">
-        <form id="tripSearchForm" class="booking-form">
-            <div class="trip-type-selector d-flex flex-wrap align-items-center justify-content-between gap-3">
+
+<style>
+/* Custom overrides to match teal theme for home page specific booking elements */
+.trip-type-label {
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: inline-block;
+}
+
+.btn-check:checked + .trip-type-label {
+    background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+    border-color: #0f766e;
+    color: white;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.2);
+}
+
+.trip-type-label:hover {
+    border-color: #0f766e;
+    color: #0f766e;
+}
+
+.trip-schedule-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.trip-schedule-link:hover {
+    border-color: #0f766e;
+    color: #0f766e;
+}
+
+/* Overlay Swap Button Styling */
+.swap-btn-overlay {
+    position: absolute;
+    right: -18px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #0f766e;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.swap-btn-overlay:hover {
+    background: #0f766e;
+    color: #ffffff;
+    border-color: #0f766e;
+    transform: translateY(-50%) rotate(180deg);
+}
+
+@media (max-width: 991.98px) {
+    .swap-btn-overlay {
+        right: 50%;
+        top: calc(100% - 18px);
+        transform: translateX(50%) rotate(90deg);
+    }
+    .swap-btn-overlay:hover {
+        transform: translateX(50%) rotate(270deg);
+    }
+}
+
+/* Selected Tickets Premium Styling */
+#selectedTickets .card {
+    border: 1px solid #e2ece7;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(15, 118, 110, 0.06);
+    overflow: hidden;
+}
+
+#selectedTickets .card-title {
+    color: #0f766e;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#selectedTickets .list-group-item {
+    border: 1px solid #f1f5f9;
+    margin-bottom: 8px;
+    border-radius: 8px !important;
+    background: #f8fafc;
+    transition: all 0.2s ease;
+}
+
+#selectedTickets .list-group-item:hover {
+    border-color: #cbd5e1;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.home-news-section {
+    margin-top: 4rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid #e2ece7;
+}
+
+.home-trip-section {
+    margin-top: 4rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid #e2ece7;
+}
+
+.section-kicker {
+    display: inline-block;
+    background: #e6f4f2;
+    color: #0f766e;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.home-section-header {
+    margin-bottom: 30px;
+}
+
+.home-section-header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.home-section-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 6px 0;
+}
+
+.home-section-subtitle {
+    font-size: 1rem;
+    color: #64748b;
+    margin: 0;
+}
+
+.home-view-all-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #0f766e;
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    font-weight: 700;
+    padding: 10px 22px;
+    border-radius: 99px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.25s ease;
+}
+
+.home-view-all-btn:hover {
+    color: #ffffff;
+    background: #0f766e;
+    border-color: #0f766e;
+    box-shadow: 0 8px 16px rgba(15, 118, 110, 0.15);
+    transform: translateY(-2px);
+}
+
+.home-view-all-btn i {
+    font-size: 1.1rem;
+    transition: transform 0.2s ease;
+}
+
+.home-view-all-btn:hover i {
+    transform: translateX(4px);
+}
+
+/* Featured Trip Premium Card Styling */
+.home-trip-card {
+    background: #ffffff;
+    border: 1px solid #e2ece7;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(15, 118, 110, 0.04);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.home-trip-card:hover {
+    transform: translateY(-5px);
+    border-color: #0f766e;
+    box-shadow: 0 20px 40px rgba(15, 118, 110, 0.12);
+}
+
+.home-trip-media {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+    background: #ffffff; /* Thêm background màu trắng để tránh khoảng trống subpixel */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+}
+
+.home-trip-media::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 35%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #ffffff 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.home-trip-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+.home-trip-card:hover .home-trip-media img {
+    transform: scale(1.08) translate3d(0, 0, 0);
+}
+
+.home-trip-price-pill {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(15, 118, 110, 0.92);
+    backdrop-filter: blur(4px);
+    color: #ffffff;
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+}
+
+.home-trip-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.home-trip-route {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.home-trip-route i {
+    color: #0f766e;
+}
+
+.home-trip-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    color: #475569;
+    flex-grow: 1;
+}
+
+.home-trip-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.home-trip-meta-item i {
+    font-size: 1.1rem;
+    color: #0f766e;
+}
+
+/* Loại bỏ hoàn toàn đường kẻ ngang (underline) trên mọi trạng thái hover của thẻ chứa */
+.home-trip-card a,
+.home-trip-card a:hover,
+.home-trip-card a:focus,
+.home-trip-card:hover a,
+.home-trip-card:hover .home-trip-action-btn,
+.home-trip-action-btn,
+.home-trip-action-btn:hover {
+    text-decoration: none !important;
+}
+
+.home-trip-action-btn {
+    background: #e6f4f2;
+    color: #0f766e;
+    border: none;
+    font-weight: 700;
+    padding: 10px;
+    border-radius: 12px;
+    text-align: center;
+    transition: all 0.2s ease;
+    display: block;
+    width: 100%;
+}
+
+.home-trip-card:hover .home-trip-action-btn {
+    background: #0f766e;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.2);
+}
+
+.home-trip-empty {
+    border: 1px dashed #bad1c6;
+    border-radius: 16px;
+    background: #fff;
+    color: #64748b;
+    padding: 1.25rem;
+    text-align: center;
+}
+
+/* Featured News Premium Card Styling */
+.home-news-card {
+    background: #ffffff;
+    border: 1px solid #e2ece7;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(15, 118, 110, 0.04);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.home-news-card:hover {
+    transform: translateY(-5px);
+    border-color: #0f766e;
+    box-shadow: 0 20px 40px rgba(15, 118, 110, 0.12);
+}
+
+.home-news-media {
+    position: relative;
+    height: 190px;
+    overflow: hidden;
+}
+
+.home-news-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.home-news-card:hover .home-news-media img {
+    transform: scale(1.08);
+}
+
+.home-news-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #0f766e;
+    color: #ffffff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    z-index: 2;
+}
+
+.home-news-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.home-news-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+}
+
+.home-news-meta i {
+    color: #0f766e;
+}
+
+.home-news-title {
+    font-size: 1.08rem;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 10px;
+}
+
+.home-news-title a {
+    color: #0f172a;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.home-news-title a:hover {
+    color: #0f766e;
+}
+
+.home-news-summary {
+    color: #475569;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    margin-bottom: 20px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex-grow: 1;
+}
+
+.home-news-link {
+    color: #0f766e;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: gap 0.2s ease;
+    align-self: flex-start;
+}
+
+.home-news-link:hover {
+    gap: 10px;
+    color: #115e59;
+}
+
+@media (max-width: 767.98px) {
+    .home-section-header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .home-view-all-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+<div class="container-fluid px-lg-5 py-5" style="max-width: 1500px; margin: 0 auto;">
+    <!-- Home Hero Banner -->
+    <div class="schedule-hero text-white p-4 p-md-5 mb-4">
+        <div class="row align-items-center g-4 position-relative z-3">
+            <div class="col-lg-7">
+                <span class="badge bg-teal-subtle text-success-light mb-3 px-3 py-2 fs-7 fw-bold" style="background-color: rgba(255, 255, 255, 0.15); color: #2dd4bf; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <i class="bi bi-bus-front-fill me-1"></i> Đặt Vé Xe Khách LobiBus Trực Tuyến
+                </span>
+                <h1 class="display-5 fw-bold mb-3">Hành Trình Trọn Vẹn, Đặt Vé Dễ Dàng</h1>
+                <p class="lead mb-0 text-white-75">
+                    Hệ thống đặt vé trực tuyến nhanh chóng, an toàn và tối ưu chi phí. Tra cứu giờ đi, lựa chọn loại xe ưa thích và chọn chỗ ngồi ưng ý chỉ trong 1 nốt nhạc.
+                </p>
+            </div>
+            <div class="col-lg-5">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="stat-pill text-center h-100">
+                            <i class="bi bi-signpost-2-fill mb-2 d-inline-block"></i>
+                            <div class="h3 fw-bold mb-0 text-white" id="statRouteCount">-</div>
+                            <small class="text-white-50">Tuyến đường</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-pill text-center h-100">
+                            <i class="bi bi-bus-front-fill mb-2 d-inline-block"></i>
+                            <div class="h3 fw-bold mb-0 text-white" id="statTripCount">-</div>
+                            <small class="text-white-50">Chuyến đang mở bán</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-pill text-center h-100">
+                            <i class="bi bi-shield-check mb-2 d-inline-block"></i>
+                            <div class="h5 fw-bold mb-0 text-white">An Toàn</div>
+                            <small class="text-white-50">Chất lượng 5★</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-pill text-center h-100">
+                            <i class="bi bi-percent mb-2 d-inline-block"></i>
+                            <div class="h5 fw-bold mb-0 text-white">Giá Tối Ưu</div>
+                            <small class="text-white-50">Nhiều ưu đãi</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Section Panel -->
+    <div class="search-panel">
+        <h5 class="fw-bold mb-4" style="color: #0f766e;">
+            <i class="bi bi-search-heart me-2"></i>Tìm kiếm hành trình đặt vé
+        </h5>
+        
+        <form id="tripSearchForm" class="row g-3 align-items-center">
+            <!-- Trip Type Selector -->
+            <div class="col-12 d-flex flex-wrap align-items-center justify-content-between gap-3 mb-2">
                 <div class="trip-type-group">
                     <input type="radio" class="btn-check" name="tripType" id="oneWay" value="oneway" checked>
                     <label class="trip-type-label" for="oneWay">Một chiều</label>
@@ -16,64 +555,251 @@ $locations = isset($locations) && is_array($locations) ? $locations : [];
                     <label class="trip-type-label" for="roundTrip">Khứ hồi</label>
                 </div>
                 <a href="<?= url('/trips/schedule') ?>" class="trip-schedule-link ms-auto">
-                    Xem lịch trình
+                    <i class="bi bi-calendar3 me-1"></i> Xem lịch trình
                 </a>
             </div>
-            <div class="form-row-full">
-                <div class="form-col-half">
-                    <label class="form-label" for="from">Điểm đi</label>
-                    <select id="from" name="from" class="form-select form-select-lg" required>
+
+            <!-- Origin Location -->
+            <div class="col-lg-2 col-md-6 position-relative mb-md-2 mb-lg-0">
+                <div class="form-floating">
+                    <select name="from" id="fromLocationSelect" class="form-select border-2 border-light-subtle rounded-3" required>
                         <option value="">-- Chọn điểm đi --</option>
                         <?php foreach ($locations as $loc): ?>
-                        <option value="<?= e($loc['name']) ?>"><?= e($loc['name']) ?></option>
+                            <option value="<?= e($loc['name']) ?>"><?= e($loc['name']) ?></option>
                         <?php endforeach; ?>
                     </select>
+                    <label for="fromLocationSelect" class="text-secondary fw-semibold">Điểm đi</label>
                 </div>
-                <div class="form-col-half">
-                    <label class="form-label" for="to">Điểm đến</label>
-                    <select id="to" name="to" class="form-select form-select-lg" required>
+                <!-- Swap Button Overlay -->
+                <button type="button" id="swapLocationsBtn" class="swap-btn-overlay shadow-sm" title="Đảo ngược điểm đi/đến">
+                    <i class="bi bi-arrow-left-right"></i>
+                </button>
+            </div>
+            
+            <!-- Destination Location -->
+            <div class="col-lg-2 col-md-6 mb-md-2 mb-lg-0">
+                <div class="form-floating">
+                    <select name="to" id="toLocationSelect" class="form-select border-2 border-light-subtle rounded-3" required>
                         <option value="">-- Chọn điểm đến --</option>
                         <?php foreach ($locations as $loc): ?>
-                        <option value="<?= e($loc['name']) ?>"><?= e($loc['name']) ?></option>
+                            <option value="<?= e($loc['name']) ?>"><?= e($loc['name']) ?></option>
                         <?php endforeach; ?>
                     </select>
+                    <label for="toLocationSelect" class="text-secondary fw-semibold">Điểm đến</label>
                 </div>
             </div>
-            <div class="form-row">
-                <div class="form-col">
-                    <label class="form-label" for="departDate">Ngày đi</label>
-                    <input type="date" id="departDate" name="date" class="form-control form-control-lg" required>
+            
+            <!-- Date Picker -->
+            <div class="col-lg-2 col-md-4">
+                <div class="form-floating">
+                    <input name="date" type="date" id="dateInput" class="form-control border-2 border-light-subtle rounded-3" required>
+                    <label for="dateInput" class="text-secondary fw-semibold">Ngày đi</label>
                 </div>
-                <div class="form-col" id="returnDateWrapper" style="display:none;">
-                    <label class="form-label" for="returnDate">Ngày về</label>
-                    <input type="date" id="returnDate" name="return_date" class="form-control form-control-lg" disabled>
+            </div>
+
+            <!-- Return Date Picker (Always visible, state controlled via JS) -->
+            <div class="col-lg-2 col-md-4" id="returnDateWrapper">
+                <div class="form-floating">
+                    <input name="return_date" type="date" id="returnDate" class="form-control border-2 border-light-subtle rounded-3" disabled>
+                    <label for="returnDate" class="text-secondary fw-semibold">Ngày về</label>
                 </div>
-                <div class="form-col">
-                    <label class="form-label" for="seats">Số ghế</label>
-                    <select id="seats" name="seats" class="form-select form-select-lg">
+            </div>
+            
+            <!-- Seats Selector -->
+            <div class="col-lg-2 col-md-4">
+                <div class="form-floating">
+                    <select name="seats" id="seatsSelect" class="form-select border-2 border-light-subtle rounded-3" required>
                         <option value="1">1 hành khách</option>
                         <option value="2">2 hành khách</option>
                         <option value="3">3 hành khách</option>
                     </select>
+                    <label for="seatsSelect" class="text-secondary fw-semibold">Số lượng ghế</label>
                 </div>
-                <div class="form-col-search">
-                    <button type="submit" class="btn btn-search"><span class="fw-bold">TÌM KIẾM</span></button>
-                </div>
+            </div>
+
+            <!-- Search Button -->
+            <div class="col-lg-2 col-md-12">
+                <button type="submit" class="btn btn-success w-100 rounded-3 py-3 fw-bold fs-6 shadow-sm btn-submit-search" style="background-color: #0f766e; border-color: #0f766e;">
+                    <i class="bi bi-search me-2"></i>Tìm Chuyến
+                </button>
             </div>
         </form>
-        </div>
     </div>
-</section>
-<section class="container my-5">
-    <h2 class="mb-4">Chuyến gợi ý</h2>
-</section>
-<section class="booking-hero">
-    <div class="booking-form-wrapper">
-        <div class="container">
-            <div id="tripResults" class="row g-4"></div>
-            <div id="selectedTickets" class="mt-4">
-                <!-- Selected tickets will be rendered here by JS -->
+
+    <!-- Advanced Filter and Sorting Dashboard (Hidden initially, will display when results are rendered) -->
+    <div class="filter-card" id="filterCardWrapper" style="display: none;">
+        <div class="row g-4 align-items-center">
+            <!-- Filter by departure times -->
+            <div class="col-lg-5 col-md-12">
+                <div class="filter-section-title">
+                    <i class="bi bi-hourglass-split me-1 text-teal" style="color: #0f766e;"></i>Khung giờ chạy
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <label class="time-pill-btn">
+                        <input type="checkbox" value="morning">
+                        <i class="bi bi-brightness-high"></i> Sáng (00:00 - 12:00)
+                    </label>
+                    <label class="time-pill-btn">
+                        <input type="checkbox" value="afternoon">
+                        <i class="bi bi-cloud-sun"></i> Chiều (12:00 - 18:00)
+                    </label>
+                    <label class="time-pill-btn">
+                        <input type="checkbox" value="evening">
+                        <i class="bi bi-moon-stars"></i> Tối (18:00 - 24:00)
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Filter by vehicle types -->
+            <div class="col-lg-4 col-md-8 col-sm-12">
+                <div class="filter-section-title">
+                    <i class="bi bi-bus-front me-1 text-teal" style="color: #0f766e;"></i>Dòng xe LobiBus
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <label class="type-pill-btn">
+                        <input type="checkbox" value="vip">
+                        <i class="bi bi-gem"></i> VIP Limousine
+                    </label>
+                    <label class="type-pill-btn">
+                        <input type="checkbox" value="sleeper">
+                        <i class="bi bi-moon-stars"></i> Giường nằm
+                    </label>
+                    <label class="type-pill-btn">
+                        <input type="checkbox" value="seat">
+                        <i class="bi bi-person-workspace"></i> Ghế ngồi
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Sort by Selector -->
+            <div class="col-lg-3 col-md-4 col-sm-12 text-md-end">
+                <div class="filter-section-title text-start text-lg-end">
+                    <i class="bi bi-sort-down me-1 text-teal" style="color: #0f766e;"></i>Sắp xếp chuyến đi
+                </div>
+                <select id="sortBySelect" class="form-select border-light-subtle rounded-3 fw-semibold">
+                    <option value="time-asc" selected>Giờ xuất phát: Sớm nhất</option>
+                    <option value="time-desc">Giờ xuất phát: Muộn nhất</option>
+                    <option value="price-asc">Giá vé: Từ thấp đến cao</option>
+                    <option value="price-desc">Giá vé: Từ cao đến thấp</option>
+                </select>
             </div>
         </div>
     </div>
-</section>
+
+    <!-- Grouped Route Results Container -->
+    <div id="tripResults" class="row g-4 mb-4">
+        <!-- JS inserts route cards dynamically here -->
+    </div>
+
+    <!-- Selected Tickets Section -->
+    <div id="selectedTickets" class="mt-4">
+        <!-- Selected tickets will be rendered here by JS -->
+    </div>
+
+    <section class="home-trip-section">
+        <div class="home-section-header">
+            <span class="section-kicker">Chuyến nổi bật</span>
+            <div class="home-section-header-inner">
+                <div>
+                    <h3 class="home-section-title">Các chuyến đi sắp khởi hành</h3>
+                    <p class="home-section-subtitle">Những hành trình đang mở bán sắp tới được xếp nhóm trực quan, đặt mua nhanh chóng.</p>
+                </div>
+                <a href="<?= url('/trips/schedule') ?>" class="home-view-all-btn">Xem lịch trình <i class="bi bi-arrow-right-short"></i></a>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <?php if (!empty($featuredTrips)): ?>
+                <?php foreach (array_slice($featuredTrips, 0, 3) as $trip): ?>
+                    <?php
+                        $routeLabel = trim((string) ($trip['from'] ?? '') . ' → ' . (string) ($trip['to'] ?? ''));
+                        if ($routeLabel === '→') {
+                            $routeLabel = (string) ($trip['route'] ?? '');
+                        }
+                        $busImage = trim((string) ($trip['bus_image'] ?? ''));
+                        if ($busImage !== '') {
+                            $busImage = preg_replace('#^/?assets/#', '', $busImage) ?? ltrim($busImage, '/');
+                            $busImage = asset($busImage);
+                        } else {
+                            $busImage = asset('images/news/booking_online.png');
+                        }
+                    ?>
+                    <div class="col-12 col-md-4">
+                        <article class="home-trip-card">
+                            <div class="home-trip-media">
+                                <span class="home-trip-price-pill"><?= e(number_format((float) $trip['price'], 0, ',', '.')) ?>đ</span>
+                                <img src="<?= e($busImage) ?>" alt="<?= e($trip['bus_name'] ?? 'Xe khách') ?>" loading="lazy">
+                            </div>
+                            <div class="home-trip-content">
+                                <div class="home-trip-route">
+                                    <i class="bi bi-geo-alt-fill me-1"></i>
+                                    <span><?= e($routeLabel) ?></span>
+                                </div>
+                                <div class="home-trip-meta">
+                                    <div class="home-trip-meta-item">
+                                        <i class="bi bi-bus-front"></i>
+                                        <span><?= e($trip['bus_name'] ?? 'Xe khách LobiBus') ?></span>
+                                    </div>
+                                    <div class="home-trip-meta-item">
+                                        <i class="bi bi-calendar3"></i>
+                                        <span><?= e(date('H:i d/m/Y', strtotime($trip['departure_time']))) ?></span>
+                                    </div>
+                                    <div class="home-trip-meta-item">
+                                        <i class="bi bi-people"></i>
+                                        <span>Còn <strong class="text-success"><?= e((string) $trip['available_seats']) ?></strong> ghế trống</span>
+                                    </div>
+                                </div>
+                                <a href="<?= url('/trips/schedule?from=' . urlencode($trip['from'] ?? '') . '&to=' . urlencode($trip['to'] ?? '')) ?>" class="home-trip-action-btn">Đặt Vé Ngay</a>
+                            </div>
+                        </article>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12">
+                    <div class="home-trip-empty">Hiện chưa có chuyến đi nổi bật nào.</div>
+                </div>
+            <?php endif; ?>
+        </div>
+    </section>
+
+    <section class="home-news-section">
+        <div class="home-section-header">
+            <span class="section-kicker">Tin nổi bật</span>
+            <div class="home-section-header-inner">
+                <div>
+                    <h3 class="home-section-title">Xem nhanh tin tức mới nhất</h3>
+                    <p class="home-section-subtitle">Các chương trình khuyến mãi, cẩm nang du lịch và thông báo quan trọng của LobiBus.</p>
+                </div>
+                <a href="<?= url('/news') ?>" class="home-view-all-btn">Xem tất cả tin tức <i class="bi bi-arrow-right-short"></i></a>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <?php foreach (array_slice($featuredNews, 0, 3) as $news): ?>
+                <div class="col-12 col-md-4">
+                    <article class="home-news-card">
+                        <div class="home-news-media">
+                            <span class="home-news-badge">Tin tức</span>
+                            <img src="<?= asset(e($news['image'])) ?>" alt="<?= e($news['title']) ?>" loading="lazy">
+                        </div>
+                        <div class="home-news-content">
+                            <div class="home-news-meta">
+                                <i class="bi bi-calendar3"></i>
+                                <span><?= e($news['date']) ?></span>
+                            </div>
+                            <h4 class="home-news-title">
+                                <a href="<?= url('/news/detail?id=' . $news['id']) ?>">
+                                    <?= e($news['title']) ?>
+                                </a>
+                            </h4>
+                            <p class="home-news-summary"><?= e($news['summary']) ?></p>
+                            <a href="<?= url('/news/detail?id=' . $news['id']) ?>" class="home-news-link">
+                                Đọc chi tiết <i class="bi bi-arrow-right-short"></i>
+                            </a>
+                        </div>
+                    </article>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </section>
+</div>
