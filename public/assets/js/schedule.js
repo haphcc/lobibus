@@ -70,6 +70,26 @@
     if (form && form.dataset.autoLoad === '1') {
       loadInitialSchedules();
     }
+
+    // 5. Setup Map Modal Click Trigger
+    document.addEventListener('click', (e) => {
+      const mapBtn = e.target.closest('.js-view-map');
+      if (mapBtn) {
+        e.preventDefault();
+        if (window.LobiBusMap) {
+          window.LobiBusMap.showMap(
+            mapBtn.getAttribute('data-from'),
+            mapBtn.getAttribute('data-from-addr'),
+            mapBtn.getAttribute('data-from-lat'),
+            mapBtn.getAttribute('data-from-lng'),
+            mapBtn.getAttribute('data-to'),
+            mapBtn.getAttribute('data-to-addr'),
+            mapBtn.getAttribute('data-to-lat'),
+            mapBtn.getAttribute('data-to-lng')
+          );
+        }
+      }
+    });
   });
 
   // Handle Form Search Submit
@@ -154,11 +174,11 @@
   function getBusType(busName) {
     const name = (busName || '').toLowerCase();
     if (name.includes('limousine') || name.includes('vip') || name.includes('luxury')) {
-      return { id: 'vip', label: 'VIP Limousine', badgeClass: 'badge-vip', icon: 'bi-gem' };
+      return { id: 'vip', label: 'VIP Limousine', badgeClass: 'badge-vip', icon: 'bi-gem', img: 'images/bus/limousine.jpg' };
     } else if (name.includes('giường') || name.includes('sleeper') || name.includes('nằm')) {
-      return { id: 'sleeper', label: 'Giường nằm', badgeClass: 'badge-sleeper', icon: 'bi-moon-stars' };
+      return { id: 'sleeper', label: 'Giường nằm', badgeClass: 'badge-sleeper', icon: 'bi-moon-stars', img: 'images/bus/giuong-nam.png' };
     } else {
-      return { id: 'seat', label: 'Ghế ngồi', badgeClass: 'badge-seating', icon: 'bi-person-workspace' };
+      return { id: 'seat', label: 'Ghế ngồi', badgeClass: 'badge-seating', icon: 'bi-person-workspace', img: 'images/bus/ghe-ngoi.jpg' };
     }
   }
 
@@ -378,20 +398,41 @@
                   return `
                     <tr class="timetable-row">
                       <td data-label="Giờ chạy">
-                        <div>
-                          <span class="fw-bold fs-5 text-dark">${depTimeStr}</span>
-                          <span class="text-muted mx-2">➔</span>
-                          <span class="text-secondary fw-semibold">${arrTimeStr}</span>
-                        </div>
-                        <div class="mt-1">
-                          <small class="text-muted"><i class="bi bi-calendar3 me-1"></i>${depDateStr}</small>
+                        <div class="text-end text-md-start">
+                          <div>
+                            <span class="fw-bold fs-5 text-dark">${depTimeStr}</span>
+                            <span class="text-muted mx-2">➔</span>
+                            <span class="text-secondary fw-semibold">${arrTimeStr}</span>
+                          </div>
+                          <div class="mt-1">
+                            <small class="text-muted"><i class="bi bi-calendar3 me-1"></i>${depDateStr}</small>
+                          </div>
+                          <div class="mt-2">
+                            <a href="#" class="text-teal text-decoration-none fw-semibold small js-view-map d-inline-flex align-items-center gap-1"
+                               style="color: #0f766e;"
+                               data-from="${trip.from}" 
+                               data-from-addr="${trip.from_address || ''}" 
+                               data-from-lat="${trip.from_lat || ''}" 
+                               data-from-lng="${trip.from_lng || ''}" 
+                               data-to="${trip.to}" 
+                               data-to-addr="${trip.to_address || ''}" 
+                               data-to-lat="${trip.to_lat || ''}" 
+                               data-to-lng="${trip.to_lng || ''}">
+                              <i class="bi bi-geo-alt-fill text-success"></i> Xem bản đồ
+                            </a>
+                          </div>
                         </div>
                       </td>
                       <td data-label="Dòng xe">
-                        <span class="${typeInfo.badgeClass}">
-                          <i class="bi ${typeInfo.icon} me-1"></i>${typeInfo.label}
-                        </span>
-                        <div class="mt-1"><small class="text-muted">${trip.bus_name}</small></div>
+                        <div class="d-flex align-items-center gap-2">
+                          <img src="${base}/assets/${typeInfo.img}" alt="${typeInfo.label}" class="rounded shadow-sm border" style="width: 55px; height: 38px; object-fit: cover; border-color: #e2ece7 !important; flex-shrink: 0;">
+                          <div>
+                            <span class="${typeInfo.badgeClass}">
+                              <i class="bi ${typeInfo.icon} me-1"></i>${typeInfo.label}
+                            </span>
+                            <div class="mt-1"><small class="text-muted">${trip.bus_name}</small></div>
+                          </div>
+                        </div>
                       </td>
                       <td data-label="Trạng thái">
                         <div class="seat-indicator ${seatClass}">

@@ -11,7 +11,11 @@ final class TripController extends Controller
 {
     public function search(): void
     {
-        $this->view('trips.search', ['title' => 'Đặt chuyến']);
+        $locations = (new Location())->all();
+        $this->view('trips.search', [
+            'title' => 'Đặt chuyến',
+            'locations' => $locations,
+        ]);
     }
 
     public function schedule(): void

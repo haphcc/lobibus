@@ -40,14 +40,16 @@ a {
   text-decoration: none
 }
 
-/* Global scale: shrink UI to 90% on desktop; keep mobile at 100% */
+/* Global scale: shrink UI to 90% on desktop using font-size (NOT zoom).
+   IMPORTANT: Do NOT use zoom on html/body — it breaks position:fixed coordinates
+   causing modal backdrops and fixed elements to not cover the full viewport. */
 html {
-  zoom: 0.9;
+  font-size: 90%;
 }
 
 @media (max-width: 767px) {
   html {
-    zoom: 1;
+    font-size: 100%;
   }
 }
 
@@ -2057,4 +2059,22 @@ header.site-header .actions .btn-register:hover {
   .account-submit {
     width: 100%;
   }
+}
+
+/* Fix Bootstrap Modal Backdrop & Z-Index issues globally (ensures full coverage over sticky headers/footers) */
+.modal-backdrop {
+  z-index: 2050 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  background-color: #000000 !important;
+  opacity: 0.55 !important;
+}
+
+.modal {
+  z-index: 2060 !important;
 }
