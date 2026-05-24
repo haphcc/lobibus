@@ -18,7 +18,7 @@ final class BookingController extends AdminController
     public function index(): void
     {
         $this->view('admin.bookings.index', [
-            'title' => 'Quan ly dat ve',
+            'title' => 'Quản lý đặt vé',
             'bookings' => $this->bookings->allWithDetails(),
         ], 'admin');
     }
@@ -31,7 +31,7 @@ final class BookingController extends AdminController
         }
 
         $this->view('admin.bookings.detail', [
-            'title' => 'Chi tiet dat ve',
+            'title' => 'Chi tiết đặt vé',
             'booking' => $booking,
         ], 'admin');
     }

@@ -31,7 +31,7 @@ final class TripController extends AdminController
         }
 
         $this->view('admin.trips.index', [
-            'title' => 'Quan ly chuyen',
+            'title' => 'Quản lý chuyến',
             'trips' => $this->trips->adminList($filters, $perPage, ($page - 1) * $perPage),
             'filters' => $filters,
             'pagination' => [

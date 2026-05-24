@@ -10,7 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="<?= asset('css/index.css') ?>?v=zoom-fix-v4">
-    <link rel="stylesheet" href="<?= asset('css/customer.css') ?>">
+    <link rel="stylesheet" href="<?= asset('css/customer.css') ?>?v=seatmap-layout-v2">
     <link rel="stylesheet" href="<?= asset('css/chatbot.css') ?>?v=bubble-v1">
     <?php foreach (($pageCss ?? []) as $css): ?>
         <link rel="stylesheet" href="<?= asset('css/' . $css) ?>">
