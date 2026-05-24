@@ -61,7 +61,17 @@
       'tphcm': 'hochiminh.jpg',
       'saigon': 'hochiminh.jpg',
       'halong': 'haiphong.webp',
-      'hatinh': 'nghean.jpg'
+      'hatinh': 'nghean.jpg',
+      'khanhhoa': 'nhatrang.jpg',
+      'quangninh': 'haiphong.webp',
+      'laichau': 'laocai.jpg',
+      'dienbien': 'laocai.jpg',
+      'sonla': 'yenbai.jpg',
+      'langson': 'caobang.jpg',
+      'tuyenquang': 'thainguyen.webp',
+      'phutho': 'thainguyen.webp',
+      'vinhlong': 'cantho.jpg',
+      'angiang': 'kiengiang.jpg'
     };
     
     if (specialMap[name]) {

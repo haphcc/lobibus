@@ -7,6 +7,10 @@
 
   let allOutboundTrips = []; // Raw outbound trips from API
   let allReturnTrips = []; // Raw return trips from API
+  const DATE_RESULT_LIMIT = 1500;
+  const DATE_STRIP_LIMIT = 500;
+  const MAX_VISIBLE_ROUTES = 6;
+  const MAX_TRIPS_PER_ROUTE = 5;
   let activeTimeFilters = []; // ['morning', 'afternoon', 'evening']
   let activeTypeFilters = []; // ['vip', 'sleeper', 'seat']
   let currentSort = 'time-asc'; // 'time-asc', 'time-desc', 'price-asc', 'price-desc'
@@ -468,7 +472,49 @@
         groups[rId].minPrice = parseFloat(trip.price);
       }
     });
-    return Object.values(groups);
+    return Object.values(groups).map(route => ({
+      ...route,
+      trips: route.trips.slice(0, MAX_TRIPS_PER_ROUTE)
+    }));
+  }
+
+  function selectVisibleGroups(groups) {
+    if (activeTimeFilters.length > 0) {
+      return groups.slice(0, MAX_VISIBLE_ROUTES);
+    }
+
+    const buckets = {
+      morning: [],
+      afternoon: [],
+      evening: []
+    };
+
+    groups.forEach(route => {
+      const departure = route.trips[0]?.departure_time || '';
+      const hour = parseInt((departure.split(' ')[1] || '00:00:00').split(':')[0], 10);
+      if (hour < 12) {
+        buckets.morning.push(route);
+      } else if (hour < 18) {
+        buckets.afternoon.push(route);
+      } else {
+        buckets.evening.push(route);
+      }
+    });
+
+    const visible = [];
+    ['morning', 'afternoon', 'evening'].forEach(bucket => {
+      visible.push(...buckets[bucket].slice(0, 2));
+    });
+
+    if (visible.length < MAX_VISIBLE_ROUTES) {
+      groups.forEach(route => {
+        if (visible.length < MAX_VISIBLE_ROUTES && !visible.includes(route)) {
+          visible.push(route);
+        }
+      });
+    }
+
+    return visible;
   }
 
   function applyFiltersAndRender() {
@@ -500,7 +546,7 @@
         emptyOutbound.innerText = 'Không tìm thấy chuyến đi nào cho chiều đi.';
         resultsContainer.appendChild(emptyOutbound);
       } else {
-        renderGroupsToContainer(outboundGroups);
+        renderGroupsToContainer(selectVisibleGroups(outboundGroups));
       }
 
       // Return Section
@@ -516,12 +562,12 @@
         emptyReturn.innerText = 'Không tìm thấy chuyến đi nào cho chiều về.';
         resultsContainer.appendChild(emptyReturn);
       } else {
-        renderGroupsToContainer(returnGroups);
+        renderGroupsToContainer(selectVisibleGroups(returnGroups));
       }
     } else {
       // Oneway Section
       const outboundGroups = groupTripsByRoute(outboundProcessed);
-      renderGroupsToContainer(outboundGroups);
+      renderGroupsToContainer(selectVisibleGroups(outboundGroups));
     }
   }
 
@@ -729,17 +775,17 @@
     if (filterCardWrapper) filterCardWrapper.style.display = 'none';
 
     try {
-      // Outbound start date: Fetch trips starting from (date - 2 days)
-      const startDate = addDays(date, -2);
-
       let tripsOut = [];
       let tripsReturn = [];
+      let dateStripTrips = [];
 
       if (tripType === 'roundtrip') {
         const paramsOut = new URLSearchParams();
         paramsOut.set('from', from || '');
         paramsOut.set('to', to || '');
-        paramsOut.set('date', startDate);
+        paramsOut.set('date', date);
+        paramsOut.set('exact_date', '1');
+        paramsOut.set('limit', DATE_RESULT_LIMIT);
         if (seats) paramsOut.set('seats', seats);
 
         const paramsReturn = new URLSearchParams();
@@ -747,30 +793,54 @@
         paramsReturn.set('to', from || '');
         
         // Return dates also centered around returnDate
-        const startReturnDate = addDays(returnDate || date, -2);
-        paramsReturn.set('date', startReturnDate);
+        paramsReturn.set('date', returnDate || date);
+        paramsReturn.set('exact_date', '1');
+        paramsReturn.set('limit', DATE_RESULT_LIMIT);
         if (seats) paramsReturn.set('seats', seats);
 
-        const [respOut, respReturn] = await Promise.all([
+        const paramsStrip = new URLSearchParams();
+        paramsStrip.set('from', from || '');
+        paramsStrip.set('to', to || '');
+        paramsStrip.set('date', addDays(date, -2));
+        paramsStrip.set('limit', DATE_STRIP_LIMIT);
+
+        const [respOut, respReturn, respStrip] = await Promise.all([
           fetch(`${base}/api/trips/search?${paramsOut.toString()}`),
-          fetch(`${base}/api/trips/search?${paramsReturn.toString()}`)
+          fetch(`${base}/api/trips/search?${paramsReturn.toString()}`),
+          fetch(`${base}/api/trips/search?${paramsStrip.toString()}`)
         ]);
         const payloadOut = await respOut.json();
         const payloadReturn = await respReturn.json();
+        const payloadStrip = await respStrip.json();
 
         tripsOut = payloadOut.data || [];
         tripsReturn = payloadReturn.data || [];
+        dateStripTrips = payloadStrip.data || tripsOut;
       } else {
         const params = new URLSearchParams();
         params.set('from', from || '');
         params.set('to', to || '');
-        params.set('date', startDate);
+        params.set('date', date);
+        params.set('exact_date', '1');
+        params.set('limit', DATE_RESULT_LIMIT);
         if (seats) params.set('seats', seats);
 
-        const response = await fetch(`${base}/api/trips/search?${params.toString()}`);
+        const paramsStrip = new URLSearchParams();
+        paramsStrip.set('from', from || '');
+        paramsStrip.set('to', to || '');
+        paramsStrip.set('date', addDays(date, -2));
+        paramsStrip.set('limit', DATE_STRIP_LIMIT);
+        if (seats) paramsStrip.set('seats', seats);
+
+        const [response, stripResponse] = await Promise.all([
+          fetch(`${base}/api/trips/search?${params.toString()}`),
+          fetch(`${base}/api/trips/search?${paramsStrip.toString()}`)
+        ]);
         const payload = await response.json();
+        const stripPayload = await stripResponse.json();
         
         tripsOut = payload.data || [];
+        dateStripTrips = stripPayload.data || tripsOut;
         tripsReturn = [];
       }
 
@@ -778,7 +848,7 @@
       allReturnTrips = tripsReturn;
 
       // 2. Render flight Date Carousel Slider based on the active selected date
-      renderDateStrip(date, tripsOut);
+      renderDateStrip(date, dateStripTrips);
 
       const outboundForActiveDate = tripsOut.filter(t => t.departure_time.startsWith(date));
       const returnForActiveDate = tripsReturn.filter(t => t.departure_time.startsWith(date));

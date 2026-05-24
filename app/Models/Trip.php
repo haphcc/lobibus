@@ -27,7 +27,8 @@ final class Trip extends Model
                     JOIN bookings bk ON bk.id = bd.booking_id
                     WHERE bk.status NOT IN ("cancelled", "expired")
                 ) booked ON booked.trip_id = t.id
-                WHERE t.status = "scheduled"';
+                WHERE t.status = "scheduled"
+                AND t.departure_time >= NOW()';
         $params = [];
 
         if (!empty($filters['from'])) {
@@ -39,11 +40,21 @@ final class Trip extends Model
             $params['to'] = '%' . $filters['to'] . '%';
         }
         if (!empty($filters['date'])) {
-            $sql .= ' AND DATE(t.departure_time) >= :date';
+            if (!empty($filters['exact_date'])) {
+                $sql .= ' AND DATE(t.departure_time) = :date';
+            } else {
+                $sql .= ' AND DATE(t.departure_time) >= :date';
+            }
             $params['date'] = $filters['date'];
         }
 
         $sql .= ' GROUP BY t.id, b.name, b.total_seats, fl.name, tl.name, r.distance_km, r.duration_minutes ORDER BY t.departure_time ASC';
+
+        if (!empty($filters['limit'])) {
+            $limit = max(1, min(1500, (int) $filters['limit']));
+            $sql .= ' LIMIT ' . $limit;
+        }
+
         $stmt = $this->db()->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll();

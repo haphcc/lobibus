@@ -1056,6 +1056,16 @@ $featuredPromotions = isset($featuredPromotions) && is_array($featuredPromotions
                                 'saigon' => 'hochiminh.jpg',
                                 'halong' => 'haiphong.webp', 
                                 'hatinh' => 'nghean.jpg', // Dùng ảnh Nghệ An làm fallback lân cận nếu thiếu ảnh Hà Tĩnh
+                                'khanhhoa' => 'nhatrang.jpg',
+                                'quangninh' => 'haiphong.webp',
+                                'laichau' => 'laocai.jpg',
+                                'dienbien' => 'laocai.jpg',
+                                'sonla' => 'yenbai.jpg',
+                                'langson' => 'caobang.jpg',
+                                'tuyenquang' => 'thainguyen.webp',
+                                'phutho' => 'thainguyen.webp',
+                                'vinhlong' => 'cantho.jpg',
+                                'angiang' => 'kiengiang.jpg'
                             ];
 
                             if (isset($specialMap[$cleanName])) {

@@ -7,25 +7,7 @@ START TRANSACTION;
 -- =========================================================
 INSERT INTO roles (id, name) VALUES
 (1, 'admin'),
-(2, 'customer'),
-(3, 'staff'),
-(4, 'driver'),
-(5, 'manager'),
-(6, 'support'),
-(7, 'accountant'),
-(8, 'operator'),
-(9, 'moderator'),
-(10, 'content'),
-(11, 'sales'),
-(12, 'marketing'),
-(13, 'auditor'),
-(14, 'inspector'),
-(15, 'dispatcher'),
-(16, 'hr'),
-(17, 'partner'),
-(18, 'vip_customer'),
-(19, 'guest'),
-(20, 'developer')
+(2, 'customer')
 ON DUPLICATE KEY UPDATE
 name = VALUES(name);
 
@@ -43,16 +25,16 @@ INSERT INTO users (id, role_id, name, email, phone, password, status) VALUES
 (8, 2, 'Đỗ Khoa', 'khoa.do@lobibus.local', '0900000007', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active'),
 (9, 2, 'Bùi Lam', 'lam.bui@lobibus.local', '0900000008', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active'),
 (10, 2, 'Mai Minh', 'minh.mai@lobibus.local', '0900000009', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active'),
-(11, 3, 'Nhân viên Một', 'staff1@lobibus.local', '0900000010', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active'),
-(12, 3, 'Nhân viên Hai', 'staff2@lobibus.local', '0900000011', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active'),
-(13, 4, 'Tài xế A', 'driver.a@lobibus.local', '0900000012', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active'),
-(14, 4, 'Tài xế B', 'driver.b@lobibus.local', '0900000013', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active'),
-(15, 5, 'Quản lý Vận hành', 'manager@lobibus.local', '0900000014', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active'),
-(16, 6, 'Hỗ trợ Một', 'support1@lobibus.local', '0900000015', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active'),
-(17, 6, 'Hỗ trợ Hai', 'support2@lobibus.local', '0900000016', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active'),
+(11, 2, 'Nhân viên Một', 'staff1@lobibus.local', '0900000010', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active'),
+(12, 2, 'Nhân viên Hai', 'staff2@lobibus.local', '0900000011', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active'),
+(13, 2, 'Tài xế A', 'driver.a@lobibus.local', '0900000012', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active'),
+(14, 2, 'Tài xế B', 'driver.b@lobibus.local', '0900000013', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active'),
+(15, 2, 'Quản lý Vận hành', 'manager@lobibus.local', '0900000014', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active'),
+(16, 2, 'Hỗ trợ Một', 'support1@lobibus.local', '0900000015', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active'),
+(17, 2, 'Hỗ trợ Hai', 'support2@lobibus.local', '0900000016', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active'),
 (18, 2, 'Khách bị khóa', 'locked.customer@lobibus.local', '0900000017', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'locked'),
-(19, 18, 'Khách VIP', 'vip.customer@lobibus.local', '0900000018', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active'),
-(20, 20, 'Dev Seed', 'dev@lobibus.local', '0900000019', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active')
+(19, 2, 'Khách VIP', 'vip.customer@lobibus.local', '0900000018', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active'),
+(20, 2, 'Dev Seed', 'dev@lobibus.local', '0900000019', '$2y$10$8DB7XGjg1PBM3MgIUFQCyOc6ibuf4Sj.2R2rd0S.kvcLTdZMCYDQK', 'active')
 ON DUPLICATE KEY UPDATE
 role_id = VALUES(role_id),
 name = VALUES(name),
@@ -65,25 +47,39 @@ status = VALUES(status);
 -- =========================================================
 INSERT INTO locations (id, name, province, address, latitude, longitude) VALUES
 (1, 'Hà Nội', 'Hà Nội', 'Bến xe Mỹ Đình', 21.0285110, 105.8048170),
-(2, 'Hải Phòng', 'Hải Phòng', 'Bến xe Cầu Rào', 20.8449110, 106.6880840),
-(3, 'Nam Định', 'Nam Định', 'Bến xe Nam Định', 20.4388220, 106.1621060),
-(4, 'Ninh Bình', 'Ninh Bình', 'Bến xe Ninh Bình', 20.2530000, 105.9750000),
-(5, 'Thanh Hóa', 'Thanh Hóa', 'Bến xe phía Bắc Thanh Hóa', 19.8070000, 105.7760000),
-(6, 'Hạ Long', 'Quảng Ninh', 'Bến xe Bãi Cháy', 20.9550000, 107.0440000),
-(7, 'Bắc Ninh', 'Bắc Ninh', 'Bến xe Bắc Ninh', 21.1860000, 106.0760000),
-(8, 'Hưng Yên', 'Hưng Yên', 'Bến xe Hưng Yên', 20.6460000, 106.0510000),
-(9, 'Thái Bình', 'Thái Bình', 'Bến xe Thái Bình', 20.4460000, 106.3360000),
-(10, 'Vinh', 'Nghệ An', 'Bến xe Vinh', 18.6790000, 105.6810000),
-(11, 'Hà Tĩnh', 'Hà Tĩnh', 'Bến xe Hà Tĩnh', 18.3550000, 105.8870000),
-(12, 'Đà Nẵng', 'Đà Nẵng', 'Bến xe Trung tâm Đà Nẵng', 16.0544070, 108.2021670),
-(13, 'Huế', 'Thừa Thiên Huế', 'Bến xe phía Nam Huế', 16.4490000, 107.5620000),
-(14, 'Quy Nhơn', 'Bình Định', 'Bến xe Quy Nhơn', 13.7820000, 109.2190000),
-(15, 'Nha Trang', 'Khánh Hòa', 'Bến xe phía Nam Nha Trang', 12.2380000, 109.1960000),
-(16, 'Đà Lạt', 'Lâm Đồng', 'Bến xe Liên tỉnh Đà Lạt', 11.9400000, 108.4580000),
-(17, 'TP.HCM', 'TP.HCM', 'Bến xe Miền Đông', 10.8230990, 106.6296640),
-(18, 'Bình Dương', 'Bình Dương', 'Bến xe Bình Dương', 11.3250000, 106.4770000),
-(19, 'Vũng Tàu', 'Bà Rịa - Vũng Tàu', 'Bến xe Vũng Tàu', 10.4110000, 107.1360000),
-(20, 'Cần Thơ', 'Cần Thơ', 'Bến xe Cần Thơ', 10.0450000, 105.7460000)
+(2, 'Huế', 'Huế', 'Bến xe phía Nam Huế', 16.4637130, 107.5908660),
+(3, 'Lai Châu', 'Lai Châu', 'Bến xe Lai Châu', 22.3862220, 103.4702630),
+(4, 'Điện Biên', 'Điện Biên', 'Bến xe Điện Biên Phủ', 21.3860200, 103.0230100),
+(5, 'Sơn La', 'Sơn La', 'Bến xe Sơn La', 21.3270340, 103.9141280),
+(6, 'Lạng Sơn', 'Lạng Sơn', 'Bến xe Lạng Sơn', 21.8526400, 106.7610100),
+(7, 'Quảng Ninh', 'Quảng Ninh', 'Bến xe Bãi Cháy', 20.9711970, 107.0448060),
+(8, 'Thanh Hóa', 'Thanh Hóa', 'Bến xe phía Bắc Thanh Hóa', 19.8070000, 105.7760000),
+(9, 'Nghệ An', 'Nghệ An', 'Bến xe Vinh', 18.6790000, 105.6810000),
+(10, 'Hà Tĩnh', 'Hà Tĩnh', 'Bến xe Hà Tĩnh', 18.3550000, 105.8870000),
+(11, 'Cao Bằng', 'Cao Bằng', 'Bến xe Cao Bằng', 22.6666300, 106.2639850),
+(12, 'Tuyên Quang', 'Tuyên Quang', 'Bến xe Tuyên Quang', 21.7767240, 105.2280190),
+(13, 'Lào Cai', 'Lào Cai', 'Bến xe Trung tâm Lào Cai', 22.4855560, 103.9706670),
+(14, 'Thái Nguyên', 'Thái Nguyên', 'Bến xe Thái Nguyên', 21.5942200, 105.8481700),
+(15, 'Phú Thọ', 'Phú Thọ', 'Bến xe Việt Trì', 21.3227400, 105.4015400),
+(16, 'Bắc Ninh', 'Bắc Ninh', 'Bến xe Bắc Ninh', 21.1860000, 106.0760000),
+(17, 'Hưng Yên', 'Hưng Yên', 'Bến xe Hưng Yên', 20.6460000, 106.0510000),
+(18, 'Hải Phòng', 'Hải Phòng', 'Bến xe Cầu Rào', 20.8449110, 106.6880840),
+(19, 'Ninh Bình', 'Ninh Bình', 'Bến xe Ninh Bình', 20.2530000, 105.9750000),
+(20, 'Quảng Trị', 'Quảng Trị', 'Bến xe Đông Hà', 16.8162500, 107.1003100),
+(21, 'Đà Nẵng', 'Đà Nẵng', 'Bến xe Trung tâm Đà Nẵng', 16.0544070, 108.2021670),
+(22, 'Quảng Ngãi', 'Quảng Ngãi', 'Bến xe Quảng Ngãi', 15.1213870, 108.8044140),
+(23, 'Gia Lai', 'Gia Lai', 'Bến xe Pleiku', 13.9718350, 108.0150790),
+(24, 'Khánh Hòa', 'Khánh Hòa', 'Bến xe phía Nam Nha Trang', 12.2380000, 109.1960000),
+(25, 'Lâm Đồng', 'Lâm Đồng', 'Bến xe Liên tỉnh Đà Lạt', 11.9400000, 108.4580000),
+(26, 'Đắk Lắk', 'Đắk Lắk', 'Bến xe phía Bắc Buôn Ma Thuột', 12.6661940, 108.0382470),
+(27, 'Hồ Chí Minh', 'Hồ Chí Minh', 'Bến xe Miền Đông', 10.8230990, 106.6296640),
+(28, 'Đồng Nai', 'Đồng Nai', 'Bến xe Biên Hòa', 10.9574130, 106.8426870),
+(29, 'Tây Ninh', 'Tây Ninh', 'Bến xe Tây Ninh', 11.3351550, 106.1098850),
+(30, 'Cần Thơ', 'Cần Thơ', 'Bến xe Cần Thơ', 10.0450000, 105.7460000),
+(31, 'Vĩnh Long', 'Vĩnh Long', 'Bến xe Vĩnh Long', 10.2537000, 105.9722000),
+(32, 'Đồng Tháp', 'Đồng Tháp', 'Bến xe Cao Lãnh', 10.4937980, 105.6881780),
+(33, 'Cà Mau', 'Cà Mau', 'Bến xe Cà Mau', 9.1768200, 105.1524200),
+(34, 'An Giang', 'An Giang', 'Bến xe Long Xuyên', 10.3863900, 105.4351800)
 ON DUPLICATE KEY UPDATE
 name = VALUES(name),
 province = VALUES(province),
@@ -115,6 +111,55 @@ INSERT INTO routes (id, from_location_id, to_location_id, distance_km, duration_
 (18, 15, 16, 140.00, 210, 'active'),
 (19, 16, 17, 310.00, 420, 'active'),
 (20, 17, 20, 170.00, 220, 'active')
+ON DUPLICATE KEY UPDATE
+from_location_id = VALUES(from_location_id),
+to_location_id = VALUES(to_location_id),
+distance_km = VALUES(distance_km),
+duration_minutes = VALUES(duration_minutes),
+status = VALUES(status);
+
+-- Tạo đầy đủ tuyến hai chiều giữa 34 tỉnh/thành hiện hành.
+-- route id dùng quy ước: from_location_id * 1000 + to_location_id.
+INSERT INTO routes (id, from_location_id, to_location_id, distance_km, duration_minutes, status)
+SELECT
+    l1.id * 1000 + l2.id AS id,
+    l1.id AS from_location_id,
+    l2.id AS to_location_id,
+    ROUND(
+        111.045 * DEGREES(
+            ACOS(
+                LEAST(
+                    1,
+                    COS(RADIANS(l1.latitude)) * COS(RADIANS(l2.latitude)) *
+                    COS(RADIANS(l2.longitude) - RADIANS(l1.longitude)) +
+                    SIN(RADIANS(l1.latitude)) * SIN(RADIANS(l2.latitude))
+                )
+            )
+        ),
+        2
+    ) AS distance_km,
+    GREATEST(
+        45,
+        CEIL(
+            (
+                111.045 * DEGREES(
+                    ACOS(
+                        LEAST(
+                            1,
+                            COS(RADIANS(l1.latitude)) * COS(RADIANS(l2.latitude)) *
+                            COS(RADIANS(l2.longitude) - RADIANS(l1.longitude)) +
+                            SIN(RADIANS(l1.latitude)) * SIN(RADIANS(l2.latitude))
+                        )
+                    )
+                )
+            ) / 55 * 60
+        ) + 30
+    ) AS duration_minutes,
+    'active' AS status
+FROM locations l1
+JOIN locations l2 ON l1.id <> l2.id
+WHERE l1.id BETWEEN 1 AND 34
+AND l2.id BETWEEN 1 AND 34
 ON DUPLICATE KEY UPDATE
 from_location_id = VALUES(from_location_id),
 to_location_id = VALUES(to_location_id),
@@ -156,15 +201,62 @@ total_seats = VALUES(total_seats),
 image = VALUES(image),
 status = VALUES(status);
 
+-- Thêm xe vận hành cho lịch toàn quốc tháng 6/2026.
+INSERT INTO buses (id, name, license_plate, bus_type, total_seats, image, status)
+SELECT
+    n.id,
+    CONCAT('LobiBus Fleet ', LPAD(n.id, 3, '0')) AS name,
+    CONCAT('LB-', LPAD(n.id, 5, '0')) AS license_plate,
+    CASE
+        WHEN MOD(n.id, 3) = 0 THEN 'limousine'
+        WHEN MOD(n.id, 3) = 1 THEN 'standard'
+        ELSE 'sleeper'
+    END AS bus_type,
+    CASE
+        WHEN MOD(n.id, 3) = 0 THEN 9
+        WHEN MOD(n.id, 3) = 1 THEN 32
+        ELSE 40
+    END AS total_seats,
+    CASE
+        WHEN MOD(n.id, 3) = 0 THEN '/assets/images/bus/limousine.jpg'
+        WHEN MOD(n.id, 3) = 1 THEN '/assets/images/bus/ghe-ngoi.jpg'
+        ELSE '/assets/images/bus/giuong-nam.png'
+    END AS image,
+    'active' AS status
+FROM (
+    SELECT 21 id UNION ALL SELECT 22 UNION ALL SELECT 23 UNION ALL SELECT 24 UNION ALL SELECT 25
+    UNION ALL SELECT 26 UNION ALL SELECT 27 UNION ALL SELECT 28 UNION ALL SELECT 29 UNION ALL SELECT 30
+    UNION ALL SELECT 31 UNION ALL SELECT 32 UNION ALL SELECT 33 UNION ALL SELECT 34 UNION ALL SELECT 35
+    UNION ALL SELECT 36 UNION ALL SELECT 37 UNION ALL SELECT 38 UNION ALL SELECT 39 UNION ALL SELECT 40
+    UNION ALL SELECT 41 UNION ALL SELECT 42 UNION ALL SELECT 43 UNION ALL SELECT 44 UNION ALL SELECT 45
+    UNION ALL SELECT 46 UNION ALL SELECT 47 UNION ALL SELECT 48 UNION ALL SELECT 49 UNION ALL SELECT 50
+    UNION ALL SELECT 51 UNION ALL SELECT 52 UNION ALL SELECT 53 UNION ALL SELECT 54 UNION ALL SELECT 55
+    UNION ALL SELECT 56 UNION ALL SELECT 57 UNION ALL SELECT 58 UNION ALL SELECT 59 UNION ALL SELECT 60
+    UNION ALL SELECT 61 UNION ALL SELECT 62 UNION ALL SELECT 63 UNION ALL SELECT 64 UNION ALL SELECT 65
+    UNION ALL SELECT 66 UNION ALL SELECT 67 UNION ALL SELECT 68 UNION ALL SELECT 69 UNION ALL SELECT 70
+    UNION ALL SELECT 71 UNION ALL SELECT 72 UNION ALL SELECT 73 UNION ALL SELECT 74 UNION ALL SELECT 75
+    UNION ALL SELECT 76 UNION ALL SELECT 77 UNION ALL SELECT 78 UNION ALL SELECT 79 UNION ALL SELECT 80
+    UNION ALL SELECT 81 UNION ALL SELECT 82 UNION ALL SELECT 83 UNION ALL SELECT 84 UNION ALL SELECT 85
+    UNION ALL SELECT 86 UNION ALL SELECT 87 UNION ALL SELECT 88 UNION ALL SELECT 89 UNION ALL SELECT 90
+    UNION ALL SELECT 91 UNION ALL SELECT 92 UNION ALL SELECT 93 UNION ALL SELECT 94 UNION ALL SELECT 95
+    UNION ALL SELECT 96 UNION ALL SELECT 97 UNION ALL SELECT 98 UNION ALL SELECT 99 UNION ALL SELECT 100
+    UNION ALL SELECT 101 UNION ALL SELECT 102 UNION ALL SELECT 103 UNION ALL SELECT 104 UNION ALL SELECT 105
+    UNION ALL SELECT 106 UNION ALL SELECT 107 UNION ALL SELECT 108 UNION ALL SELECT 109 UNION ALL SELECT 110
+    UNION ALL SELECT 111 UNION ALL SELECT 112 UNION ALL SELECT 113 UNION ALL SELECT 114 UNION ALL SELECT 115
+    UNION ALL SELECT 116 UNION ALL SELECT 117 UNION ALL SELECT 118 UNION ALL SELECT 119 UNION ALL SELECT 120
+) n
+ON DUPLICATE KEY UPDATE
+name = VALUES(name),
+license_plate = VALUES(license_plate),
+bus_type = VALUES(bus_type),
+total_seats = VALUES(total_seats),
+image = VALUES(image),
+status = VALUES(status);
+
 -- =========================================================
 -- 6. SEATS
--- Seed đủ ghế cho 5 xe chính.
--- ID ghế dùng quy ước:
--- Bus 1: 1001 - 1032
--- Bus 2: 2001 - 2040
--- Bus 3: 3001 - 3009
--- Bus 4: 4001 - 4032
--- Bus 5: 5001 - 5040
+-- Seed đủ ghế cho tất cả xe đã tạo.
+-- ID ghế dùng quy ước: bus_id * 1000 + số thứ tự ghế.
 -- =========================================================
 INSERT INTO seats (id, bus_id, seat_number, seat_type)
 SELECT
@@ -176,6 +268,9 @@ SELECT
         WHEN b.id = 3 THEN CONCAT('VIP', LPAD(n.n, 2, '0'))
         WHEN b.id = 4 THEN CONCAT('C', LPAD(n.n, 2, '0'))
         WHEN b.id = 5 THEN CONCAT('D', LPAD(n.n, 2, '0'))
+        WHEN b.bus_type = 'limousine' THEN CONCAT('VIP', LPAD(n.n, 2, '0'))
+        WHEN b.bus_type = 'sleeper' THEN CONCAT('S', LPAD(n.n, 2, '0'))
+        ELSE CONCAT('G', LPAD(n.n, 2, '0'))
     END AS seat_number,
     CASE
         WHEN b.bus_type = 'sleeper' THEN 'sleeper'
@@ -193,7 +288,7 @@ JOIN (
     UNION ALL SELECT 31 UNION ALL SELECT 32 UNION ALL SELECT 33 UNION ALL SELECT 34 UNION ALL SELECT 35
     UNION ALL SELECT 36 UNION ALL SELECT 37 UNION ALL SELECT 38 UNION ALL SELECT 39 UNION ALL SELECT 40
 ) n
-WHERE b.id IN (1, 2, 3, 4, 5)
+WHERE b.id BETWEEN 1 AND 120
 AND n.n <= b.total_seats
 ON DUPLICATE KEY UPDATE
 bus_id = VALUES(bus_id),
@@ -205,36 +300,102 @@ seat_type = VALUES(seat_type);
 -- 20 chuyến dùng lặp 5 xe chính.
 -- Không để cùng 1 xe chạy trùng thời gian trong cùng ngày.
 -- =========================================================
-INSERT INTO trips (id, route_id, bus_id, departure_time, arrival_time, price, status) VALUES
-(1, 1, 1, '2026-05-20 08:00:00', '2026-05-20 10:30:00', 150000.00, 'scheduled'),
-(2, 2, 2, '2026-05-20 08:30:00', '2026-05-20 10:30:00', 140000.00, 'scheduled'),
-(3, 3, 3, '2026-05-20 09:00:00', '2026-05-20 11:10:00', 180000.00, 'scheduled'),
-(4, 4, 4, '2026-05-20 09:30:00', '2026-05-20 13:00:00', 220000.00, 'scheduled'),
-(5, 5, 5, '2026-05-20 10:00:00', '2026-05-20 13:10:00', 165000.00, 'scheduled'),
+INSERT INTO trips (id, route_id, bus_id, departure_time, arrival_time, price, available_seats, status) VALUES
+(1, 1, 1, '2026-05-20 08:00:00', '2026-05-20 10:30:00', 150000.00, 31, 'scheduled'),
+(2, 2, 2, '2026-05-20 08:30:00', '2026-05-20 10:30:00', 140000.00, 39, 'scheduled'),
+(3, 3, 3, '2026-05-20 09:00:00', '2026-05-20 11:10:00', 180000.00, 8, 'scheduled'),
+(4, 4, 4, '2026-05-20 09:30:00', '2026-05-20 13:00:00', 220000.00, 31, 'scheduled'),
+(5, 5, 5, '2026-05-20 10:00:00', '2026-05-20 13:10:00', 165000.00, 39, 'scheduled'),
 
-(6, 6, 1, '2026-05-21 08:00:00', '2026-05-21 09:05:00', 80000.00, 'scheduled'),
-(7, 7, 2, '2026-05-21 08:30:00', '2026-05-21 10:00:00', 95000.00, 'scheduled'),
-(8, 8, 3, '2026-05-21 09:00:00', '2026-05-21 11:30:00', 155000.00, 'scheduled'),
-(9, 9, 4, '2026-05-21 09:30:00', '2026-05-21 11:05:00', 110000.00, 'scheduled'),
-(10, 10, 5, '2026-05-21 10:00:00', '2026-05-21 11:15:00', 90000.00, 'scheduled'),
+(6, 6, 1, '2026-05-21 08:00:00', '2026-05-21 09:05:00', 80000.00, 31, 'scheduled'),
+(7, 7, 2, '2026-05-21 08:30:00', '2026-05-21 10:00:00', 95000.00, 39, 'scheduled'),
+(8, 8, 3, '2026-05-21 09:00:00', '2026-05-21 11:30:00', 155000.00, 8, 'scheduled'),
+(9, 9, 4, '2026-05-21 09:30:00', '2026-05-21 11:05:00', 110000.00, 31, 'scheduled'),
+(10, 10, 5, '2026-05-21 10:00:00', '2026-05-21 11:15:00', 90000.00, 40, 'scheduled'),
 
-(11, 11, 1, '2026-05-22 08:00:00', '2026-05-22 09:30:00', 100000.00, 'scheduled'),
-(12, 12, 2, '2026-05-22 08:30:00', '2026-05-22 11:50:00', 170000.00, 'scheduled'),
-(13, 13, 3, '2026-05-22 09:00:00', '2026-05-22 10:20:00', 95000.00, 'scheduled'),
-(14, 14, 4, '2026-05-22 09:30:00', '2026-05-22 16:30:00', 320000.00, 'scheduled'),
-(15, 15, 5, '2026-05-22 10:00:00', '2026-05-22 12:30:00', 185000.00, 'scheduled'),
+(11, 11, 1, '2026-05-22 08:00:00', '2026-05-22 09:30:00', 100000.00, 31, 'scheduled'),
+(12, 12, 2, '2026-05-22 08:30:00', '2026-05-22 11:50:00', 170000.00, 39, 'scheduled'),
+(13, 13, 3, '2026-05-22 09:00:00', '2026-05-22 10:20:00', 95000.00, 8, 'scheduled'),
+(14, 14, 4, '2026-05-22 09:30:00', '2026-05-22 16:30:00', 320000.00, 31, 'scheduled'),
+(15, 15, 5, '2026-05-22 10:00:00', '2026-05-22 12:30:00', 185000.00, 39, 'scheduled'),
 
-(16, 16, 1, '2026-05-23 08:00:00', '2026-05-23 14:30:00', 350000.00, 'scheduled'),
-(17, 17, 2, '2026-05-23 08:30:00', '2026-05-23 13:00:00', 260000.00, 'scheduled'),
-(18, 18, 3, '2026-05-23 09:00:00', '2026-05-23 12:30:00', 210000.00, 'scheduled'),
-(19, 19, 4, '2026-05-23 09:30:00', '2026-05-23 16:30:00', 300000.00, 'completed'),
-(20, 20, 5, '2026-05-23 10:00:00', '2026-05-23 13:40:00', 190000.00, 'scheduled')
+(16, 16, 1, '2026-05-23 08:00:00', '2026-05-23 14:30:00', 350000.00, 31, 'scheduled'),
+(17, 17, 2, '2026-05-23 08:30:00', '2026-05-23 13:00:00', 260000.00, 40, 'scheduled'),
+(18, 18, 3, '2026-05-23 09:00:00', '2026-05-23 12:30:00', 210000.00, 8, 'scheduled'),
+(19, 19, 4, '2026-05-23 09:30:00', '2026-05-23 16:30:00', 300000.00, 31, 'completed'),
+(20, 20, 5, '2026-05-23 10:00:00', '2026-05-23 13:40:00', 190000.00, 39, 'scheduled')
 ON DUPLICATE KEY UPDATE
 route_id = VALUES(route_id),
 bus_id = VALUES(bus_id),
 departure_time = VALUES(departure_time),
 arrival_time = VALUES(arrival_time),
 price = VALUES(price),
+available_seats = VALUES(available_seats),
+status = VALUES(status);
+
+-- Sinh chuyến cho mọi tuyến hai chiều trong tất cả các ngày tháng 6/2026.
+-- Mỗi tuyến có 1 chuyến/ngày, giờ chạy được phân bổ giữa sáng, chiều, tối.
+-- trip id dùng quy ước: 1000000 + ngày trong tháng * 100000 + route_id.
+DELETE FROM trips
+WHERE id >= 1000000;
+
+INSERT INTO trips (id, route_id, bus_id, departure_time, arrival_time, price, available_seats, status)
+SELECT
+    1000000 + DAY(d.service_date) * 100000 + r.id AS id,
+    r.id AS route_id,
+    b.id AS bus_id,
+    TIMESTAMP(
+        d.service_date,
+        CASE MOD(r.id + DAY(d.service_date), 3)
+            WHEN 0 THEN TIME('07:00:00')
+            WHEN 1 THEN TIME('14:00:00')
+            ELSE TIME('20:00:00')
+        END
+    ) AS departure_time,
+    DATE_ADD(
+        TIMESTAMP(
+            d.service_date,
+            CASE MOD(r.id + DAY(d.service_date), 3)
+                WHEN 0 THEN TIME('07:00:00')
+                WHEN 1 THEN TIME('14:00:00')
+                ELSE TIME('20:00:00')
+            END
+        ),
+        INTERVAL r.duration_minutes MINUTE
+    ) AS arrival_time,
+    GREATEST(70000, ROUND(r.distance_km * 1200 / 1000, 0) * 1000) AS price,
+    b.total_seats AS available_seats,
+    'scheduled' AS status
+FROM routes r
+JOIN (
+    SELECT DATE('2026-06-01') service_date UNION ALL SELECT DATE('2026-06-02')
+    UNION ALL SELECT DATE('2026-06-03') UNION ALL SELECT DATE('2026-06-04')
+    UNION ALL SELECT DATE('2026-06-05') UNION ALL SELECT DATE('2026-06-06')
+    UNION ALL SELECT DATE('2026-06-07') UNION ALL SELECT DATE('2026-06-08')
+    UNION ALL SELECT DATE('2026-06-09') UNION ALL SELECT DATE('2026-06-10')
+    UNION ALL SELECT DATE('2026-06-11') UNION ALL SELECT DATE('2026-06-12')
+    UNION ALL SELECT DATE('2026-06-13') UNION ALL SELECT DATE('2026-06-14')
+    UNION ALL SELECT DATE('2026-06-15') UNION ALL SELECT DATE('2026-06-16')
+    UNION ALL SELECT DATE('2026-06-17') UNION ALL SELECT DATE('2026-06-18')
+    UNION ALL SELECT DATE('2026-06-19') UNION ALL SELECT DATE('2026-06-20')
+    UNION ALL SELECT DATE('2026-06-21') UNION ALL SELECT DATE('2026-06-22')
+    UNION ALL SELECT DATE('2026-06-23') UNION ALL SELECT DATE('2026-06-24')
+    UNION ALL SELECT DATE('2026-06-25') UNION ALL SELECT DATE('2026-06-26')
+    UNION ALL SELECT DATE('2026-06-27') UNION ALL SELECT DATE('2026-06-28')
+    UNION ALL SELECT DATE('2026-06-29') UNION ALL SELECT DATE('2026-06-30')
+) d
+JOIN buses b ON b.id = 21 + MOD(r.id + DAY(d.service_date), 100)
+WHERE r.from_location_id BETWEEN 1 AND 34
+AND r.to_location_id BETWEEN 1 AND 34
+AND r.from_location_id <> r.to_location_id
+AND r.id >= 1000
+ON DUPLICATE KEY UPDATE
+route_id = VALUES(route_id),
+bus_id = VALUES(bus_id),
+departure_time = VALUES(departure_time),
+arrival_time = VALUES(arrival_time),
+price = VALUES(price),
+available_seats = VALUES(available_seats),
 status = VALUES(status);
 
 -- =========================================================
@@ -443,7 +604,7 @@ JOIN seats s ON bd.seat_id = s.id
 WHERE t.bus_id <> s.bus_id;
 
 -- =========================================================
--- CHECK 2: xem số ghế đã seed cho 5 xe chính
+-- CHECK 2: xem số ghế đã seed cho toàn bộ xe
 -- =========================================================
 SELECT 
     b.id AS bus_id,
@@ -452,5 +613,5 @@ SELECT
     COUNT(s.id) AS seeded_seats
 FROM buses b
 LEFT JOIN seats s ON s.bus_id = b.id
-WHERE b.id IN (1, 2, 3, 4, 5)
+WHERE b.id BETWEEN 1 AND 120
 GROUP BY b.id, b.name, b.total_seats;
