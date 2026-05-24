@@ -15,10 +15,10 @@ final class MailService
         $this->config = $config ?? \config('mail');
     }
 
-    public function send(string $to, string $subject, string $body): bool
+    public function send(string $to, string $subject, string $body, array $attachments = []): bool
     {
         if (!$this->usesSmtp()) {
-            return $this->writeLogMail($to, $subject, $body);
+            return $this->writeLogMail($to, $subject, $body, $attachments);
         }
 
         if (!class_exists(PHPMailer::class)) {
@@ -48,6 +48,12 @@ final class MailService
                 (string) ($this->config['from_name'] ?? 'LobiBus')
             );
             $mailer->addAddress($to);
+            foreach ($attachments as $attachment) {
+                $path = (string) ($attachment['path'] ?? '');
+                if ($path !== '' && is_file($path)) {
+                    $mailer->addAttachment($path, (string) ($attachment['name'] ?? basename($path)));
+                }
+            }
             $mailer->Subject = $subject;
             $isHtml = $this->isHtml($body);
             $mailer->isHTML($isHtml);
@@ -78,7 +84,7 @@ final class MailService
         return trim(html_entity_decode(strip_tags($body), ENT_QUOTES, 'UTF-8'));
     }
 
-    private function writeLogMail(string $to, string $subject, string $body): bool
+    private function writeLogMail(string $to, string $subject, string $body, array $attachments = []): bool
     {
         $logPath = (string) ($this->config['log_path'] ?? dirname(__DIR__, 2) . '/public/uploads/mail.log');
         $directory = dirname($logPath);
@@ -87,11 +93,14 @@ final class MailService
             return false;
         }
 
+        $attachmentPaths = array_filter(array_map(static fn (array $attachment): string => (string) ($attachment['path'] ?? ''), $attachments));
+
         $entry = sprintf(
-            "[%s]\nTo: %s\nSubject: %s\n%s\n\n",
+            "[%s]\nTo: %s\nSubject: %s\nAttachments: %s\n%s\n\n",
             date('Y-m-d H:i:s'),
             $to,
             $subject,
+            implode(', ', $attachmentPaths),
             $body
         );
 

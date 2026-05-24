@@ -5,7 +5,21 @@ $bookingMeta = $bookingMeta ?? ['trip_type' => 'oneway', 'direction' => 'outboun
 $departure = !empty($trip['departure_time']) ? date('H:i d/m/Y', strtotime((string) $trip['departure_time'])) : '-';
 $arrival = !empty($trip['arrival_time']) ? date('H:i d/m/Y', strtotime((string) $trip['arrival_time'])) : '-';
 $isRoundTrip = ($bookingMeta['trip_type'] ?? 'oneway') === 'roundtrip';
+$seatCount = max(1, min(5, (int) ($seatCount ?? $bookingMeta['seats'] ?? 1)));
+$returnUrl = (string) ($bookingMeta['return_url'] ?? '');
 $directionLabel = ($bookingMeta['direction'] ?? 'outbound') === 'return' ? 'Chiều về' : 'Chiều đi';
+$seatBackQuery = [
+    'trip_id' => (int) ($trip['id'] ?? 0),
+    'seats' => $seatCount,
+];
+if ($isRoundTrip) {
+    $seatBackQuery['trip_type'] = 'roundtrip';
+    $seatBackQuery['direction'] = (string) ($bookingMeta['direction'] ?? 'outbound');
+    $seatBackQuery['booking_group_code'] = (string) ($bookingMeta['booking_group_code'] ?? '');
+    $seatBackQuery['next_trip_id'] = (int) ($bookingMeta['next_trip_id'] ?? 0);
+    $seatBackQuery['next_direction'] = (string) ($bookingMeta['next_direction'] ?? '');
+}
+$changeTripUrl = $returnUrl !== '' ? $returnUrl : url('/');
 ?>
 <section class="booking-page py-5">
     <div class="container">
@@ -27,7 +41,7 @@ $directionLabel = ($bookingMeta['direction'] ?? 'outbound') === 'return' ? 'Chi�
                                 </span>
                             <?php endif; ?>
                         </div>
-                        <a class="btn btn-outline-secondary" href="<?= url('/trips/search') ?>">
+                        <a class="btn btn-outline-secondary" href="<?= e($changeTripUrl) ?>">
                             <i class="bi bi-arrow-left"></i> Đổi chuyến
                         </a>
                     </div>
@@ -41,6 +55,7 @@ $directionLabel = ($bookingMeta['direction'] ?? 'outbound') === 'return' ? 'Chi�
                     <div id="seatMap"
                          class="seat-map-grid"
                          data-trip-id="<?= e($trip['id'] ?? '') ?>"
+                         data-seat-limit="<?= e((string) $seatCount) ?>"
                          data-checkout-url="<?= e(url('/booking/checkout')) ?>">
                         <div class="text-muted">Đang tải sơ đồ ghế...</div>
                     </div>
@@ -73,12 +88,15 @@ $directionLabel = ($bookingMeta['direction'] ?? 'outbound') === 'return' ? 'Chi�
                     </div>
 
                     <form id="seatCheckoutForm" method="post" action="<?= url('/booking/checkout') ?>">
+                        <div id="seatSelectionNotice" class="alert alert-warning d-none py-2 mb-3" role="alert"></div>
                         <input type="hidden" name="trip_id" value="<?= e($trip['id'] ?? '') ?>">
                         <input type="hidden" name="trip_type" value="<?= e($bookingMeta['trip_type'] ?? 'oneway') ?>">
                         <input type="hidden" name="direction" value="<?= e($bookingMeta['direction'] ?? 'outbound') ?>">
                         <input type="hidden" name="booking_group_code" value="<?= e($bookingMeta['booking_group_code'] ?? '') ?>">
                         <input type="hidden" name="next_trip_id" value="<?= e($bookingMeta['next_trip_id'] ?? '') ?>">
                         <input type="hidden" name="next_direction" value="<?= e($bookingMeta['next_direction'] ?? '') ?>">
+                        <input type="hidden" name="seats" value="<?= e((string) $seatCount) ?>">
+                        <input type="hidden" name="return_url" value="<?= e($returnUrl) ?>">
                         <input type="hidden" name="seat_ids" id="selectedSeatIds" value="">
                         <button id="bookingSubmit" class="btn btn-success w-100" type="submit" disabled>
                             Xác nhận ghế

@@ -65,6 +65,14 @@ final class Booking extends Model
         return $booking ?: null;
     }
 
+    public function getBookingByCode(string $code): ?array
+    {
+        $stmt = $this->db()->prepare('SELECT * FROM bookings WHERE booking_code = :code');
+        $stmt->execute(['code' => $code]);
+        $booking = $stmt->fetch();
+        return $booking ?: null;
+    }
+
     public function getBookingsByUser(int $userId): array
     {
         return $this->findByUser($userId);

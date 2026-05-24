@@ -14,6 +14,7 @@ use App\Models\Seat;
 use App\Models\Ticket;
 use App\Models\Trip;
 use App\Services\QRCodeService;
+use App\Services\TicketEmailService;
 use Throwable;
 
 final class BookingApiController extends Controller
@@ -53,10 +54,11 @@ final class BookingApiController extends Controller
             $bookingModel = new Booking();
             $totalAmount = array_sum(array_map(static fn (array $seat): float => (float) $seat['price'], $seats));
             $user = Auth::user() ?? [];
+            $bookingCode = $bookingModel->generateBookingCode();
             $bookingId = $bookingModel->createBooking([
                 'user_id' => Auth::id(),
                 'trip_id' => $tripId,
-                'booking_code' => $bookingModel->generateBookingCode(),
+                'booking_code' => $bookingCode,
                 'customer_name' => trim((string) ($payload['customer_name'] ?? $user['name'] ?? 'Khách hàng')),
                 'customer_phone' => trim((string) ($payload['customer_phone'] ?? $user['phone'] ?? '0000000000')),
                 'customer_email' => trim((string) ($payload['customer_email'] ?? $user['email'] ?? '')) ?: null,
@@ -81,9 +83,24 @@ final class BookingApiController extends Controller
             $qrPayload = json_encode([
                 'ticket_code' => $ticketCode,
                 'booking_id' => $bookingId,
+                'booking_code' => $bookingCode,
                 'user_id' => Auth::id(),
                 'trip_id' => $tripId,
+                'booking_status' => 'pending',
+                'customer' => [
+                    'name' => trim((string) ($payload['customer_name'] ?? $user['name'] ?? 'KhÃ¡ch hÃ ng')),
+                    'phone' => trim((string) ($payload['customer_phone'] ?? $user['phone'] ?? '0000000000')),
+                    'email' => trim((string) ($payload['customer_email'] ?? $user['email'] ?? '')) ?: null,
+                ],
+                'trip' => [
+                    'from' => (string) ($trip['from_name'] ?? ''),
+                    'to' => (string) ($trip['to_name'] ?? ''),
+                    'bus' => (string) ($trip['bus_name'] ?? ''),
+                    'departure_time' => (string) ($trip['departure_time'] ?? ''),
+                    'arrival_time' => (string) ($trip['arrival_time'] ?? ''),
+                ],
                 'seat_number' => implode(', ', array_column($seats, 'seat_number')),
+                'total_amount' => $totalAmount,
                 'status' => 'pending',
             ], JSON_UNESCAPED_UNICODE);
             $qrPath = (new QRCodeService())->generate((string) $qrPayload, $ticketCode);
@@ -95,6 +112,7 @@ final class BookingApiController extends Controller
             ]);
 
             $db->commit();
+            (new TicketEmailService())->sendForBooking($bookingId);
             $this->json([
                 'message' => 'Đặt vé thành công.',
                 'booking_id' => $bookingId,
@@ -120,6 +138,6 @@ final class BookingApiController extends Controller
             return [];
         }
 
-        return array_slice(array_values(array_unique(array_filter(array_map('intval', $input)))), 0, 8);
+        return array_slice(array_values(array_unique(array_filter(array_map('intval', $input)))), 0, 5);
     }
 }

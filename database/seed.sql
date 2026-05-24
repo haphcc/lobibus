@@ -585,6 +585,20 @@ keyword = VALUES(keyword),
 question = VALUES(question),
 answer = VALUES(answer);
 
+-- =========================================================
+-- 14. SYNC AVAILABLE SEATS
+-- =========================================================
+UPDATE trips t
+JOIN buses bus ON bus.id = t.bus_id
+LEFT JOIN (
+    SELECT bd.trip_id, COUNT(DISTINCT bd.seat_id) AS booked_count
+    FROM booking_details bd
+    JOIN bookings b ON b.id = bd.booking_id
+    WHERE b.status NOT IN ('cancelled', 'expired')
+    GROUP BY bd.trip_id
+) booked ON booked.trip_id = t.id
+SET t.available_seats = GREATEST(bus.total_seats - COALESCE(booked.booked_count, 0), 0);
+
 COMMIT;
 
 -- =========================================================

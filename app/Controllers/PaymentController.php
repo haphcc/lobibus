@@ -10,6 +10,10 @@ use App\Core\Database;
 use App\Core\Session;
 use App\Models\Booking;
 use App\Models\Payment;
+use App\Models\Ticket;
+use App\Services\PayOSService;
+use App\Services\QRCodeService;
+use App\Services\TicketEmailService;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
 use Throwable;
@@ -20,29 +24,39 @@ final class PaymentController extends Controller
 
     public function method(): void
     {
-        if (!Auth::check()) {
-            $this->redirectLogin();
-            return;
-        }
-
         $bookingId = (int) ($_GET['booking_id'] ?? 0);
         $booking = $bookingId > 0 ? (new Booking())->getBookingDetailFull($bookingId) : null;
 
-        if ($booking === null || (int) ($booking['user_id'] ?? 0) !== Auth::id()) {
-            Session::flash('error', 'Không tìm thấy booking hoặc bạn không có quyền thanh toán booking này.');
-            header('Location: ' . \url('/booking/history'));
+        $isAuthorized = false;
+        if ($booking !== null) {
+            $guestBookings = Session::get('guest_bookings');
+            $isInGuestSession = is_array($guestBookings) && in_array($bookingId, $guestBookings, true);
+            if (Auth::check()) {
+                $isAuthorized = ((int) ($booking['user_id'] ?? 0) === Auth::id()) || $isInGuestSession;
+            } else {
+                $isAuthorized = $isInGuestSession;
+            }
+        }
+
+        if (!$isAuthorized) {
+            Session::flash('error', 'Khong tim thay booking hoac ban khong co quyen thanh toan booking nay.');
+            if (Auth::check()) {
+                header('Location: ' . \url('/booking/history'));
+            } else {
+                header('Location: ' . \url('/'));
+            }
             return;
         }
 
         $payment = (new Payment())->getPaymentByBookingId($bookingId);
         if ($payment === null) {
-            Session::flash('error', 'Booking này chưa có thông tin thanh toán.');
+            Session::flash('error', 'Booking nay chua co thong tin thanh toan.');
             header('Location: ' . \url('/booking/detail?id=' . $bookingId));
             return;
         }
 
         if (($payment['status'] ?? '') === 'paid') {
-            Session::flash('success', 'Booking đã được thanh toán trước đó.');
+            Session::flash('success', 'Booking da duoc thanh toan truoc do.');
             header('Location: ' . \url('/booking/detail?id=' . $bookingId));
             return;
         }
@@ -52,12 +66,27 @@ final class PaymentController extends Controller
             return;
         }
 
+        $payosData = [];
+        $payosError = '';
+        try {
+            $payosData = (new PayOSService())->createPaymentLink(
+                $booking,
+                $payment,
+                $this->absoluteUrl('/payment/result?booking_id=' . $bookingId),
+                $this->absoluteUrl('/booking/detail?id=' . $bookingId)
+            );
+        } catch (Throwable $exception) {
+            $payosError = $exception->getMessage();
+        }
+        $payosData = $this->payosDataWithCachedQr($bookingId, $payosData);
+
         $this->view('payments.payment-method', [
-            'title' => 'Thanh toán đặt vé',
+            'title' => 'Thanh toan dat ve',
             'booking' => $booking,
             'payment' => $payment,
-            'banks' => $this->popularBanks(),
-            'paymentQrDataUri' => $this->paymentQrDataUri($booking, $payment),
+            'paymentQrDataUri' => $this->paymentQrDataUri((string) ($payosData['qrCode'] ?? '')),
+            'payosData' => $payosData,
+            'payosError' => $payosError,
             'nextTripId' => max(0, (int) ($_GET['next_trip_id'] ?? 0)),
             'nextDirection' => ((string) ($_GET['next_direction'] ?? '') === 'return') ? 'return' : 'outbound',
         ]);
@@ -65,19 +94,29 @@ final class PaymentController extends Controller
 
     public function confirm(): void
     {
-        if (!Auth::check()) {
-            $this->redirectLogin();
-            return;
-        }
-
         $bookingId = (int) ($_POST['booking_id'] ?? 0);
         $bookingModel = new Booking();
         $paymentModel = new Payment();
         $booking = $bookingId > 0 ? $bookingModel->getBookingDetailFull($bookingId) : null;
 
-        if ($booking === null || (int) ($booking['user_id'] ?? 0) !== Auth::id()) {
-            Session::flash('error', 'Không tìm thấy booking hoặc bạn không có quyền thanh toán booking này.');
-            header('Location: ' . \url('/booking/history'));
+        $isAuthorized = false;
+        if ($booking !== null) {
+            $guestBookings = Session::get('guest_bookings');
+            $isInGuestSession = is_array($guestBookings) && in_array($bookingId, $guestBookings, true);
+            if (Auth::check()) {
+                $isAuthorized = ((int) ($booking['user_id'] ?? 0) === Auth::id()) || $isInGuestSession;
+            } else {
+                $isAuthorized = $isInGuestSession;
+            }
+        }
+
+        if (!$isAuthorized) {
+            Session::flash('error', 'Khong tim thay booking hoac ban khong co quyen thanh toan booking nay.');
+            if (Auth::check()) {
+                header('Location: ' . \url('/booking/history'));
+            } else {
+                header('Location: ' . \url('/'));
+            }
             return;
         }
 
@@ -85,19 +124,28 @@ final class PaymentController extends Controller
         $method = (string) ($payment['method'] ?? '');
 
         if ($payment === null || !in_array($method, self::ONLINE_METHODS, true)) {
-            Session::flash('error', 'Phương thức thanh toán không hợp lệ.');
+            Session::flash('error', 'Phuong thuc thanh toan khong hop le.');
             header('Location: ' . \url('/booking/detail?id=' . $bookingId));
             return;
         }
 
         if (($payment['status'] ?? '') === 'paid') {
-            Session::flash('success', 'Booking đã được thanh toán trước đó.');
+            Session::flash('success', 'Booking da duoc thanh toan truoc do.');
             header('Location: ' . $this->successRedirect($booking, $_POST));
             return;
         }
 
-        if ($method === 'card' && !$this->validCardPayload($_POST)) {
-            Session::flash('error', 'Vui lòng nhập ngân hàng, số thẻ/tài khoản và tên chủ thẻ.');
+        try {
+            $payos = new PayOSService();
+            $payosStatus = $payos->getPaymentRequest($payos->orderCodeForBooking($bookingId));
+        } catch (Throwable $exception) {
+            Session::flash('error', $exception->getMessage());
+            header('Location: ' . $this->methodUrl($bookingId, $_POST));
+            return;
+        }
+
+        if (($payosStatus['status'] ?? '') !== 'PAID') {
+            Session::flash('error', 'payOS chua ghi nhan thanh toan thanh cong. Vui long quet QR hoac bam kiem tra lai sau.');
             header('Location: ' . $this->methodUrl($bookingId, $_POST));
             return;
         }
@@ -105,18 +153,20 @@ final class PaymentController extends Controller
         $db = Database::connection();
         try {
             $db->beginTransaction();
-            $paymentModel->markPaidByBooking($bookingId, $this->generateTransactionCode($method));
+            $paymentModel->markPaidByBooking($bookingId, 'PAYOS-' . (string) ($payosStatus['orderCode'] ?? $payos->orderCodeForBooking($bookingId)));
             $bookingModel->updateStatus($bookingId, 'confirmed');
+            Session::forget('payos_payment_' . $bookingId);
             $db->commit();
+            $this->refreshConfirmedTicketAndEmail($bookingId);
 
-            Session::flash('success', 'Thanh toán thành công. Vé đã được xác nhận.');
+            Session::flash('success', 'Thanh toan thanh cong. Ve da duoc xac nhan.');
             header('Location: ' . $this->successRedirect($booking, $_POST));
         } catch (Throwable) {
             if ($db->inTransaction()) {
                 $db->rollBack();
             }
 
-            Session::flash('error', 'Không thể xác nhận thanh toán. Vui lòng thử lại.');
+            Session::flash('error', 'Khong the xac nhan thanh toan. Vui long thu lai.');
             header('Location: ' . $this->methodUrl($bookingId, $_POST));
         }
     }
@@ -125,20 +175,43 @@ final class PaymentController extends Controller
     {
         $bookingId = (int) ($_GET['booking_id'] ?? 0);
         if ($bookingId > 0) {
+            $bookingModel = new Booking();
+            $paymentModel = new Payment();
+            $booking = $bookingModel->getBookingDetailFull($bookingId);
+            $payment = $paymentModel->getPaymentByBookingId($bookingId);
+
+            $isAuthorized = false;
+            if ($booking !== null) {
+                $guestBookings = Session::get('guest_bookings');
+                $isInGuestSession = is_array($guestBookings) && in_array($bookingId, $guestBookings, true);
+                if (Auth::check()) {
+                    $isAuthorized = ((int) ($booking['user_id'] ?? 0) === Auth::id()) || $isInGuestSession;
+                } else {
+                    $isAuthorized = $isInGuestSession;
+                }
+            }
+
+            if ($isAuthorized && $payment !== null) {
+                try {
+                    $payos = new PayOSService();
+                    $payosStatus = $payos->getPaymentRequest($payos->orderCodeForBooking($bookingId));
+                } catch (Throwable) {
+                    $payosStatus = [];
+                }
+                if (($payosStatus['status'] ?? '') === 'PAID' && ($payment['status'] ?? '') !== 'paid') {
+                    $paymentModel->markPaidByBooking($bookingId, 'PAYOS-' . (string) ($payosStatus['orderCode'] ?? $payos->orderCodeForBooking($bookingId)));
+                    $bookingModel->updateStatus($bookingId, 'confirmed');
+                    Session::forget('payos_payment_' . $bookingId);
+                    $this->refreshConfirmedTicketAndEmail($bookingId);
+                    Session::flash('success', 'Thanh toan payOS thanh cong. Ve da duoc xac nhan.');
+                }
+            }
+
             header('Location: ' . \url('/booking/detail?id=' . $bookingId));
             return;
         }
 
         header('Location: ' . \url('/booking/history'));
-    }
-
-    private function validCardPayload(array $payload): bool
-    {
-        $bank = trim((string) ($payload['bank_code'] ?? ''));
-        $accountNumber = preg_replace('/\D+/', '', (string) ($payload['account_number'] ?? '')) ?? '';
-        $holderName = trim((string) ($payload['account_holder'] ?? ''));
-
-        return $bank !== '' && strlen($accountNumber) >= 6 && $holderName !== '';
     }
 
     private function methodUrl(int $bookingId, array $source): string
@@ -163,31 +236,18 @@ final class PaymentController extends Controller
                 'booking_group_code' => (string) ($booking['booking_group_code'] ?? ''),
             ];
 
-            Session::flash('success', 'Thanh toán thành công. Vui lòng chọn ghế cho chiều còn lại.');
+            Session::flash('success', 'Thanh toan thanh cong. Vui long chon ghe cho chieu con lai.');
             return \url('/booking/select-seat?' . http_build_query($query));
         }
 
         return \url('/booking/detail?id=' . (int) ($booking['id'] ?? 0));
     }
 
-    private function generateTransactionCode(string $method): string
+    private function paymentQrDataUri(string $qrCode): string
     {
-        return 'PAY-' . strtoupper($method) . '-' . date('Ymd') . '-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 6));
-    }
-
-    private function paymentQrDataUri(array $booking, array $payment): string
-    {
-        if (!class_exists(QRCode::class)) {
+        if ($qrCode === '' || !class_exists(QRCode::class) || !class_exists(QROptions::class)) {
             return '';
         }
-
-        $payload = json_encode([
-            'type' => 'LOBIBUS_DEMO_PAYMENT',
-            'booking_code' => (string) ($booking['booking_code'] ?? ''),
-            'method' => (string) ($payment['method'] ?? ''),
-            'amount' => (float) ($payment['amount'] ?? $booking['total_amount'] ?? 0),
-            'content' => 'Thanh toan ' . (string) ($booking['booking_code'] ?? ''),
-        ], JSON_UNESCAPED_UNICODE);
 
         $options = new QROptions();
         $options->outputBase64 = false;
@@ -196,29 +256,100 @@ final class PaymentController extends Controller
         $options->drawLightModules = true;
         $options->connectPaths = true;
 
-        $svg = (new QRCode($options))->render((string) $payload);
+        $svg = (new QRCode($options))->render($qrCode);
         return 'data:image/svg+xml;base64,' . base64_encode($svg);
     }
 
-    private function popularBanks(): array
+    private function refreshConfirmedTicketAndEmail(int $bookingId): void
     {
-        return [
-            'VCB' => 'Vietcombank',
-            'TCB' => 'Techcombank',
-            'BIDV' => 'BIDV',
-            'CTG' => 'VietinBank',
-            'MB' => 'MB Bank',
-            'ACB' => 'ACB',
-            'VPB' => 'VPBank',
-            'STB' => 'Sacombank',
-            'TPB' => 'TPBank',
-            'AGR' => 'Agribank',
-        ];
+        $booking = (new Booking())->getBookingDetailFull($bookingId);
+        $ticket = (new Ticket())->getTicketByBooking($bookingId);
+        if ($booking === null || $ticket === null) {
+            return;
+        }
+
+        $seatNumbers = implode(', ', array_column($booking['seats'] ?? [], 'seat_number'));
+        $payload = json_encode([
+            'ticket_code' => (string) ($ticket['ticket_code'] ?? ''),
+            'booking_id' => $bookingId,
+            'booking_code' => (string) ($booking['booking_code'] ?? ''),
+            'booking_group_code' => $booking['booking_group_code'] ?? null,
+            'trip_type' => (string) ($booking['trip_type'] ?? 'oneway'),
+            'direction' => (string) ($booking['direction'] ?? 'outbound'),
+            'booking_status' => 'confirmed',
+            'customer' => [
+                'name' => (string) ($booking['customer_name'] ?? ''),
+                'phone' => (string) ($booking['customer_phone'] ?? ''),
+                'email' => $booking['customer_email'] ?? null,
+            ],
+            'trip' => [
+                'id' => (int) ($booking['trip_id'] ?? 0),
+                'from' => (string) ($booking['from_name'] ?? ''),
+                'to' => (string) ($booking['to_name'] ?? ''),
+                'bus' => (string) ($booking['bus_name'] ?? ''),
+                'departure_time' => (string) ($booking['departure_time'] ?? ''),
+                'arrival_time' => (string) ($booking['arrival_time'] ?? ''),
+            ],
+            'seats' => $seatNumbers,
+            'total_amount' => (float) ($booking['total_amount'] ?? 0),
+            'issued_at' => date('c'),
+        ], JSON_UNESCAPED_UNICODE);
+
+        try {
+            $qrPath = (new QRCodeService())->generate((string) $payload, (string) ($ticket['ticket_code'] ?? ''));
+            (new Ticket())->updateQrPath((int) ($ticket['id'] ?? 0), $qrPath);
+            (new TicketEmailService())->sendForBooking($bookingId);
+        } catch (Throwable) {
+            // Email/QR refresh must not block successful payment confirmation.
+        }
+    }
+
+    private function payosDataWithCachedQr(int $bookingId, array $payosData): array
+    {
+        $cacheKey = 'payos_payment_' . $bookingId;
+        $cached = Session::get($cacheKey);
+        $cached = is_array($cached) ? $cached : [];
+
+        if (empty($payosData['qrCode']) && !empty($cached['qrCode'])) {
+            $payosData['qrCode'] = $cached['qrCode'];
+        }
+
+        if (empty($payosData['checkoutUrl']) && !empty($cached['checkoutUrl'])) {
+            $payosData['checkoutUrl'] = $cached['checkoutUrl'];
+        }
+
+        if (empty($payosData['orderCode']) && !empty($cached['orderCode'])) {
+            $payosData['orderCode'] = $cached['orderCode'];
+        }
+
+        if (empty($payosData['description']) && !empty($cached['description'])) {
+            $payosData['description'] = $cached['description'];
+        }
+
+        if (!empty($payosData['qrCode'])) {
+            Session::set($cacheKey, array_merge($cached, $payosData));
+        }
+
+        return $payosData;
+    }
+
+    private function absoluteUrl(string $path): string
+    {
+        $url = \url($path);
+        if (preg_match('#^https?://#i', $url)) {
+            return $url;
+        }
+
+        $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+        $scheme = $https ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+
+        return $scheme . '://' . $host . $url;
     }
 
     private function redirectLogin(): void
     {
-        Session::flash('error', 'Vui lòng đăng nhập để tiếp tục thanh toán.');
+        Session::flash('error', 'Vui long dang nhap de tiep tuc thanh toan.');
         header('Location: ' . \url('/login?redirect=' . rawurlencode($_SERVER['REQUEST_URI'] ?? '/booking/history')));
     }
 }

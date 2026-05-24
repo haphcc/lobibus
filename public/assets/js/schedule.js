@@ -517,7 +517,7 @@
                         <strong class="fs-6 text-dark">${parseFloat(trip.price).toLocaleString('vi-VN')}đ</strong>
                       </td>
                       <td data-label="Hành động" class="text-end">
-                        <a href="${base}/booking/select-seat?trip_id=${trip.id}" class="btn btn-book-now text-decoration-none d-inline-block">
+                        <a href="${base}/booking/select-seat?trip_id=${trip.id}&return_url=${encodeURIComponent(`${window.location.pathname}${window.location.search}`)}" class="btn btn-book-now text-decoration-none d-inline-block">
                           Đặt vé <i class="bi bi-arrow-right-short ms-1"></i>
                         </a>
                       </td>

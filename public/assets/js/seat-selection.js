@@ -5,14 +5,28 @@
   const totalAmount = document.getElementById('seatTotalAmount');
   const submitButton = document.getElementById('bookingSubmit');
   const form = document.getElementById('seatCheckoutForm');
+  const notice = document.getElementById('seatSelectionNotice');
   const base = window.APP_BASE_URL || '';
 
   if (!seatMap || !form) return;
 
   const tripId = seatMap.dataset.tripId || new URLSearchParams(window.location.search).get('trip_id');
+  const seatLimit = Math.max(1, Math.min(5, parseInt(seatMap.dataset.seatLimit || '1', 10) || 1));
   const selected = new Map();
 
   const money = (value) => `${Number(value || 0).toLocaleString('vi-VN')}đ`;
+
+  function showNotice(message, type = 'warning') {
+    if (!notice) return;
+    notice.className = `alert alert-${type} py-2 mb-3`;
+    notice.textContent = message;
+  }
+
+  function clearNotice() {
+    if (!notice) return;
+    notice.className = 'alert alert-warning d-none py-2 mb-3';
+    notice.textContent = '';
+  }
 
   function naturalSeatSort(a, b) {
     return String(a.seat_number || '').localeCompare(String(b.seat_number || ''), 'vi', {
@@ -31,12 +45,16 @@
   function renderSummary() {
     const seats = Array.from(selected.values());
     selectedSeatIdsInput.value = seats.map((seat) => seat.seat_id).join(',');
-    submitButton.disabled = seats.length === 0;
+    submitButton.disabled = seats.length !== seatLimit;
+    if (seats.length === seatLimit) {
+      clearNotice();
+    }
 
     if (!seats.length) {
       selectedSeatList.className = 'selected-seat-list text-muted mb-3';
       selectedSeatList.innerHTML = 'Chưa chọn ghế.';
       totalAmount.textContent = '0đ';
+      selectedSeatList.insertAdjacentHTML('beforeend', ` <span>Can chon ${seatLimit} ghe.</span>`);
       return;
     }
 
@@ -222,6 +240,11 @@
       selected.delete(seatId);
       button.classList.remove('selected');
     } else {
+      if (selected.size >= seatLimit) {
+        showNotice(`Ban chi duoc chon ${seatLimit} ghe cho luot dat nay.`);
+        return;
+      }
+
       selected.set(seatId, {
         seat_id: seatId,
         seat_number: button.dataset.seatNumber,
@@ -234,9 +257,9 @@
   });
 
   form.addEventListener('submit', (event) => {
-    if (!selected.size) {
+    if (selected.size !== seatLimit) {
       event.preventDefault();
-      alert('Vui lòng chọn ít nhất một ghế.');
+      showNotice(`Vui long chon dung ${seatLimit} ghe truoc khi tiep tuc.`);
     }
   });
 
