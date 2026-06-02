@@ -1,0 +1,148 @@
+erDiagram
+    ROLES {
+        int id PK
+        varchar name
+        timestamp created_at
+        timestamp updated_at
+    }
+    USERS {
+        int id PK
+        int role_id FK
+        varchar name
+        varchar email
+        varchar phone
+        varchar password
+        enum status
+        tinyint is_google
+        timestamp created_at
+        timestamp updated_at
+    }
+    LOCATIONS {
+        int id PK
+        varchar name
+        varchar province
+        varchar address
+        decimal latitude
+        decimal longitude
+        timestamp created_at
+        timestamp updated_at
+    }
+    ROUTES {
+        int id PK
+        int from_location_id FK
+        int to_location_id FK
+        decimal distance_km
+        int duration_minutes
+        enum status
+        timestamp created_at
+        timestamp updated_at
+    }
+    BUSES {
+        int id PK
+        varchar name
+        varchar license_plate
+        enum bus_type
+        int total_seats
+        varchar image
+        enum status
+        timestamp created_at
+        timestamp updated_at
+    }
+    SEATS {
+        int id PK
+        int bus_id FK
+        varchar seat_number
+        enum seat_type
+        timestamp created_at
+        timestamp updated_at
+    }
+    TRIPS {
+        int id PK
+        int route_id FK
+        int bus_id FK
+        datetime departure_time
+        datetime arrival_time
+        decimal price
+        int available_seats
+        enum status
+        timestamp created_at
+        timestamp updated_at
+    }
+    BOOKINGS {
+        int id PK
+        int user_id FK
+        int trip_id FK
+        varchar booking_code
+        varchar booking_group_code
+        enum trip_type
+        enum direction
+        varchar customer_name
+        varchar customer_phone
+        varchar customer_email
+        decimal total_amount
+        enum status
+        timestamp created_at
+        timestamp updated_at
+    }
+    BOOKING_DETAILS {
+        int id PK
+        int booking_id FK
+        int trip_id FK
+        int seat_id FK
+        decimal price
+        timestamp created_at
+    }
+    TICKETS {
+        int id PK
+        int booking_id FK
+        varchar ticket_code
+        varchar qr_code_path
+        enum status
+        timestamp created_at
+        timestamp updated_at
+    }
+    PAYMENTS {
+        int id PK
+        int booking_id FK
+        enum method
+        decimal amount
+        enum status
+        varchar transaction_code
+        timestamp created_at
+        timestamp updated_at
+    }
+    REVIEWS {
+        int id PK
+        int user_id FK
+        int trip_id FK
+        tinyint rating
+        text comment
+        timestamp created_at
+    }
+    CHATBOT_QUESTIONS {
+        int id PK
+        varchar keyword
+        text question
+        text answer
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ROLES ||--o{ USERS : "1 - N"
+    USERS ||--o{ BOOKINGS : "1 - N"
+    LOCATIONS ||--o{ ROUTES : "1 - N (from/to)"
+    ROUTES ||--o{ TRIPS : "1 - N"
+    BUSES ||--o{ TRIPS : "1 - N"
+    BUSES ||--o{ SEATS : "1 - N"
+    TRIPS ||--o{ BOOKINGS : "1 - N"
+    BOOKINGS ||--o{ BOOKING_DETAILS : "1 - N"
+    TRIPS ||--o{ BOOKING_DETAILS : "1 - N"
+    BOOKING_DETAILS }o--|| SEATS : "N - 1"
+    BOOKINGS ||--o{ TICKETS : "1 - N"
+    BOOKINGS ||--o{ PAYMENTS : "1 - N"
+    TRIPS ||--o{ REVIEWS : "1 - N"
+    USERS ||--o{ REVIEWS : "1 - N"
+    BOOKINGS }o--|| TRIPS : "N - 1"
+    BOOKING_DETAILS }o--|| BOOKINGS : "N - 1"
+    TICKETS }o--|| BOOKINGS : "N - 1"
+    PAYMENTS }o--|| BOOKINGS : "N - 1"
