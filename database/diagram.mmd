@@ -1,148 +1,316 @@
-erDiagram
-    ROLES {
-        int id PK
-        varchar name
-        timestamp created_at
-        timestamp updated_at
-    }
-    USERS {
-        int id PK
-        int role_id FK
-        varchar name
-        varchar email
-        varchar phone
-        varchar password
-        enum status
-        tinyint is_google
-        timestamp created_at
-        timestamp updated_at
-    }
-    LOCATIONS {
-        int id PK
-        varchar name
-        varchar province
-        varchar address
-        decimal latitude
-        decimal longitude
-        timestamp created_at
-        timestamp updated_at
-    }
-    ROUTES {
-        int id PK
-        int from_location_id FK
-        int to_location_id FK
-        decimal distance_km
-        int duration_minutes
-        enum status
-        timestamp created_at
-        timestamp updated_at
-    }
-    BUSES {
-        int id PK
-        varchar name
-        varchar license_plate
-        enum bus_type
-        int total_seats
-        varchar image
-        enum status
-        timestamp created_at
-        timestamp updated_at
-    }
-    SEATS {
-        int id PK
-        int bus_id FK
-        varchar seat_number
-        enum seat_type
-        timestamp created_at
-        timestamp updated_at
-    }
-    TRIPS {
-        int id PK
-        int route_id FK
-        int bus_id FK
-        datetime departure_time
-        datetime arrival_time
-        decimal price
-        int available_seats
-        enum status
-        timestamp created_at
-        timestamp updated_at
-    }
-    BOOKINGS {
-        int id PK
-        int user_id FK
-        int trip_id FK
-        varchar booking_code
-        varchar booking_group_code
-        enum trip_type
-        enum direction
-        varchar customer_name
-        varchar customer_phone
-        varchar customer_email
-        decimal total_amount
-        enum status
-        timestamp created_at
-        timestamp updated_at
-    }
-    BOOKING_DETAILS {
-        int id PK
-        int booking_id FK
-        int trip_id FK
-        int seat_id FK
-        decimal price
-        timestamp created_at
-    }
-    TICKETS {
-        int id PK
-        int booking_id FK
-        varchar ticket_code
-        varchar qr_code_path
-        enum status
-        timestamp created_at
-        timestamp updated_at
-    }
-    PAYMENTS {
-        int id PK
-        int booking_id FK
-        enum method
-        decimal amount
-        enum status
-        varchar transaction_code
-        timestamp created_at
-        timestamp updated_at
-    }
-    REVIEWS {
-        int id PK
-        int user_id FK
-        int trip_id FK
-        tinyint rating
-        text comment
-        timestamp created_at
-    }
-    CHATBOT_QUESTIONS {
-        int id PK
-        varchar keyword
-        text question
-        text answer
-        timestamp created_at
-        timestamp updated_at
-    }
+%%{init: {"theme":"base","themeVariables":{"primaryColor":"#ffffff","primaryBorderColor":"#555555","lineColor":"#777777","fontFamily":"Arial","fontSize":"12px"},"flowchart":{"defaultRenderer":"elk","curve":"linear","nodeSpacing":42,"rankSpacing":72,"padding":6,"htmlLabels":true}}}%%
+flowchart LR
+    %% Layout guides: invisible edges keep the ERD in wide rows like the reference image.
+    LOCATIONS ~~~ ROUTES ~~~ TRIPS ~~~ BOOKINGS ~~~ TICKETS
+    ROLES ~~~ USERS ~~~ REVIEWS ~~~ CHATBOT_QUESTIONS
+    BUSES ~~~ SEATS ~~~ BOOKING_DETAILS ~~~ PAYMENTS
 
-    ROLES ||--o{ USERS : "1 - N"
-    USERS ||--o{ BOOKINGS : "1 - N"
-    LOCATIONS ||--o{ ROUTES : "1 - N (from/to)"
-    ROUTES ||--o{ TRIPS : "1 - N"
-    BUSES ||--o{ TRIPS : "1 - N"
-    BUSES ||--o{ SEATS : "1 - N"
-    TRIPS ||--o{ BOOKINGS : "1 - N"
-    BOOKINGS ||--o{ BOOKING_DETAILS : "1 - N"
-    TRIPS ||--o{ BOOKING_DETAILS : "1 - N"
-    BOOKING_DETAILS }o--|| SEATS : "N - 1"
-    BOOKINGS ||--o{ TICKETS : "1 - N"
-    BOOKINGS ||--o{ PAYMENTS : "1 - N"
-    TRIPS ||--o{ REVIEWS : "1 - N"
-    USERS ||--o{ REVIEWS : "1 - N"
-    BOOKINGS }o--|| TRIPS : "N - 1"
-    BOOKING_DETAILS }o--|| BOOKINGS : "N - 1"
-    TICKETS }o--|| BOOKINGS : "N - 1"
-    PAYMENTS }o--|| BOOKINGS : "N - 1"
+    %% Entities
+    ROLES[ROLES]:::entity
+    USERS[USERS]:::entity
+    LOCATIONS[LOCATIONS]:::entity
+    ROUTES[ROUTES]:::entity
+    BUSES[BUSES]:::entity
+    SEATS[SEATS]:::entity
+    TRIPS[TRIPS]:::entity
+    BOOKINGS[BOOKINGS]:::entity
+    BOOKING_DETAILS[BOOKING_DETAILS]:::entity
+    TICKETS[TICKETS]:::entity
+    PAYMENTS[PAYMENTS]:::entity
+    REVIEWS[REVIEWS]:::entity
+    CHATBOT_QUESTIONS[CHATBOT_QUESTIONS]:::entity
+
+    %% Attributes - ROLES
+    roles_id([<b>id</b>]):::attr
+    roles_name([name]):::attr
+    roles_created_at([created_at]):::attr
+    roles_updated_at([updated_at]):::attr
+
+    ROLES --- roles_id
+    ROLES --- roles_name
+    ROLES --- roles_created_at
+    ROLES --- roles_updated_at
+
+    %% Attributes - USERS
+    users_id([<b>id</b>]):::attr
+    users_role_id(["<u>role_id</u>"]):::attr
+    users_name([name]):::attr
+    users_email([email]):::attr
+    users_phone([phone]):::attr
+    users_password([password]):::attr
+    users_status([status]):::attr
+    users_is_google([is_google]):::attr
+    users_created_at([created_at]):::attr
+    users_updated_at([updated_at]):::attr
+
+    USERS --- users_id
+    USERS --- users_role_id
+    USERS --- users_name
+    USERS --- users_email
+    USERS --- users_phone
+    USERS --- users_password
+    USERS --- users_status
+    USERS --- users_is_google
+    USERS --- users_created_at
+    USERS --- users_updated_at
+
+    %% Attributes - LOCATIONS
+    locations_id([<b>id</b>]):::attr
+    locations_name([name]):::attr
+    locations_province([province]):::attr
+    locations_address([address]):::attr
+    locations_latitude([latitude]):::attr
+    locations_longitude([longitude]):::attr
+    locations_created_at([created_at]):::attr
+    locations_updated_at([updated_at]):::attr
+
+    LOCATIONS --- locations_id
+    LOCATIONS --- locations_name
+    LOCATIONS --- locations_province
+    LOCATIONS --- locations_address
+    LOCATIONS --- locations_latitude
+    LOCATIONS --- locations_longitude
+    LOCATIONS --- locations_created_at
+    LOCATIONS --- locations_updated_at
+
+    %% Attributes - ROUTES
+    routes_id([<b>id</b>]):::attr
+    routes_from_location_id(["<u>from_location_id</u>"]):::attr
+    routes_to_location_id(["<u>to_location_id</u>"]):::attr
+    routes_distance_km([distance_km]):::attr
+    routes_duration_minutes([duration_minutes]):::attr
+    routes_status([status]):::attr
+    routes_created_at([created_at]):::attr
+    routes_updated_at([updated_at]):::attr
+
+    ROUTES --- routes_id
+    ROUTES --- routes_from_location_id
+    ROUTES --- routes_to_location_id
+    ROUTES --- routes_distance_km
+    ROUTES --- routes_duration_minutes
+    ROUTES --- routes_status
+    ROUTES --- routes_created_at
+    ROUTES --- routes_updated_at
+
+    %% Attributes - BUSES
+    buses_id([<b>id</b>]):::attr
+    buses_name([name]):::attr
+    buses_license_plate([license_plate]):::attr
+    buses_bus_type([bus_type]):::attr
+    buses_total_seats([total_seats]):::attr
+    buses_image([image]):::attr
+    buses_status([status]):::attr
+    buses_created_at([created_at]):::attr
+    buses_updated_at([updated_at]):::attr
+
+    BUSES --- buses_id
+    BUSES --- buses_name
+    BUSES --- buses_license_plate
+    BUSES --- buses_bus_type
+    BUSES --- buses_total_seats
+    BUSES --- buses_image
+    BUSES --- buses_status
+    BUSES --- buses_created_at
+    BUSES --- buses_updated_at
+
+    %% Attributes - SEATS
+    seats_id([<b>id</b>]):::attr
+    seats_bus_id(["<u>bus_id</u>"]):::attr
+    seats_seat_number([seat_number]):::attr
+    seats_seat_type([seat_type]):::attr
+    seats_created_at([created_at]):::attr
+    seats_updated_at([updated_at]):::attr
+
+    SEATS --- seats_id
+    SEATS --- seats_bus_id
+    SEATS --- seats_seat_number
+    SEATS --- seats_seat_type
+    SEATS --- seats_created_at
+    SEATS --- seats_updated_at
+
+    %% Attributes - TRIPS
+    trips_id([<b>id</b>]):::attr
+    trips_route_id(["<u>route_id</u>"]):::attr
+    trips_bus_id(["<u>bus_id</u>"]):::attr
+    trips_departure_time([departure_time]):::attr
+    trips_arrival_time([arrival_time]):::attr
+    trips_price([price]):::attr
+    trips_available_seats([available_seats]):::attr
+    trips_status([status]):::attr
+    trips_created_at([created_at]):::attr
+    trips_updated_at([updated_at]):::attr
+
+    TRIPS --- trips_id
+    TRIPS --- trips_route_id
+    TRIPS --- trips_bus_id
+    TRIPS --- trips_departure_time
+    TRIPS --- trips_arrival_time
+    TRIPS --- trips_price
+    TRIPS --- trips_available_seats
+    TRIPS --- trips_status
+    TRIPS --- trips_created_at
+    TRIPS --- trips_updated_at
+
+    %% Attributes - BOOKINGS
+    bookings_id([<b>id</b>]):::attr
+    bookings_user_id(["<u>user_id</u>"]):::attr
+    bookings_trip_id(["<u>trip_id</u>"]):::attr
+    bookings_booking_code([booking_code]):::attr
+    bookings_booking_group_code([booking_group_code]):::attr
+    bookings_trip_type([trip_type]):::attr
+    bookings_direction([direction]):::attr
+    bookings_customer_name([customer_name]):::attr
+    bookings_customer_phone([customer_phone]):::attr
+    bookings_customer_email([customer_email]):::attr
+    bookings_total_amount([total_amount]):::attr
+    bookings_status([status]):::attr
+    bookings_created_at([created_at]):::attr
+    bookings_updated_at([updated_at]):::attr
+
+    BOOKINGS --- bookings_id
+    BOOKINGS --- bookings_user_id
+    BOOKINGS --- bookings_trip_id
+    BOOKINGS --- bookings_booking_code
+    BOOKINGS --- bookings_booking_group_code
+    BOOKINGS --- bookings_trip_type
+    BOOKINGS --- bookings_direction
+    BOOKINGS --- bookings_customer_name
+    BOOKINGS --- bookings_customer_phone
+    BOOKINGS --- bookings_customer_email
+    BOOKINGS --- bookings_total_amount
+    BOOKINGS --- bookings_status
+    BOOKINGS --- bookings_created_at
+    BOOKINGS --- bookings_updated_at
+
+    %% Attributes - BOOKING_DETAILS
+    booking_details_id([<b>id</b>]):::attr
+    booking_details_booking_id(["<u>booking_id</u>"]):::attr
+    booking_details_trip_id(["<u>trip_id</u>"]):::attr
+    booking_details_seat_id(["<u>seat_id</u>"]):::attr
+    booking_details_price([price]):::attr
+    booking_details_created_at([created_at]):::attr
+
+    BOOKING_DETAILS --- booking_details_id
+    BOOKING_DETAILS --- booking_details_booking_id
+    BOOKING_DETAILS --- booking_details_trip_id
+    BOOKING_DETAILS --- booking_details_seat_id
+    BOOKING_DETAILS --- booking_details_price
+    BOOKING_DETAILS --- booking_details_created_at
+
+    %% Attributes - TICKETS
+    tickets_id([<b>id</b>]):::attr
+    tickets_booking_id(["<u>booking_id</u>"]):::attr
+    tickets_ticket_code([ticket_code]):::attr
+    tickets_qr_code_path([qr_code_path]):::attr
+    tickets_status([status]):::attr
+    tickets_created_at([created_at]):::attr
+    tickets_updated_at([updated_at]):::attr
+
+    TICKETS --- tickets_id
+    TICKETS --- tickets_booking_id
+    TICKETS --- tickets_ticket_code
+    TICKETS --- tickets_qr_code_path
+    TICKETS --- tickets_status
+    TICKETS --- tickets_created_at
+    TICKETS --- tickets_updated_at
+
+    %% Attributes - PAYMENTS
+    payments_id([<b>id</b>]):::attr
+    payments_booking_id(["<u>booking_id</u>"]):::attr
+    payments_method([method]):::attr
+    payments_amount([amount]):::attr
+    payments_status([status]):::attr
+    payments_transaction_code([transaction_code]):::attr
+    payments_created_at([created_at]):::attr
+    payments_updated_at([updated_at]):::attr
+
+    PAYMENTS --- payments_id
+    PAYMENTS --- payments_booking_id
+    PAYMENTS --- payments_method
+    PAYMENTS --- payments_amount
+    PAYMENTS --- payments_status
+    PAYMENTS --- payments_transaction_code
+    PAYMENTS --- payments_created_at
+    PAYMENTS --- payments_updated_at
+
+    %% Attributes - REVIEWS
+    reviews_id([<b>id</b>]):::attr
+    reviews_user_id(["<u>user_id</u>"]):::attr
+    reviews_trip_id(["<u>trip_id</u>"]):::attr
+    reviews_rating([rating]):::attr
+    reviews_comment([comment]):::attr
+    reviews_created_at([created_at]):::attr
+
+    REVIEWS --- reviews_id
+    REVIEWS --- reviews_user_id
+    REVIEWS --- reviews_trip_id
+    REVIEWS --- reviews_rating
+    REVIEWS --- reviews_comment
+    REVIEWS --- reviews_created_at
+
+    %% Attributes - CHATBOT_QUESTIONS
+    chatbot_questions_id([<b>id</b>]):::attr
+    chatbot_questions_keyword([keyword]):::attr
+    chatbot_questions_question([question]):::attr
+    chatbot_questions_answer([answer]):::attr
+    chatbot_questions_created_at([created_at]):::attr
+    chatbot_questions_updated_at([updated_at]):::attr
+
+    CHATBOT_QUESTIONS --- chatbot_questions_id
+    CHATBOT_QUESTIONS --- chatbot_questions_keyword
+    CHATBOT_QUESTIONS --- chatbot_questions_question
+    CHATBOT_QUESTIONS --- chatbot_questions_answer
+    CHATBOT_QUESTIONS --- chatbot_questions_created_at
+    CHATBOT_QUESTIONS --- chatbot_questions_updated_at
+
+    %% Relationships
+    R_ROLE_USER{Có vai trò}:::rel
+    R_USER_BOOKING{Đặt vé}:::rel
+    R_LOCATION_ROUTE_FROM{Đi từ}:::rel
+    R_LOCATION_ROUTE_TO{Đi đến}:::rel
+    R_ROUTE_TRIP{Có chuyến}:::rel
+    R_BUS_TRIP{Phục vụ}:::rel
+    R_BUS_SEAT{Có ghế}:::rel
+    R_TRIP_BOOKING{Được đặt}:::rel
+    R_BOOKING_DETAIL{Có chi tiết}:::rel
+    R_TRIP_DETAIL{Bao gồm}:::rel
+    R_DETAIL_SEAT{Dùng ghế}:::rel
+    R_BOOKING_TICKET{Xuất vé}:::rel
+    R_BOOKING_PAYMENT{Thanh toán}:::rel
+    R_TRIP_REVIEW{Được đánh giá}:::rel
+    R_USER_REVIEW{Viết}:::rel
+
+    ROLES ---|1| R_ROLE_USER
+    R_ROLE_USER ---|N| USERS
+    USERS ---|1| R_USER_BOOKING
+    R_USER_BOOKING ---|N| BOOKINGS
+    LOCATIONS ---|1| R_LOCATION_ROUTE_FROM
+    R_LOCATION_ROUTE_FROM ---|N| ROUTES
+    LOCATIONS ---|1| R_LOCATION_ROUTE_TO
+    R_LOCATION_ROUTE_TO ---|N| ROUTES
+    ROUTES ---|1| R_ROUTE_TRIP
+    R_ROUTE_TRIP ---|N| TRIPS
+    BUSES ---|1| R_BUS_TRIP
+    R_BUS_TRIP ---|N| TRIPS
+    BUSES ---|1| R_BUS_SEAT
+    R_BUS_SEAT ---|N| SEATS
+    TRIPS ---|1| R_TRIP_BOOKING
+    R_TRIP_BOOKING ---|N| BOOKINGS
+    BOOKINGS ---|1| R_BOOKING_DETAIL
+    R_BOOKING_DETAIL ---|N| BOOKING_DETAILS
+    TRIPS ---|1| R_TRIP_DETAIL
+    R_TRIP_DETAIL ---|N| BOOKING_DETAILS
+    BOOKING_DETAILS ---|N| R_DETAIL_SEAT
+    R_DETAIL_SEAT ---|1| SEATS
+    BOOKINGS ---|1| R_BOOKING_TICKET
+    R_BOOKING_TICKET ---|N| TICKETS
+    BOOKINGS ---|1| R_BOOKING_PAYMENT
+    R_BOOKING_PAYMENT ---|N| PAYMENTS
+    TRIPS ---|1| R_TRIP_REVIEW
+    R_TRIP_REVIEW ---|N| REVIEWS
+    USERS ---|1| R_USER_REVIEW
+    R_USER_REVIEW ---|N| REVIEWS
+
+    classDef entity fill:#ffffff,stroke:#555555,stroke-width:1px,color:#111111;
+    classDef attr fill:#ffffff,stroke:#8a8a8a,stroke-width:1px,color:#111111;
+    classDef rel fill:#ffffff,stroke:#777777,stroke-width:1px,color:#111111;
