@@ -143,7 +143,7 @@
       if (!returnWrapper || !returnInput) return;
       if (isRound) {
         returnInput.disabled = false;
-        returnInput.required = true;
+        // returnInput.required = true; // Bỏ bắt buộc nhập ngày về
         returnWrapper.style.pointerEvents = 'auto';
         returnWrapper.style.opacity = '1';
       } else {
@@ -438,6 +438,19 @@
   // Handle Form Search Submit
   if (form) {
     form.addEventListener('submit', async (e) => {
+      // Đặt mặc định ngày hôm nay nếu người dùng không chọn ngày đi
+      const dateInput = form.querySelector('input[name="date"]');
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      const todayStr = `${year}-${month}-${day}`;
+
+      if (dateInput && !dateInput.value) {
+        dateInput.value = todayStr;
+      }
+
+      // Bỏ tự động điền ngày về để tránh bắt chọn ngày về trên trang chủ
       const isSearchPage = window.location.pathname.includes('/trips/search');
       if (!isSearchPage) {
         // Let homepage form submit naturally to search page
@@ -450,7 +463,7 @@
 
       const from = formData.get('from');
       const to = formData.get('to');
-      const date = formData.get('date');
+      let date = formData.get('date');
       const returnDate = formData.get('return_date');
       const seats = formData.get('seats');
 
@@ -464,11 +477,14 @@
 
   function processTrips(trips, activeDate) {
     let filtered = trips.filter(trip => {
-      // Date filter (YYYY-MM-DD match)
-      if (activeDate && !trip.departure_time.startsWith(activeDate)) {
-        return false;
+      // Date filter: Show trips on or after activeDate (YYYY-MM-DD match)
+      if (activeDate) {
+        const tripDate = trip.departure_time.split(' ')[0];
+        if (tripDate < activeDate) {
+          return false;
+        }
       }
-
+      
       // Time filter
       if (activeTimeFilters.length > 0) {
         const matchesTime = activeTimeFilters.some(range => isTimeInRange(trip.departure_time, range));
@@ -504,12 +520,19 @@
     return filtered;
   }
 
+  function normalizeRouteKey(value) {
+    return String(value || '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, ' ');
+  }
+
   function groupTripsByRoute(trips) {
     const groups = {};
     trips.forEach(trip => {
-      const rId = trip.route_id || `${trip.from}-${trip.to}`;
-      if (!groups[rId]) {
-        groups[rId] = {
+      const key = `${normalizeRouteKey(trip.from)}|${normalizeRouteKey(trip.to)}`;
+      if (!groups[key]) {
+        groups[key] = {
           route_id: trip.route_id,
           from: trip.from,
           to: trip.to,
@@ -519,54 +542,20 @@
           minPrice: parseFloat(trip.price)
         };
       }
-      groups[rId].trips.push(trip);
-      if (parseFloat(trip.price) < groups[rId].minPrice) {
-        groups[rId].minPrice = parseFloat(trip.price);
+      groups[key].trips.push(trip);
+      if (parseFloat(trip.price) < groups[key].minPrice) {
+        groups[key].minPrice = parseFloat(trip.price);
       }
     });
     return Object.values(groups).map(route => ({
       ...route,
-      trips: route.trips.slice(0, MAX_TRIPS_PER_ROUTE)
+      trips: route.trips // Removed slice to allow Load More
     }));
   }
 
   function selectVisibleGroups(groups) {
-    if (activeTimeFilters.length > 0) {
-      return groups.slice(0, MAX_VISIBLE_ROUTES);
-    }
-
-    const buckets = {
-      morning: [],
-      afternoon: [],
-      evening: []
-    };
-
-    groups.forEach(route => {
-      const departure = route.trips[0]?.departure_time || '';
-      const hour = parseInt((departure.split(' ')[1] || '00:00:00').split(':')[0], 10);
-      if (hour < 12) {
-        buckets.morning.push(route);
-      } else if (hour < 18) {
-        buckets.afternoon.push(route);
-      } else {
-        buckets.evening.push(route);
-      }
-    });
-
-    const visible = [];
-    ['morning', 'afternoon', 'evening'].forEach(bucket => {
-      visible.push(...buckets[bucket].slice(0, 2));
-    });
-
-    if (visible.length < MAX_VISIBLE_ROUTES) {
-      groups.forEach(route => {
-        if (visible.length < MAX_VISIBLE_ROUTES && !visible.includes(route)) {
-          visible.push(route);
-        }
-      });
-    }
-
-    return visible;
+    // Trả về toàn bộ tuyến đường để có thể sử dụng "Xem thêm tuyến"
+    return groups;
   }
 
   function applyFiltersAndRender() {
@@ -633,10 +622,8 @@
       }
       
       const distanceStr = route.distance_km ? `${route.distance_km} km` : 'Chưa xác định';
-      const isExpanded = index === 0; // Expand first route card by default
-      
       const routeCard = document.createElement('div');
-      routeCard.className = `col-12 route-group-card animated-item ${isExpanded ? 'expanded' : ''}`;
+      routeCard.className = `col-12 route-group-card animated-item ${index >= 3 ? 'd-none route-hidden' : ''}`;
       routeCard.style.animationDelay = `${index * 0.08}s`;
       
       routeCard.innerHTML = `
@@ -682,7 +669,7 @@
                 </tr>
               </thead>
               <tbody>
-                ${route.trips.map(trip => {
+                ${route.trips.map((trip, tripIndex) => {
                   const typeInfo = getBusType(trip.bus_name);
                   
                   const depDate = new Date(trip.departure_time);
@@ -715,7 +702,7 @@
                   }));
 
                   return `
-                    <tr class="timetable-row">
+                    <tr class="timetable-row ${tripIndex >= 2 ? 'd-none' : ''}">
                       <td data-label="Giờ chạy">
                         <div class="text-end text-md-start">
                           <div>
@@ -772,6 +759,13 @@
                 }).join('')}
               </tbody>
             </table>
+            ${route.trips.length > 2 ? `
+            <div class="text-center mt-3 pb-3 load-more-container">
+              <button class="btn btn-outline-teal rounded-pill px-4 py-2 js-load-more" style="color: #0f766e; border-color: #0f766e; font-weight: 500;">
+                <i class="bi bi-chevron-down me-1"></i> Xem thêm các chuyến khác
+              </button>
+            </div>
+            ` : ''}
           </div>
         </div>
       `;
@@ -780,9 +774,49 @@
       header.addEventListener('click', () => {
         routeCard.classList.toggle('expanded');
       });
+
+      // Add Load More functionality
+      const loadMoreBtn = routeCard.querySelector('.js-load-more');
+      if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', (e) => {
+          e.stopPropagation(); // Ngăn sự kiện lan truyền
+          const hiddenRows = routeCard.querySelectorAll('.timetable-row.d-none');
+          for (let i = 0; i < 5 && i < hiddenRows.length; i++) {
+            hiddenRows[i].classList.remove('d-none');
+          }
+          // Nếu không còn dòng nào ẩn thì ẩn nút Xem thêm
+          if (routeCard.querySelectorAll('.timetable-row.d-none').length === 0) {
+            loadMoreBtn.closest('.load-more-container').classList.add('d-none');
+          }
+        });
+      }
       
       resultsContainer.appendChild(routeCard);
     });
+
+    // Add Load More Routes button
+    if (groups.length > 3) {
+      const loadMoreContainer = document.createElement('div');
+      loadMoreContainer.className = 'col-12 text-center mt-4 mb-3 load-more-routes-container';
+      loadMoreContainer.innerHTML = `
+        <button class="btn btn-primary rounded-pill px-5 py-2 shadow-sm js-load-more-routes" style="font-weight: 600; background-color: #0f766e; border-color: #0f766e;">
+          <i class="bi bi-arrow-down-circle me-2"></i>Xem thêm tuyến đường
+        </button>
+      `;
+      
+      const loadMoreBtn = loadMoreContainer.querySelector('.js-load-more-routes');
+      loadMoreBtn.addEventListener('click', () => {
+        const hiddenRoutes = resultsContainer.querySelectorAll('.route-hidden');
+        for (let i = 0; i < 3 && i < hiddenRoutes.length; i++) {
+          hiddenRoutes[i].classList.remove('d-none', 'route-hidden');
+        }
+        if (resultsContainer.querySelectorAll('.route-hidden').length === 0) {
+          loadMoreContainer.classList.add('d-none');
+        }
+      });
+      
+      resultsContainer.appendChild(loadMoreContainer);
+    }
   }
 
   function renderEmptyState() {
@@ -837,7 +871,6 @@
         paramsOut.set('from', from || '');
         paramsOut.set('to', to || '');
         paramsOut.set('date', date);
-        paramsOut.set('exact_date', '1');
         paramsOut.set('limit', DATE_RESULT_LIMIT);
         if (seats) paramsOut.set('seats', seats);
 
@@ -847,7 +880,6 @@
         
         // Return dates also centered around returnDate
         paramsReturn.set('date', returnDate || date);
-        paramsReturn.set('exact_date', '1');
         paramsReturn.set('limit', DATE_RESULT_LIMIT);
         if (seats) paramsReturn.set('seats', seats);
 
@@ -874,7 +906,6 @@
         params.set('from', from || '');
         params.set('to', to || '');
         params.set('date', date);
-        params.set('exact_date', '1');
         params.set('limit', DATE_RESULT_LIMIT);
         if (seats) params.set('seats', seats);
 
@@ -1028,7 +1059,9 @@
   }
 
   function addDays(dateStr, days) {
+    if (!dateStr) return '';
     const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return '';
     d.setDate(d.getDate() + days);
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, '0');

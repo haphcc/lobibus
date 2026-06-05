@@ -19,7 +19,7 @@
 <body>
 <?php require __DIR__ . '/navbar.php'; ?>
 <main>
-    <?= $content ?>
+    <?= $content?>
 </main>
 <?php require __DIR__ . '/footer.php'; ?>
 
@@ -28,7 +28,7 @@
 
 <!-- Map Preview Modal -->
 <div class="modal fade" id="mapModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 85%; width: 85%;">
         <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
             <div class="modal-header text-white border-0 py-3" style="background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);">
                 <h5 class="modal-title fw-bold">
@@ -39,25 +39,27 @@
             <div class="modal-body p-0">
                 <div class="row g-0">
                     <!-- Left Panel: Stations Details -->
-                    <div class="col-md-4 bg-light p-3 border-end">
-                        <h6 class="fw-bold mb-3" style="color: #0f766e;"><i class="bi bi-info-circle-fill me-1"></i>Hành trình chi tiết</h6>
-                        <div class="d-flex flex-column gap-3">
-                            <div class="station-info-box">
-                                <span class="badge bg-success mb-1">Điểm đón</span>
-                                <div class="fw-bold text-dark fs-6" id="mapFromStation">-</div>
-                                <small class="text-muted d-block mt-1" id="mapFromAddress">-</small>
+                    <div class="col-md-4 bg-light p-4 border-end d-flex flex-column justify-content-start">
+                        <h5 class="fw-bold mb-4" style="color: #0f766e;"><i class="bi bi-info-circle-fill me-2"></i>Hành trình chi tiết</h5>
+                        <div class="d-flex flex-column gap-4">
+                            <div class="station-info-box p-3 bg-white rounded-3 border">
+                                <span class="badge bg-success mb-2 px-2.5 py-1.5 fs-7">Điểm đón</span>
+                                <div class="fw-bold text-dark fs-5" id="mapFromStation">-</div>
+                                <small class="text-muted d-block mt-2 fs-6.5" id="mapFromAddress">-</small>
                             </div>
-                            <hr class="my-1">
-                            <div class="station-info-box">
-                                <span class="badge bg-danger mb-1">Điểm trả</span>
-                                <div class="fw-bold text-dark fs-6" id="mapToStation">-</div>
-                                <small class="text-muted d-block mt-1" id="mapToAddress">-</small>
+                            <div class="text-center my-1">
+                                <i class="bi bi-arrow-down-up fs-4 text-muted"></i>
+                            </div>
+                            <div class="station-info-box p-3 bg-white rounded-3 border">
+                                <span class="badge bg-danger mb-2 px-2.5 py-1.5 fs-7">Điểm trả</span>
+                                <div class="fw-bold text-dark fs-5" id="mapToStation">-</div>
+                                <small class="text-muted d-block mt-2 fs-6.5" id="mapToAddress">-</small>
                             </div>
                         </div>
                     </div>
                     <!-- Right Panel: Map Container -->
                     <div class="col-md-8 position-relative">
-                        <div id="leafletMap" style="height: 400px; width: 100%;"></div>
+                        <div id="routeMap" style="height: 78vh; min-height: 680px; width: 100%;"></div>
                     </div>
                 </div>
             </div>

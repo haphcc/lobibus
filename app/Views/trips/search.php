@@ -267,7 +267,7 @@ $locations = isset($locations) && is_array($locations) ? $locations : [];
             <!-- Date Picker -->
             <div class="col-lg-2 col-md-4">
                 <div class="form-floating">
-                    <input name="date" type="date" id="dateInput" class="form-control border-2 border-light-subtle rounded-3" required>
+                    <input name="date" type="date" id="dateInput" class="form-control border-2 border-light-subtle rounded-3">
                     <label for="dateInput" class="text-secondary fw-semibold">Ngày đi</label>
                 </div>
             </div>

@@ -5,6 +5,20 @@ $locations = isset($locations) && is_array($locations) ? $locations : [];
 $featuredTrips = isset($featuredTrips) && is_array($featuredTrips) ? $featuredTrips : [];
 $featuredNews = isset($featuredNews) && is_array($featuredNews) ? $featuredNews : [];
 $featuredPromotions = isset($featuredPromotions) && is_array($featuredPromotions) ? $featuredPromotions : [];
+
+// Helper function to get bus type info in PHP (matches trip-search.js)
+if (!function_exists('getBusTypeInfo')) {
+    function getBusTypeInfo($busName) {
+        $name = mb_strtolower($busName ?? '', 'UTF-8');
+        if (strpos($name, 'limousine') !== false || strpos($name, 'vip') !== false || strpos($name, 'luxury') !== false) {
+            return ['id' => 'vip', 'label' => 'VIP Limousine', 'badge' => 'badge-vip', 'icon' => 'bi-gem'];
+        } elseif (strpos($name, 'giường') !== false || strpos($name, 'sleeper') !== false || strpos($name, 'nằm') !== false) {
+            return ['id' => 'sleeper', 'label' => 'Giường nằm', 'badge' => 'badge-sleeper', 'icon' => 'bi-moon-stars'];
+        } else {
+            return ['id' => 'seat', 'label' => 'Ghế ngồi', 'badge' => 'badge-seating', 'icon' => 'bi-person-workspace'];
+        }
+    }
+}
 ?>
 
 <style>
@@ -94,6 +108,120 @@ $featuredPromotions = isset($featuredPromotions) && is_array($featuredPromotions
     .swap-btn-overlay:hover {
         transform: translateX(50%) rotate(270deg);
     }
+}
+
+/* Header & Date Strip custom styles */
+.search-header-card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #e2ece7;
+    box-shadow: 0 4px 20px rgba(15, 118, 110, 0.02);
+}
+.city-name-large {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.01em;
+}
+.date-strip-wrapper {
+    background: #f8fafc;
+    border: 1px solid #e2ece7;
+    border-radius: 20px;
+    padding: 15px 25px;
+    box-shadow: 0 4px 20px rgba(15, 118, 110, 0.03);
+}
+.date-nav-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #334155;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+.date-nav-btn:hover {
+    background: #0f766e;
+    color: #ffffff;
+    border-color: #0f766e;
+    box-shadow: 0 4px 10px rgba(15, 118, 110, 0.2);
+}
+.date-items-container {
+    gap: 12px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.date-items-container::-webkit-scrollbar {
+    display: none;
+}
+.date-item {
+    flex: 1;
+    min-width: 130px;
+    text-align: center;
+    padding: 12px 10px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: transparent;
+    border: 1px solid transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.date-item:hover {
+    background: rgba(15, 118, 110, 0.05);
+}
+.date-item.active {
+    background: #ffffff;
+    border-color: #0f766e;
+    box-shadow: 0 8px 16px rgba(15, 118, 110, 0.08);
+    transform: translateY(-2px);
+}
+.date-item-dow {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-bottom: 2px;
+}
+.date-item.active .date-item-dow {
+    color: #0f766e;
+}
+.date-item-day {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #1e293b;
+}
+.date-item.active .date-item-day {
+    color: #0f766e;
+}
+.date-item-price {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-top: 4px;
+}
+.date-item.active .date-item-price {
+    color: #2dd4bf;
+}
+
+/* Teal Outline Button */
+.btn-outline-teal {
+    color: #0f766e;
+    border-color: #0f766e;
+    background: transparent;
+    transition: all 0.2s ease;
+}
+.btn-outline-teal:hover {
+    color: #ffffff;
+    background-color: #0f766e;
+    border-color: #0f766e;
+    box-shadow: 0 4px 10px rgba(15, 118, 110, 0.2);
 }
 
 /* Selected Tickets Premium Styling */
@@ -903,7 +1031,7 @@ $featuredPromotions = isset($featuredPromotions) && is_array($featuredPromotions
             <!-- Date Picker -->
             <div class="col-lg-2 col-md-4">
                 <div class="form-floating">
-                    <input name="date" type="date" id="dateInput" class="form-control border-2 border-light-subtle rounded-3" required>
+                    <input name="date" type="date" id="dateInput" class="form-control border-2 border-light-subtle rounded-3">
                     <label for="dateInput" class="text-secondary fw-semibold">Ngày đi</label>
                 </div>
             </div>
@@ -937,6 +1065,47 @@ $featuredPromotions = isset($featuredPromotions) && is_array($featuredPromotions
                 </button>
             </div>
         </form>
+    </div>
+
+    <!-- Origin-Destination Header Card (Teal Theme with normal names and trip details) -->
+    <div class="search-header-card text-center py-4 mb-4 d-none" id="searchHeaderCard">
+        <div class="d-flex flex-column align-items-center justify-content-center">
+            <div class="d-flex align-items-center justify-content-center gap-4 flex-wrap">
+                <div class="city-name-large" id="originCityName">-</div>
+                <div class="d-flex flex-column align-items-center justify-content-center px-2">
+                    <div class="arrow-line-container">
+                        <svg width="48" height="12" viewBox="0 0 48 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0 6H44.5M44.5 6L39.5 1M44.5 6L39.5 11" stroke="#0f766e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="city-name-large" id="destinationCityName">-</div>
+            </div>
+            <div class="mt-2 d-flex gap-2 justify-content-center align-items-center flex-wrap" id="tripDetailsBadges">
+                <span class="badge bg-teal-subtle text-teal px-3 py-2 rounded-pill fw-bold" id="badgeTripType" style="color: #0f766e !important; background-color: #e6f4f2 !important; border: 1px solid #cbd5e1;">Một chiều</span>
+                <span class="badge bg-teal-subtle text-teal px-3 py-2 rounded-pill fw-bold d-none" id="badgeTripDirection" style="color: #0f766e !important; background-color: #e6f4f2 !important; border: 1px solid #cbd5e1;">Chiều đi</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Date Strip Slider Carousel -->
+    <div class="date-strip-wrapper my-4 d-none" id="dateStripWrapper">
+        <div class="d-flex align-items-center justify-content-center gap-2">
+            <!-- Prev button -->
+            <button type="button" class="date-nav-btn prev-btn" id="datePrevBtn" title="Ngày trước">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+
+            <!-- Date items row -->
+            <div class="date-items-container d-flex align-items-center justify-content-between flex-grow-1" id="dateItemsRow">
+                <!-- Date tabs will be dynamically rendered here by JS -->
+            </div>
+
+            <!-- Next button -->
+            <button type="button" class="date-nav-btn next-btn" id="dateNextBtn" title="Ngày sau">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
     </div>
 
     <!-- Advanced Filter and Sorting Dashboard (Hidden initially, will display when results are rendered) -->
@@ -1023,120 +1192,110 @@ $featuredPromotions = isset($featuredPromotions) && is_array($featuredPromotions
 
         <div class="row g-4">
             <?php if (!empty($featuredTrips)): ?>
-                <?php foreach (array_slice($featuredTrips, 0, 3) as $trip): ?>
+                <?php
+                // Group featured trips by route
+                $groupedFeatured = [];
+                foreach ($featuredTrips as $t) {
+                    $key = (string)($t['from'] ?? '') . '|' . (string)($t['to'] ?? '');
+                    if (!isset($groupedFeatured[$key])) {
+                        $groupedFeatured[$key] = [
+                            'from' => (string)($t['from'] ?? ''),
+                            'to' => (string)($t['to'] ?? ''),
+                            'duration_minutes' => (int)($t['duration_minutes'] ?? 0),
+                            'distance_km' => (int)($t['distance_km'] ?? 0),
+                            'minPrice' => (float)($t['price'] ?? 0),
+                            'trips' => []
+                        ];
+                    }
+                    $groupedFeatured[$key]['trips'][] = $t;
+                    if ((float)$t['price'] < $groupedFeatured[$key]['minPrice']) {
+                        $groupedFeatured[$key]['minPrice'] = (float)$t['price'];
+                    }
+                }
+                
+                // Sort by departure time within groups
+                foreach ($groupedFeatured as &$group) {
+                    usort($group['trips'], function($a, $b) {
+                        return strtotime($a['departure_time'] ?? 'now') - strtotime($b['departure_time'] ?? 'now');
+                    });
+                }
+                unset($group);
+
+                // Show only first 3 route groups to keep home page clean
+                $displayGroups = array_slice($groupedFeatured, 0, 3);
+                ?>
+
+                <?php foreach ($displayGroups as $group): ?>
                     <?php
-                        $routeLabel = trim((string) ($trip['from'] ?? '') . ' → ' . (string) ($trip['to'] ?? ''));
-                        if ($routeLabel === '→') {
-                            $routeLabel = (string) ($trip['route'] ?? '');
-                        }
-
-                        // Lấy tên bến/điểm đến để ánh xạ sang ảnh địa danh
-                        $toName = trim((string) ($trip['to'] ?? ''));
-                        $destinationImage = '';
-
-                        if ($toName !== '') {
-                            // Chuyển chữ thường và loại bỏ dấu tiếng Việt để so khớp chính xác với tên file
-                            $cleanName = mb_strtolower($toName, 'UTF-8');
-                            $unicode = [
-                                'a' => 'á|à|ả|ã|ạ|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ',
-                                'd' => 'đ',
-                                'e' => 'é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ',
-                                'i' => 'í|ì|ỉ|ĩ|ị',
-                                'o' => 'ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ',
-                                'u' => 'ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự',
-                                'y' => 'ý|ỳ|ỷ|ỹ|ỵ',
-                            ];
-                            foreach ($unicode as $nonUni => $uni) {
-                                $cleanName = preg_replace("/($uni)/i", $nonUni, $cleanName);
-                            }
-                            $cleanName = str_replace([' ', '.', '-'], '', $cleanName);
-
-                            // Định nghĩa ánh xạ đặc biệt cho một số thành phố/địa danh
-                            $specialMap = [
-                                'vinh' => 'nghean.jpg',
-                                'tphcm' => 'hochiminh.jpg',
-                                'saigon' => 'hochiminh.jpg',
-                                'halong' => 'haiphong.webp', 
-                                'hatinh' => 'nghean.jpg', // Dùng ảnh Nghệ An làm fallback lân cận nếu thiếu ảnh Hà Tĩnh
-                                'khanhhoa' => 'nhatrang.jpg',
-                                'quangninh' => 'haiphong.webp',
-                                'laichau' => 'laocai.jpg',
-                                'dienbien' => 'laocai.jpg',
-                                'sonla' => 'yenbai.jpg',
-                                'langson' => 'caobang.jpg',
-                                'tuyenquang' => 'thainguyen.webp',
-                                'phutho' => 'thainguyen.webp',
-                                'vinhlong' => 'cantho.jpg',
-                                'angiang' => 'kiengiang.jpg'
-                            ];
-
-                            if (isset($specialMap[$cleanName])) {
-                                $imgName = $specialMap[$cleanName];
-                            } else {
-                                // Một số tỉnh có phần mở rộng đặc biệt (.webp, .png, .jpeg) thay vì .jpg
-                                $extensions = [
-                                    'haiphong' => 'webp',
-                                    'thanhhoa' => 'webp',
-                                    'tamky' => 'webp',
-                                    'backan' => 'webp',
-                                    'thainguyen' => 'webp',
-                                    'dongnai' => 'webp',
-                                    'namdinh' => 'png',
-                                    'camau' => 'png',
-                                    'binhdinh' => 'jpeg',
-                                ];
-                                $ext = $extensions[$cleanName] ?? 'jpg';
-                                $imgName = $cleanName . '.' . $ext;
-                            }
-
-                            // Đường dẫn vật lý trên đĩa
-                            $routesDir = dirname(__DIR__, 3) . '/public/assets/images/routes/';
-                            if (file_exists($routesDir . $imgName)) {
-                                $destinationImage = asset('images/routes/' . $imgName);
-                            }
-                        }
-
-                        // Nếu tìm thấy ảnh địa điểm đến thì dùng, ngược lại fallback về ảnh dòng xe
-                        if ($destinationImage !== '') {
-                            $tripCardImage = $destinationImage;
-                        } else {
-                            $busImage = trim((string) ($trip['bus_image'] ?? ''));
-                            if ($busImage !== '') {
-                                $busImage = preg_replace('#^/?assets/#', '', $busImage) ?? ltrim($busImage, '/');
-                                $tripCardImage = asset($busImage);
-                            } else {
-                                $tripCardImage = asset('images/news/booking_online.png');
-                            }
-                        }
+                    $h = floor($group['duration_minutes'] / 60);
+                    $m = $group['duration_minutes'] % 60;
+                    $durationText = ($h > 0 ? $h . 'h' : '') . ($m > 0 ? $m . 'p' : ($h == 0 ? '0p' : ''));
                     ?>
-                    <div class="col-12 col-md-4">
-                        <article class="home-trip-card">
-                            <div class="home-trip-media">
-                                <span class="home-trip-price-pill"><?= e(number_format((float) $trip['price'], 0, ',', '.')) ?>đ</span>
-                                <img src="<?= e($tripCardImage) ?>" alt="<?= e($trip['bus_name'] ?? 'Xe khách') ?>" loading="lazy">
-                            </div>
-                            <div class="home-trip-content">
-                                <div class="home-trip-route">
-                                    <i class="bi bi-geo-alt-fill me-1"></i>
-                                    <span><?= e($routeLabel) ?></span>
+                    <div class="col-12 route-group-card animate__animated animate__fadeIn">
+                        <div class="route-header d-flex flex-wrap justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="route-icon-box">
+                                    <i class="bi bi-geo-alt-fill"></i>
                                 </div>
-                                <div class="home-trip-meta">
-                                    <div class="home-trip-meta-item">
-                                        <i class="bi bi-bus-front"></i>
-                                        <span><?= e($trip['bus_name'] ?? 'Xe khách LobiBus') ?></span>
-                                    </div>
-                                    <div class="home-trip-meta-item">
-                                        <i class="bi bi-calendar3"></i>
-                                        <span><?= e(date('H:i d/m/Y', strtotime($trip['departure_time']))) ?></span>
-                                    </div>
-                                    <div class="home-trip-meta-item">
-                                        <i class="bi bi-people"></i>
-                                        <span>Còn <strong class="text-success"><?= e((string) $trip['available_seats']) ?></strong> ghế trống</span>
+                                <div>
+                                    <h5 class="mb-0 fw-bold route-title"><?= e($group['from']) ?> → <?= e($group['to']) ?></h5>
+                                    <div class="route-info-pills">
+                                        <span class="info-pill"><i class="bi bi-clock me-1"></i><?= e($durationText) ?></span>
+                                        <span class="info-pill"><i class="bi bi-signpost-split me-1"></i><?= e($group['distance_km']) ?> km</span>
                                     </div>
                                 </div>
-                                <a href="<?= url('/trips/schedule?from=' . urlencode($trip['from'] ?? '') . '&to=' . urlencode($trip['to'] ?? '')) ?>" class="home-trip-action-btn">Đặt Vé Ngay</a>
                             </div>
-                        </article>
+                            <div class="text-md-end mt-2 mt-md-0">
+                                <div class="price-from-label">Giá chỉ từ</div>
+                                <div class="route-price-tag"><?= e(number_format($group['minPrice'], 0, ',', '.')) ?>đ</div>
+                            </div>
+                        </div>
+                        <div class="timetable-wrapper">
+                            <table class="table timetable-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Giờ xuất phát</th>
+                                        <th>Dòng xe</th>
+                                        <th>Giá vé</th>
+                                        <th>Chỗ trống</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach (array_slice($group['trips'], 0, 5) as $trip): ?>
+                                        <?php $busType = getBusTypeInfo($trip['bus_name'] ?? ''); ?>
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold fs-5 color-teal" style="color: #0f766e;"><?= e(date('H:i', strtotime($trip['departure_time']))) ?></div>
+                                                <div class="text-secondary small"><?= e(date('d/m/Y', strtotime($trip['departure_time']))) ?></div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <i class="bi <?= e($busType['icon']) ?> text-teal"></i>
+                                                    <div>
+                                                        <div class="fw-bold"><?= e($trip['bus_name'] ?? 'LobiBus') ?></div>
+                                                        <span class="badge <?= e($busType['badge']) ?>"><?= e($busType['label']) ?></span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-bold text-dark fs-5"><?= e(number_format((float) $trip['price'], 0, ',', '.')) ?>đ</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-secondary">
+                                                    Còn <span class="fw-bold text-success"><?= e((string) $trip['available_seats']) ?></span> chỗ
+                                                </div>
+                                            </td>
+                                            <td class="text-end">
+                                                <a href="<?= url('/trips/schedule?from=' . urlencode($trip['from'] ?? '') . '&to=' . urlencode($trip['to'] ?? '') . '&date=' . date('Y-m-d', strtotime($trip['departure_time']))) ?>" class="btn btn-outline-teal rounded-pill px-4 btn-sm fw-bold">
+                                                    Chọn chuyến
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
