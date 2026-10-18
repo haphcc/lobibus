@@ -1,0 +1,59 @@
+body {
+    margin: 0;
+    background: #f4f6f8;
+    color: #1f2933;
+}
+
+.admin-shell {
+    display: flex;
+    min-height: 100vh;
+}
+
+.admin-sidebar {
+    width: 240px;
+    background: #16222a;
+    color: #fff;
+    padding: 24px 18px;
+}
+
+.admin-brand {
+    display: block;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    text-decoration: none;
+    margin-bottom: 28px;
+}
+
+.admin-nav {
+    display: grid;
+    gap: 8px;
+}
+
+.admin-nav a {
+    color: #d7e0e7;
+    text-decoration: none;
+    padding: 10px 12px;
+    border-radius: 6px;
+}
+
+.admin-nav a:hover {
+    background: rgba(255, 255, 255, .08);
+}
+
+.admin-main {
+    flex: 1;
+    padding: 32px;
+}
+
+.metric-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 5px rgba(20, 32, 42, .08);
+}
+
+.metric-card strong {
+    display: block;
+    font-size: 28px;
+}
