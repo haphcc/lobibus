@@ -22,6 +22,14 @@
 
 Tài khoản admin mẫu: `admin@lobibus.local` / `admin123`.
 
+Nếu import bằng XAMPP trên Windows, cần dùng `utf8mb4` để tránh lỗi dấu tiếng Việt như `Kh??ch VIP`.
+Không import seed qua PowerShell pipeline kiểu `Get-Content ... | mysql` vì PowerShell có thể làm mất ký tự Unicode. Hãy dùng phpMyAdmin chọn charset `utf8mb4`, hoặc dùng `cmd` redirection:
+
+```bat
+G:\xampp\mysql\bin\mysql.exe --default-character-set=utf8mb4 -u root < database\schema.sql
+G:\xampp\mysql\bin\mysql.exe --default-character-set=utf8mb4 -u root lobibus < database\seed.sql
+```
+
 ## Cấu trúc thư mục
 
 - `app/Core`: App, Router, Controller, Model, Database, Session, Auth, Helper.

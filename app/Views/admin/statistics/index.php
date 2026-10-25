@@ -8,15 +8,19 @@ $usersByRole = $usersByRole ?? [];
 $topRoutes = $topRoutes ?? [];
 $upcomingTrips = $upcomingTrips ?? [];
 $recentBookings = $recentBookings ?? [];
+$statisticsHeading = $statisticsHeading ?? 'Thống kê LobiBus';
+$statisticsShowDashboardLink = $statisticsShowDashboardLink ?? true;
 ?>
 <section class="statistics-page">
     <div class="statistics-header">
         <div>
             <span class="statistics-kicker">Báo cáo vận hành</span>
-            <h1>Thống kê LobiBus</h1>
+            <h1><?= e($statisticsHeading) ?></h1>
             <p>Theo dõi doanh thu, vé, chuyến xe và người dùng từ dữ liệu hệ thống.</p>
         </div>
+        <?php if ($statisticsShowDashboardLink): ?>
         <a class="btn btn-outline-secondary" href="<?= url('/admin') ?>">Dashboard</a>
+        <?php endif; ?>
     </div>
 
     <div class="statistics-metrics">
