@@ -12,6 +12,11 @@ final class App
 
     public function run(): void
     {
+        ini_set('default_charset', 'UTF-8');
+        if (!headers_sent()) {
+            header('Content-Type: text/html; charset=utf-8');
+        }
+
         Session::start();
         $this->router->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', $_SERVER['REQUEST_URI'] ?? '/');
     }
