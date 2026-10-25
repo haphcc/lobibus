@@ -1,0 +1,155 @@
+.recommendation-page {
+    background:
+        linear-gradient(180deg, rgba(15, 118, 110, .10) 0%, rgba(246, 250, 248, 0) 360px),
+        #f6faf8;
+    padding: 56px 0;
+}
+
+.recommendation-page .container {
+    max-width: 1180px;
+}
+
+.recommendation-header {
+    align-items: flex-end;
+    display: flex;
+    gap: 24px;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.recommendation-header h1 {
+    color: #10231d;
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.08;
+    margin-bottom: 12px;
+}
+
+.recommendation-header p {
+    color: #536960;
+    font-size: 17px;
+    line-height: 1.65;
+    margin: 0;
+    max-width: 720px;
+}
+
+.recommendation-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+.recommendation-filter {
+    background: #fff;
+    border: 1px solid #cfe1d9;
+    border-radius: 999px;
+    color: #224038;
+    font-weight: 700;
+    padding: 9px 15px;
+}
+
+.recommendation-filter:hover,
+.recommendation-filter.active {
+    background: #0f766e;
+    border-color: #0f766e;
+    color: #fff;
+}
+
+.recommendation-grid {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.recommendation-card {
+    background: #fff;
+    border: 1px solid #e2ece7;
+    border-radius: 8px;
+    box-shadow: 0 12px 30px rgba(18, 56, 42, .08);
+    display: grid;
+    gap: 14px;
+    padding: 22px;
+}
+
+.recommendation-card-header,
+.recommendation-card-footer {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+}
+
+.recommendation-badge {
+    background: #dcfce7;
+    border-radius: 999px;
+    color: #166534;
+    display: inline-flex;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 6px 10px;
+}
+
+.recommendation-price {
+    color: #0f766e;
+    font-size: 20px;
+}
+
+.recommendation-card h2 {
+    color: #10231d;
+    font-size: 22px;
+    margin: 0;
+}
+
+.recommendation-bus {
+    color: #64748b;
+    margin: 0;
+}
+
+.recommendation-meta {
+    color: #40534b;
+    display: grid;
+    font-size: 14px;
+    gap: 8px;
+}
+
+.recommendation-card-footer {
+    border-top: 1px solid #e8f0ec;
+    padding-top: 14px;
+}
+
+.recommendation-empty,
+.recommendation-loading {
+    background: #fff;
+    border: 1px dashed #bad1c6;
+    border-radius: 8px;
+    color: #64748b;
+    grid-column: 1 / -1;
+    padding: 24px;
+    text-align: center;
+}
+
+@media (max-width: 991.98px) {
+    .recommendation-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .recommendation-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .recommendation-page {
+        padding: 32px 0;
+    }
+
+    .recommendation-header h1 {
+        font-size: 32px;
+    }
+
+    .recommendation-card {
+        padding: 20px;
+    }
+}
