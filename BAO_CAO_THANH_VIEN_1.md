@@ -136,3 +136,103 @@ Nguon doi chieu: `PHAN_CONG_5_THANH_VIEN.md`, muc **Thanh vien 1: Core MVC, Auth
 - Admin route bi chan neu chua dang nhap admin.
 - Navbar/sidebar hien thi theo session va dung helper `url()` de chay trong subfolder XAMPP.
 
+## Viec can bo sung tiep cho Thanh vien 1
+
+### 1. Nang cap policy mat khau khi dang ky
+
+- Cap nhat `app/Services/AuthService.php` de validate mat khau manh hon.
+- De xuat policy:
+  - Toi thieu 8 ky tu.
+  - Co it nhat 1 chu in hoa.
+  - Co it nhat 1 chu thuong.
+  - Co it nhat 1 chu so.
+  - Co it nhat 1 ky tu dac biet, vi du `!@#$%^&*`.
+- Cap nhat thong bao loi trong form `app/Views/auth/register.php` de nguoi dung biet yeu cau mat khau.
+- Cap nhat test dang ky:
+  - Mat khau ngan hon 8 ky tu phai bi tu choi.
+  - Mat khau khong co chu in hoa phai bi tu choi.
+  - Mat khau khong co ky tu dac biet phai bi tu choi.
+  - Mat khau hop le vi du `Lobibus@123` phai dang ky duoc.
+
+### 2. Them chuc nang quen mat khau
+
+- Them route trong `public/index.php`:
+  - `GET /forgot-password`
+  - `POST /forgot-password`
+- Them action moi trong `app/Controllers/AuthController.php`, vi du `forgotPassword()`.
+- Tao view moi `app/Views/auth/forgot-password.php` gom:
+  - O nhap email.
+  - Nut gui mat khau tam thoi ve email.
+  - Link quay lai dang nhap.
+- Them link/nut `Quen mat khau?` trong `app/Views/auth/login.php`.
+- Bo sung ham trong `app/Models/User.php` de cap nhat password hash theo user id/email, vi du `updatePassword()`.
+- Bo sung logic trong `app/Services/AuthService.php`:
+  - Kiem tra email hop le.
+  - Tim user active theo email.
+  - Sinh mat khau tam thoi manh.
+  - Hash mat khau tam thoi bang `password_hash`.
+  - Cap nhat password vao database.
+  - Goi `MailService` de gui mat khau tam thoi cho nguoi dung.
+- Luu y bao mat: neu kip, nen lam reset link/token thay vi gui mat khau qua email. Neu van lam theo yeu cau hien tai, email chi nen gui mat khau tam thoi va yeu cau nguoi dung doi lai sau khi dang nhap.
+
+### 3. Cai va cau hinh PHPMailer
+
+- Cap nhat `composer.json`:
+  - Them dependency `phpmailer/phpmailer`.
+- Chay:
+
+```bash
+composer require phpmailer/phpmailer
+```
+
+- Cap nhat `public/index.php` de load `vendor/autoload.php` neu project chua load Composer autoload.
+- Hoan thien `app/Services/MailService.php` bang PHPMailer:
+  - Doc SMTP tu `config/mail.php`.
+  - Dat `CharSet = 'UTF-8'`.
+  - Gui email text/plain hoac HTML don gian.
+  - Xu ly loi gui mail ro rang.
+- Cap nhat `config/mail.php` theo SMTP that khi demo, khong commit mat khau SMTP that neu repo public.
+
+### 4. Gia co bao mat session cookie
+
+- Cap nhat `app/Core/Session.php` trong `start()`:
+  - `httponly => true`
+  - `samesite => 'Lax'`
+  - `secure => true` khi chay HTTPS
+  - `lifetime => 0`
+- Cap nhat `destroy()`:
+  - Kiem tra session dang active truoc khi `session_destroy()`.
+  - Xoa cookie session khi logout.
+- Giu `session_regenerate_id(true)` sau khi login trong `Auth::login()` de han che session fixation.
+
+### 5. Chinh lai header/footer cho dep va dung base URL
+
+- Chinh `app/Views/layouts/navbar.php`:
+  - Can lai logo, menu, nut dang nhap/dang ky/dang xuat.
+  - Dam bao responsive tren mobile.
+  - Ten user khong lam vo layout khi qua dai.
+- Chinh `app/Views/layouts/footer.php`:
+  - Sap xep thanh cac cot thong tin ro rang.
+  - Them link nhanh: Dat ve, Lich su dat ve, Ho tro, Goi y chuyen.
+  - Them thong tin lien he/hotline/email gon gang.
+- Kiem tra `app/Views/layouts/header.php`:
+  - Doi link `href="/"` thanh `href="<?= url('/') ?>"` neu file nay con duoc dung.
+- Chinh CSS trong `public/assets/css/index.css` hoac `public/assets/css/customer.css`:
+  - Header sticky gon, mau sac dong nhat voi LobiBus.
+  - Footer nen toi, chu de doc, spacing deu.
+  - Kiem tra tren desktop va mobile.
+
+### 6. Kiem tra lai sau khi sua
+
+- Dang ky voi mat khau sai policy: phai hien loi dung.
+- Dang ky voi mat khau hop le: tao user va hash password dung.
+- Bam `Quen mat khau?`, nhap email user active: he thong cap nhat mat khau tam thoi va gui email.
+- Dang nhap bang mat khau tam thoi vua nhan.
+- Dang xuat phai xoa session/cookie hop le.
+- Mo lai cac route:
+  - `http://localhost/lobibus-1/public/login`
+  - `http://localhost/lobibus-1/public/register`
+  - `http://localhost/lobibus-1/public/forgot-password`
+  - `http://localhost/lobibus-1/public/admin`
+- Kiem tra header/footer khong vo tren mobile va khong sai link khi chay trong subfolder XAMPP.
+
