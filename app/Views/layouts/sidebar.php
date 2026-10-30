@@ -16,7 +16,6 @@ $items = [
     ['/admin/trips', 'Chuyến xe'],
     ['/admin/bookings', 'Đơn đặt vé'],
     ['/admin/payments', 'Thanh toán'],
-    ['/admin/statistics', 'Thống kê'],
 ];
 ?>
 <aside class="admin-sidebar">

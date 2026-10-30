@@ -7,7 +7,7 @@
     <title><?= e($title) ?> | LobiBus</title>
     <link rel="icon" href="<?= asset('images/logo.svg') ?>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="<?= asset('css/index.css') ?>">
+    <link rel="stylesheet" href="<?= asset('css/index.css') ?>?v=member1-nav-click-fix">
     <link rel="stylesheet" href="<?= asset('css/customer.css') ?>">
     <?php foreach (($pageCss ?? []) as $css): ?>
         <link rel="stylesheet" href="<?= asset('css/' . $css) ?>">
