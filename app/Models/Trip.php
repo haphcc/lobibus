@@ -36,7 +36,7 @@ final class Trip extends Model
             $params['to'] = '%' . $filters['to'] . '%';
         }
         if (!empty($filters['date'])) {
-            $sql .= ' AND DATE(t.departure_time) = :date';
+            $sql .= ' AND DATE(t.departure_time) >= :date';
             $params['date'] = $filters['date'];
         }
 
