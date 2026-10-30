@@ -17,7 +17,7 @@
                 <td><span class="badge text-bg-secondary"><?= e(admin_label($route['status'])) ?></span></td>
                 <td class="text-end">
                     <a class="btn btn-sm btn-outline-primary" href="<?= url('/admin/routes/edit?id=' . $route['id']) ?>">Sửa</a>
-                    <form class="d-inline" method="post" action="<?= url('/admin/routes/delete') ?>" onsubmit="return confirm('Xóa tuyến này?')">
+                    <form class="d-inline" method="post" action="<?= url('/admin/routes/delete') ?>" data-confirm="Xóa tuyến này?">
                         <input type="hidden" name="id" value="<?= e($route['id']) ?>">
                         <button class="btn btn-sm btn-outline-danger" type="submit">Xóa</button>
                     </form>

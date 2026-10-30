@@ -25,7 +25,11 @@ final class PaymentController extends AdminController
 
     public function updateStatus(): void
     {
+        if ($error = $this->requireAllowed('status', 'Trạng thái thanh toán', ['pending', 'paid', 'failed', 'refunded', 'cancelled'])) {
+            $this->redirect('/admin/payments', 'error', $error);
+        }
+
         $this->payments->updateStatus($this->postInt('id'), $this->postString('status', 'pending'));
-        $this->redirect('/admin/payments', 'success', 'Payment status updated.');
+        $this->redirect('/admin/payments', 'success', 'Đã cập nhật trạng thái thanh toán.');
     }
 }

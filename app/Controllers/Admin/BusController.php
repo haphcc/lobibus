@@ -31,22 +31,25 @@ final class BusController extends AdminController
     public function store(): void
     {
         if ($error = $this->requireFields([
-            'name' => 'Name',
-            'license_plate' => 'License plate',
-            'total_seats' => 'Total seats',
+            'name' => 'tên xe',
+            'license_plate' => 'biển số',
+            'total_seats' => 'tổng số ghế',
         ])) {
+            $this->redirect('/admin/buses/create', 'error', $error);
+        }
+        if ($error = $this->validatePayload()) {
             $this->redirect('/admin/buses/create', 'error', $error);
         }
 
         $this->buses->create($_POST);
-        $this->redirect('/admin/buses', 'success', 'Bus created.');
+        $this->redirect('/admin/buses', 'success', 'Đã thêm xe.');
     }
 
     public function edit(): void
     {
         $bus = $this->buses->find($this->queryInt('id'));
         if ($bus === null) {
-            $this->redirect('/admin/buses', 'error', 'Bus not found.');
+            $this->redirect('/admin/buses', 'error', 'Không tìm thấy xe.');
         }
 
         $this->view('admin.buses.edit', [
@@ -59,25 +62,35 @@ final class BusController extends AdminController
     {
         $id = $this->postInt('id');
         if ($error = $this->requireFields([
-            'name' => 'Name',
-            'license_plate' => 'License plate',
-            'total_seats' => 'Total seats',
+            'name' => 'tên xe',
+            'license_plate' => 'biển số',
+            'total_seats' => 'tổng số ghế',
         ])) {
+            $this->redirect('/admin/buses/edit?id=' . $id, 'error', $error);
+        }
+        if ($error = $this->validatePayload()) {
             $this->redirect('/admin/buses/edit?id=' . $id, 'error', $error);
         }
 
         $this->buses->update($id, $_POST);
-        $this->redirect('/admin/buses', 'success', 'Bus updated.');
+        $this->redirect('/admin/buses', 'success', 'Đã cập nhật xe.');
     }
 
     public function delete(): void
     {
         $id = $this->postInt('id');
         if ($this->buses->isUsed($id)) {
-            $this->redirect('/admin/buses', 'error', 'Cannot delete a bus used by seats or trips.');
+            $this->redirect('/admin/buses', 'error', 'Không thể xóa xe đang có ghế hoặc chuyến xe.');
         }
 
         $this->buses->delete($id);
-        $this->redirect('/admin/buses', 'success', 'Bus deleted.');
+        $this->redirect('/admin/buses', 'success', 'Đã xóa xe.');
+    }
+
+    private function validatePayload(): ?string
+    {
+        return $this->requireInteger('total_seats', 'Tổng số ghế', 1)
+            ?? $this->requireAllowed('bus_type', 'Loại xe', ['standard', 'sleeper', 'limousine'])
+            ?? $this->requireAllowed('status', 'Trạng thái', ['active', 'maintenance', 'inactive']);
     }
 }

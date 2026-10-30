@@ -15,7 +15,18 @@
         <?= $content ?>
     </main>
 </div>
+<div class="admin-confirm-modal" data-admin-confirm-modal aria-hidden="true">
+    <div class="admin-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-confirm-title">
+        <h2 id="admin-confirm-title">Xác nhận thao tác</h2>
+        <p data-admin-confirm-message></p>
+        <div class="admin-confirm-actions">
+            <button class="btn btn-outline-secondary" type="button" data-admin-confirm-cancel>Hủy</button>
+            <button class="btn btn-primary" type="button" data-admin-confirm-submit>Xác nhận</button>
+        </div>
+    </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="<?= asset('js/admin.js') ?>"></script>
 <script src="<?= asset('js/dashboard-chart.js') ?>"></script>
 </body>
 </html>
