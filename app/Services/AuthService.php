@@ -36,6 +36,8 @@ final class AuthService
             throw new InvalidArgumentException('Email không hợp lệ.');
         }
 
+        $phone = $this->normalizeVietnamesePhone($phone);
+
         $this->validatePasswordPolicy($password);
 
         if ($password !== $passwordConfirmation) {
@@ -76,6 +78,37 @@ final class AuthService
         }
 
         return $this->users->verifyLogin($email, $password);
+    }
+
+    private function normalizeVietnamesePhone(string $phone): string
+    {
+        $phone = trim($phone);
+
+        if ($phone === '') {
+            throw new InvalidArgumentException('Vui lòng nhập số điện thoại.');
+        }
+
+        if (!preg_match('/^\+?[0-9\s.\-()]+$/', $phone)) {
+            throw new InvalidArgumentException('Số điện thoại chỉ được gồm chữ số, dấu cách, dấu chấm, dấu gạch ngang hoặc mã quốc gia +84.');
+        }
+
+        $phone = preg_replace('/[\s.\-()]+/', '', $phone) ?? $phone;
+
+        if (str_starts_with($phone, '+84')) {
+            $phone = '0' . substr($phone, 3);
+        } elseif (str_starts_with($phone, '84')) {
+            $phone = '0' . substr($phone, 2);
+        }
+
+        if (!preg_match('/^0[0-9]{9}$/', $phone)) {
+            throw new InvalidArgumentException('Số điện thoại phải có 10 chữ số, ví dụ 0912345678 hoặc +84912345678.');
+        }
+
+        if (!preg_match('/^0(3|5|7|8|9)[0-9]{8}$/', $phone)) {
+            throw new InvalidArgumentException('Số điện thoại phải là số di động Việt Nam, bắt đầu bằng 03, 05, 07, 08 hoặc 09.');
+        }
+
+        return $phone;
     }
 
     public function forgotPassword(string $email): bool
@@ -170,7 +203,7 @@ final class AuthService
         $name = trim((string) ($user['name'] ?? ''));
         $displayName = $name !== '' ? \e($name) : 'quý khách';
         $password = \e($temporaryPassword);
-        $loginUrl = \e(\url('/login'));
+        $loginUrl = \e('localhost/lobibus/public/login');
         $year = date('Y');
 
         return <<<HTML

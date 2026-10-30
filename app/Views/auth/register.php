@@ -14,7 +14,23 @@
         <input id="email" name="email" type="email" class="form-control mb-3" value="<?= e($old['email'] ?? '') ?>" required>
 
         <label class="form-label" for="phone">Số điện thoại</label>
-        <input id="phone" name="phone" class="form-control mb-3" value="<?= e($old['phone'] ?? '') ?>">
+        <input
+            id="phone"
+            name="phone"
+            type="tel"
+            inputmode="tel"
+            autocomplete="tel"
+            class="form-control"
+            value="<?= e($old['phone'] ?? '') ?>"
+            pattern="(\+84|84|0)[ .-]?(3|5|7|8|9)([ .-]?[0-9]){8}"
+            maxlength="18"
+            aria-describedby="phoneHelp"
+            title="Nhập số di động Việt Nam, ví dụ 0912345678 hoặc +84912345678."
+            required
+        >
+        <div id="phoneHelp" class="form-text mb-3">
+            Nhập số di động Việt Nam bắt đầu bằng 03, 05, 07, 08, 09 hoặc dùng mã quốc gia +84.
+        </div>
 
         <label class="form-label" for="password">Mật khẩu</label>
         <input id="password" name="password" type="password" class="form-control" minlength="8" required>
