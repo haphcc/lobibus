@@ -2,7 +2,7 @@
 $old = $old ?? ['email' => ''];
 $redirect = (string) ($_GET['redirect'] ?? $_POST['redirect'] ?? '');
 ?>
-<section class="container py-5" style="max-width:520px;">
+<section class="container py-5 auth-page" style="max-width:520px;">
     <h1 class="mb-4">Đăng nhập</h1>
 
     <?php if (!empty($error)): ?>
@@ -13,7 +13,7 @@ $redirect = (string) ($_GET['redirect'] ?? $_POST['redirect'] ?? '');
         <div class="alert alert-success" role="alert"><?= e($success) ?></div>
     <?php endif; ?>
 
-    <form method="post" action="<?= url('/login') ?>" class="card card-body shadow-sm">
+    <form method="post" action="<?= url('/login') ?>" class="card card-body shadow-sm auth-card">
         <?php if ($redirect !== ''): ?>
             <input type="hidden" name="redirect" value="<?= e($redirect) ?>">
         <?php endif; ?>
@@ -25,8 +25,9 @@ $redirect = (string) ($_GET['redirect'] ?? $_POST['redirect'] ?? '');
         <input id="password" name="password" type="password" class="form-control mb-3" required>
 
         <button class="btn btn-success" type="submit">Đăng nhập</button>
-        <div class="mt-3 d-flex justify-content-between gap-3">
+        <div class="auth-links mt-3 d-flex flex-wrap justify-content-between gap-3">
             <a href="<?= url('/register') ?>">Tạo tài khoản</a>
+            <a href="<?= url('/forgot-password') ?>">Quên mật khẩu?</a>
             <a href="<?= url('/') ?>">Quay về trang chủ</a>
         </div>
     </form>
