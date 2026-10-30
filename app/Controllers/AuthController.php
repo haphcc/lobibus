@@ -41,10 +41,6 @@ final class AuthController extends Controller
             $this->redirect($this->intendedPath());
         }
 
-        if (Auth::check() && !$this->hasIntendedPath()) {
-            $this->redirect(Auth::isAdmin() ? '/admin' : '/');
-        }
-
         $this->view('auth.login', [
             'title' => 'Đăng nhập',
             'error' => Session::getFlash('error'),
