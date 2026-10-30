@@ -711,34 +711,47 @@ header.site-header {
   display: flex !important;
   gap: 1rem;
   min-height: 64px;
-  padding-left: 1rem !important;
-  padding-right: 1rem !important;
+  max-width: none !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+  position: relative;
 }
 
 .site-header .logo-wrap,
 .site-header .actions,
 .site-header .main-nav {
-  position: static !important;
   transform: none !important;
 }
 
 .site-header .logo-wrap {
+  left: 10px !important;
   padding-left: 0 !important;
+  position: absolute !important;
+  top: 50%;
+  transform: translateY(-50%) !important;
   white-space: nowrap;
+  z-index: 1050;
 }
 
 .site-header .main-nav {
   flex: 1 1 auto;
-  gap: 0.25rem;
+  gap: 1.15rem;
   justify-content: center;
   min-width: 0;
+  padding-left: 170px;
+  padding-right: 220px;
 }
 
 .site-header .actions {
   flex: 0 0 auto;
   gap: 0.5rem;
-  max-width: 360px;
+  max-width: 420px;
   padding-right: 0 !important;
+  position: absolute !important;
+  right: 10px !important;
+  top: 50%;
+  transform: translateY(-50%) !important;
+  z-index: 1050;
 }
 
 .site-header .user-name {
@@ -775,6 +788,15 @@ header.site-header {
     flex-wrap: wrap;
   }
 
+  .site-header .main-nav {
+    justify-content: flex-start;
+    order: 3;
+    overflow-x: auto;
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+  }
+
   .site-header .actions {
     margin-left: auto;
     max-width: 100%;
@@ -788,11 +810,24 @@ header.site-header {
 
   .site-header .container {
     display: flex !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .site-header .logo-wrap {
+    left: auto !important;
+    position: static !important;
+    top: auto;
+    transform: none !important;
   }
 
   .site-header .actions {
     flex-wrap: wrap;
     justify-content: flex-end;
+    position: static !important;
+    right: auto !important;
+    top: auto;
+    transform: none !important;
   }
 
   .site-header .actions .btn {
