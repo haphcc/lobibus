@@ -1,4 +1,28 @@
 (() => {
+    // Dynamic table responsiveness on mobile screens
+    const setupResponsiveTables = () => {
+        const tables = document.querySelectorAll('table.table, table.statistics-table');
+        tables.forEach(table => {
+            const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+            const rows = table.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                cells.forEach((cell, index) => {
+                    if (headers[index]) {
+                        cell.setAttribute('data-label', headers[index]);
+                    }
+                });
+            });
+        });
+    };
+
+    // Run when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupResponsiveTables);
+    } else {
+        setupResponsiveTables();
+    }
+
     const modal = document.querySelector('[data-admin-confirm-modal]');
     if (!modal) {
         return;
