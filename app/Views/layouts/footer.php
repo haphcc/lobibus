@@ -1,25 +1,60 @@
-<footer class="site-footer mt-4">
+<footer class="site-footer">
     <div class="container">
-        <div class="row align-items-start py-4">
-            <div class="col-12 col-md-6 footer-left">
-                <div class="d-flex align-items-center gap-2 mb-3">
-                    <img src="<?= asset('images/logo.svg') ?>" alt="LobiBus logo" style="width:40px;height:40px;">
-                    <strong style="font-size:1.8rem;color:#27ae60;">LobiBus</strong>
-                </div>
-                <div class="footer-contact mt-2">
-                    <div>Dia chi: So 12, Pho Chua Boc, Ha Noi</div>
-                    <div>Hotline: 0936 363 363</div>
-                    <div>Email: <a href="mailto:info@lobibus.vn">info@lobibus.vn</a></div>
+        <div class="row align-items-start g-5">
+            <!-- Brand & Contact -->
+            <div class="col-12 col-lg-4 footer-brand">
+                <a href="<?= url('/') ?>" class="d-flex align-items-center gap-2 mb-4 text-decoration-none">
+                    <img src="<?= asset('images/logo.svg') ?>" alt="Logo LobiBus" class="footer-logo">
+                    <span class="footer-brand-name">LobiBus</span>
+                </a>
+                <p class="footer-desc mb-4">
+                    Nền tảng đặt vé xe khách trực tuyến thông minh, mang đến cho bạn những chuyến đi an toàn, tiện lợi và tiết kiệm nhất.
+                </p>
+                <div class="footer-contact">
+                    <div class="contact-item">
+                        <span>📍 Số 12, Phố Chùa Bộc, Đống Đa, Hà Nội</span>
+                    </div>
+                    <div class="contact-item">
+                        <span>📞 0936 363 363</span>
+                    </div>
+                    <div class="contact-item">
+                        <span>✉️ <a href="mailto:info@lobibus.vn">info@lobibus.vn</a></span>
+                    </div>
                 </div>
             </div>
-            <div class="col-12 col-md-6 footer-links">
-                <a href="<?= url('/trips/search') ?>">Dat ve xe</a>
-                <a href="<?= url('/booking/history') ?>" class="ms-3">Lich su dat ve</a>
-                <a href="<?= url('/chatbot') ?>" class="ms-3">Ho tro</a>
+
+            <!-- Links 1 -->
+            <div class="col-12 col-sm-6 col-lg-3 offset-lg-1 footer-links">
+                <h5 class="footer-title">Khám phá</h5>
+                <ul class="list-unstyled">
+                    <li><a href="<?= url('/trips/search') ?>">Đặt vé xe</a></li>
+                    <li><a href="<?= url('/trips/search') ?>">Lịch trình</a></li>
+                    <li><a href="<?= url('/recommendations') ?>">Gợi ý chuyến</a></li>
+                    <li><a href="<?= url('/chatbot') ?>">Trợ lý ảo LobiBus</a></li>
+                </ul>
+            </div>
+
+            <!-- Links 2 -->
+            <div class="col-12 col-sm-6 col-lg-3 footer-links">
+                <h5 class="footer-title">Khách hàng</h5>
+                <ul class="list-unstyled">
+                    <li><a href="<?= url('/booking/history') ?>">Tra cứu vé</a></li>
+                    <li><a href="<?= url('/login') ?>">Đăng nhập</a></li>
+                    <li><a href="<?= url('/register') ?>">Đăng ký tài khoản</a></li>
+                    <li><a href="<?= url('/forgot-password') ?>">Quên mật khẩu</a></li>
+                </ul>
             </div>
         </div>
-        <div class="row">
-            <div class="col-12 text-center py-3 footer-copy">© 2026 lobibus.com. All rights reserved.</div>
+
+        <div class="footer-bottom d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <div class="footer-copy">
+                &copy; <?= date('Y') ?> LobiBus. Tất cả quyền được bảo lưu.
+            </div>
+            <div class="footer-social mt-3 mt-md-0 d-flex gap-3">
+                <a href="#" class="social-link" aria-label="Facebook">FB</a>
+                <a href="#" class="social-link" aria-label="YouTube">YT</a>
+                <a href="#" class="social-link" aria-label="Instagram">IG</a>
+            </div>
         </div>
     </div>
 </footer>

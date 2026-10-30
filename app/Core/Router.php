@@ -22,6 +22,12 @@ final class Router
     public function dispatch(string $method, string $uri): void
     {
         $path = $this->normalize($this->stripBasePath(parse_url($uri, PHP_URL_PATH) ?: '/'));
+        if ($this->isAdminPath($path) && !Auth::isAdmin()) {
+            Session::flash('error', 'Bạn cần đăng nhập bằng tài khoản quản trị để vào trang quản trị.');
+            header('Location: ' . \url('/login?redirect=' . rawurlencode($path)));
+            return;
+        }
+
         $handler = $this->routes[strtoupper($method)][$path] ?? null;
 
         if ($handler === null) {
@@ -59,5 +65,10 @@ final class Router
         }
 
         return $path;
+    }
+
+    private function isAdminPath(string $path): bool
+    {
+        return $path === '/admin' || str_starts_with($path, '/admin/');
     }
 }
