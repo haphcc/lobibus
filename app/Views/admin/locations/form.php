@@ -13,10 +13,10 @@
     </div>
     <div class="col-md-6">
         <label class="form-label">Vĩ độ</label>
-        <input class="form-control" name="latitude" value="<?= e($location['latitude'] ?? '') ?>">
+        <input class="form-control" type="number" step="0.0000001" min="-90" max="90" name="latitude" value="<?= e($location['latitude'] ?? '') ?>">
     </div>
     <div class="col-md-6">
         <label class="form-label">Kinh độ</label>
-        <input class="form-control" name="longitude" value="<?= e($location['longitude'] ?? '') ?>">
+        <input class="form-control" type="number" step="0.0000001" min="-180" max="180" name="longitude" value="<?= e($location['longitude'] ?? '') ?>">
     </div>
 </div>

@@ -27,7 +27,7 @@
                 <td><?= e($seat['seat_number']) ?></td>
                 <td><?= e(admin_label($seat['seat_type'])) ?></td>
                 <td class="text-end">
-                    <form class="d-inline" method="post" action="<?= url('/admin/seats/delete') ?>" onsubmit="return confirm('Xóa ghế này?')">
+                    <form class="d-inline" method="post" action="<?= url('/admin/seats/delete') ?>" data-confirm="Xóa ghế này?">
                         <input type="hidden" name="id" value="<?= e($seat['id']) ?>">
                         <button class="btn btn-sm btn-outline-danger" type="submit">Xóa</button>
                     </form>

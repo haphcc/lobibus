@@ -104,6 +104,29 @@ final class User extends Model
         return $stmt->execute(['id' => $id]);
     }
 
+    public function unlock(int $id): bool
+    {
+        $stmt = $this->db()->prepare('UPDATE users SET status = "active" WHERE id = :id');
+        return $stmt->execute(['id' => $id]);
+    }
+
+    public function delete(int $id): bool
+    {
+        $stmt = $this->db()->prepare('DELETE FROM users WHERE id = :id');
+        return $stmt->execute(['id' => $id]);
+    }
+
+    public function isUsed(int $id): bool
+    {
+        $stmt = $this->db()->prepare(
+            'SELECT
+                (SELECT COUNT(*) FROM bookings WHERE user_id = :booking_user_id) +
+                (SELECT COUNT(*) FROM reviews WHERE user_id = :review_user_id) AS total'
+        );
+        $stmt->execute(['booking_user_id' => $id, 'review_user_id' => $id]);
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
     public function verifyLogin(string $email, string $password): ?array
     {
         $user = $this->findByEmail($email);
