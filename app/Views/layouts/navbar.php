@@ -16,14 +16,16 @@ $isAdmin = \App\Core\Auth::isAdmin();
             <a class="nav-link px-3" href="<?= url('/trips/search') ?>">Lịch trình</a>
             <a class="nav-link px-3" href="<?= url('/booking/history') ?>">Tra cứu vé</a>
             <a class="nav-link px-3" href="<?= url('/recommendations') ?>">Gợi ý chuyến</a>
-            <a class="nav-link px-3" href="<?= url('/chatbot') ?>">Chat bot</a>
+            <a class="nav-link px-3" href="<?= url('/chatbot') ?>">Trợ lý</a>
         </nav>
 
         <div class="actions d-flex align-items-center gap-2">
             <?php if ($currentUser !== null): ?>
-                <span class="d-none d-lg-inline text-muted small"><?= e($currentUser['name'] ?: $currentUser['email']) ?></span>
+                <span class="user-name d-none d-lg-inline text-muted small" title="<?= e($currentUser['name'] ?: $currentUser['email']) ?>">
+                    <?= e($currentUser['name'] ?: $currentUser['email']) ?>
+                </span>
                 <?php if ($isAdmin): ?>
-                    <a class="btn btn-outline-primary btn-sm" href="<?= url('/admin') ?>">Admin</a>
+                    <a class="btn btn-outline-primary btn-sm" href="<?= url('/admin') ?>">Quản trị</a>
                 <?php endif; ?>
                 <a class="btn btn-outline-secondary btn-sm" href="<?= url('/logout') ?>">Đăng xuất</a>
             <?php else: ?>

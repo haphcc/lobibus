@@ -118,6 +118,15 @@ final class User extends Model
         return $user;
     }
 
+    public function updatePasswordHash(int $id, string $passwordHash): bool
+    {
+        $stmt = $this->db()->prepare('UPDATE users SET password = :password WHERE id = :id');
+        return $stmt->execute([
+            'id' => $id,
+            'password' => $passwordHash,
+        ]);
+    }
+
     private function nullable(mixed $value): ?string
     {
         $value = trim((string) $value);

@@ -85,6 +85,70 @@ final class AuthController extends Controller
         ]);
     }
 
+    public function forgotPassword(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $email = trim((string) ($_POST['email'] ?? ''));
+            $action = (string) ($_POST['action'] ?? 'send_temporary_password');
+
+            try {
+                if ($action === 'verify_temporary_password') {
+                    $user = $this->auth->login($email, (string) ($_POST['temporary_password'] ?? ''));
+                    if ($user === null) {
+                        http_response_code(422);
+                        $this->view('auth.forgot-password', [
+                            'title' => 'Quên mật khẩu',
+                            'error' => 'Mật khẩu tạm thời không đúng hoặc tài khoản đã bị khóa.',
+                            'success' => null,
+                            'old' => ['email' => $email],
+                            'showTemporaryPasswordInput' => true,
+                        ]);
+                        return;
+                    }
+
+                    Auth::login($user);
+                    $this->redirect(Auth::isAdmin() ? '/admin' : '/');
+                }
+
+                $this->auth->forgotPassword($email);
+                $this->view('auth.forgot-password', [
+                    'title' => 'Quên mật khẩu',
+                    'error' => null,
+                    'success' => 'Nếu email tồn tại và đang hoạt động, hệ thống đã gửi mật khẩu tạm thời cho bạn.',
+                    'old' => ['email' => $email],
+                    'showTemporaryPasswordInput' => true,
+                ]);
+            } catch (InvalidArgumentException $exception) {
+                http_response_code(422);
+                $this->view('auth.forgot-password', [
+                    'title' => 'Quên mật khẩu',
+                    'error' => $exception->getMessage(),
+                    'success' => null,
+                    'old' => ['email' => $email],
+                    'showTemporaryPasswordInput' => false,
+                ]);
+            } catch (Throwable) {
+                http_response_code(500);
+                $this->view('auth.forgot-password', [
+                    'title' => 'Quên mật khẩu',
+                    'error' => 'Không thể gửi mật khẩu tạm thời lúc này. Vui lòng kiểm tra cấu hình email hoặc thử lại sau.',
+                    'success' => null,
+                    'old' => ['email' => $email],
+                    'showTemporaryPasswordInput' => false,
+                ]);
+            }
+            return;
+        }
+
+        $this->view('auth.forgot-password', [
+            'title' => 'Quên mật khẩu',
+            'error' => Session::getFlash('error'),
+            'success' => Session::getFlash('success'),
+            'old' => ['email' => ''],
+            'showTemporaryPasswordInput' => false,
+        ]);
+    }
+
     public function logout(): void
     {
         Auth::logout();

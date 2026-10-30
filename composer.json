@@ -2,12 +2,13 @@
   "name": "lobibus/bus-ticket-booking",
   "description": "MVC PHP/MySQL skeleton for bus ticket booking website.",
   "type": "project",
+  "license": "proprietary",
   "require": {
-    "php": ">=8.0"
+    "php": ">=8.0",
+    "phpmailer/phpmailer": "^7.1"
   },
   "suggest": {
-    "endroid/qr-code": "Generate QR code images for tickets.",
-    "phpmailer/phpmailer": "Send booking confirmation emails."
+    "endroid/qr-code": "Generate QR code images for tickets."
   },
   "autoload": {
     "psr-4": {
