@@ -21,8 +21,8 @@
 ## Đăng ký sai định dạng số điện thoại
 
 1. Mở `http://localhost/lobibus-1/public/register`.
-2. Nhập số điện thoại `12345` hoặc `0212345678`, các thông tin còn lại hợp lệ.
-3. Kết quả mong đợi: form không cho gửi hoặc server báo số điện thoại phải là số di động Việt Nam bắt đầu bằng `03`, `05`, `07`, `08`, `09`.
+2. Nhập số điện thoại `12345` hoặc `12345678901`, các thông tin còn lại hợp lệ.
+3. Kết quả mong đợi: form không cho gửi hoặc server báo số điện thoại phải gồm đúng 10 chữ số.
 
 ## Đăng ký với số điện thoại hợp lệ
 
@@ -43,19 +43,20 @@
 2. Mở `http://localhost/lobibus-1/public/account`.
 3. Sửa họ tên và số điện thoại thành `0912345678`, bấm `Lưu thông tin`.
 4. Kết quả mong đợi: hiện thông báo cập nhật thành công, navbar/session hiển thị tên mới.
-5. Nhập số điện thoại `12345` hoặc `0212345678`.
-6. Kết quả mong đợi: form báo lỗi số điện thoại không hợp lệ.
+5. Nhập số điện thoại `12345` hoặc `12345678901`.
+6. Kết quả mong đợi: form báo lỗi số điện thoại phải gồm đúng 10 chữ số.
 
-## Đổi mật khẩu bằng OTP
+## Đổi mật khẩu không dùng OTP
 
 1. Đăng nhập và mở `http://localhost/lobibus-1/public/account`.
-2. Bấm `Gửi mã OTP`.
-3. Kết quả mong đợi: trang hiển thị bộ đếm ngược từ khoảng `10:00`; reload trang thì thời gian còn lại vẫn tiếp tục giảm đúng.
-4. Nếu `MAIL_MAILER=log`, mở `public/uploads/mail.log` để lấy OTP.
-5. Nhập OTP sai.
-6. Kết quả mong đợi: form báo `Mã OTP không đúng.`.
-7. Nhập OTP đúng, mật khẩu mới `87654321` và xác nhận khớp.
-8. Kết quả mong đợi: đổi mật khẩu thành công; đăng xuất và đăng nhập lại bằng mật khẩu mới được.
+2. Nhập mật khẩu hiện tại sai, nhập mật khẩu mới và xác nhận mật khẩu.
+3. Kết quả mong đợi: form báo lỗi `Mật khẩu hiện tại không chính xác.`.
+4. Nhập mật khẩu hiện tại đúng, nhập mật khẩu mới ít hơn 8 ký tự.
+5. Kết quả mong đợi: form báo lỗi `Mật khẩu phải có ít nhất 8 ký tự.`.
+6. Nhập mật khẩu hiện tại đúng, nhập mật khẩu mới hợp lệ nhưng xác nhận mật khẩu không khớp.
+7. Kết quả mong đợi: form báo lỗi `Xác nhận mật khẩu không khớp.`.
+8. Nhập mật khẩu hiện tại đúng, nhập mật khẩu mới hợp lệ và xác nhận mật khẩu khớp.
+9. Kết quả mong đợi: đổi mật khẩu thành công; đăng xuất và đăng nhập lại bằng mật khẩu mới được.
 
 ## Đăng nhập bằng Google
 
