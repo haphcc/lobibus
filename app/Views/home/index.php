@@ -39,6 +39,10 @@ $pageJs = ['trip-search.js', 'recommendation.js', 'chatbot.js'];
                     <label class="form-label" for="departDate">Ngày đi</label>
                     <input type="date" id="departDate" name="date" class="form-control form-control-lg" required>
                 </div>
+                <div class="form-col" id="returnDateWrapper" style="display:none;">
+                    <label class="form-label" for="returnDate">Ngày về</label>
+                    <input type="date" id="returnDate" name="return_date" class="form-control form-control-lg" disabled>
+                </div>
                 <div class="form-col">
                     <label class="form-label" for="seats">Số ghế</label>
                     <select id="seats" name="seats" class="form-select form-select-lg">
@@ -62,6 +66,9 @@ $pageJs = ['trip-search.js', 'recommendation.js', 'chatbot.js'];
     <div class="booking-form-wrapper">
         <div class="container">
             <div id="tripResults" class="row g-4"></div>
+            <div id="selectedTickets" class="mt-4">
+                <!-- Selected tickets will be rendered here by JS -->
+            </div>
         </div>
     </div>
 </section>

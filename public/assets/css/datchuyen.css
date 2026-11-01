@@ -72,7 +72,7 @@
   padding: 2.5rem 2rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 1000px;
+  max-width: 1200px; /* increased to allow wider results */
   margin: 0 auto;
   border: 1px solid rgba(39, 174, 96, 0.1);
 }
@@ -237,6 +237,45 @@
   display: flex;
   flex-direction: column;
   border: 1px solid rgba(39, 174, 96, 0.1);
+}
+
+/* Make search result cards taller and stretch to container */
+.card.h-100 {
+  min-height: 260px;
+}
+
+/* Make trip results take full width of the wrapper */
+#tripResults {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+
+/* Make columns span full width of the wrapper and remove extra column padding
+   so the card-body can stretch edge-to-edge within booking-form-wrapper */
+#tripResults > .col-12 {
+  flex: 1 1 100%;
+  padding-left: 0.5rem; /* small gap preserved */
+  padding-right: 0.5rem;
+}
+
+#tripResults > .col-12 > .card {
+  width: 100%;
+  margin: 0;
+  border-radius: 12px;
+}
+
+#tripResults .card .card-body {
+  width: 100%;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  #tripResults > .col-12.col-md-6 {
+    flex: 1 1 calc(50% - 1rem);
+  }
 }
 
 .featured-card:hover {
