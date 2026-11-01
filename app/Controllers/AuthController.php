@@ -9,6 +9,8 @@ use App\Core\Controller;
 use App\Core\Session;
 use App\Services\AuthService;
 use InvalidArgumentException;
+use League\OAuth2\Client\Provider\Google;
+use RuntimeException;
 use Throwable;
 
 final class AuthController extends Controller
@@ -145,6 +147,76 @@ final class AuthController extends Controller
         ]);
     }
 
+    public function googleRedirect(): void
+    {
+        try {
+            $provider = $this->googleProvider();
+            $authUrl = $provider->getAuthorizationUrl([
+                'prompt' => 'select_account',
+            ]);
+
+            Session::set('google_oauth_state', $provider->getState());
+            Session::set('google_oauth_redirect', $this->safeRedirectPath((string) ($_GET['redirect'] ?? '')));
+
+            header('Location: ' . $authUrl);
+            exit;
+        } catch (InvalidArgumentException | RuntimeException $exception) {
+            Session::flash('error', $exception->getMessage());
+            $this->redirect('/login');
+        } catch (Throwable) {
+            Session::flash('error', 'Không thể bắt đầu đăng nhập bằng Google lúc này.');
+            $this->redirect('/login');
+        }
+    }
+
+    public function googleCallback(): void
+    {
+        try {
+            if (!empty($_GET['error'])) {
+                throw new InvalidArgumentException('Bạn đã hủy hoặc Google từ chối yêu cầu đăng nhập.');
+            }
+
+            $state = (string) ($_GET['state'] ?? '');
+            $expectedState = (string) Session::get('google_oauth_state', '');
+            Session::forget('google_oauth_state');
+
+            if ($state === '' || $expectedState === '' || !hash_equals($expectedState, $state)) {
+                throw new InvalidArgumentException('Phiên đăng nhập Google không hợp lệ. Vui lòng thử lại.');
+            }
+
+            $code = (string) ($_GET['code'] ?? '');
+            if ($code === '') {
+                throw new InvalidArgumentException('Google không trả về mã xác thực.');
+            }
+
+            $provider = $this->googleProvider();
+            $token = $provider->getAccessToken('authorization_code', [
+                'code' => $code,
+            ]);
+            $owner = $provider->getResourceOwner($token);
+            $ownerData = method_exists($owner, 'toArray') ? $owner->toArray() : [];
+
+            $email = strtolower(trim((string) ($ownerData['email'] ?? '')));
+            $name = trim((string) ($ownerData['name'] ?? ''));
+            if (($ownerData['email_verified'] ?? false) !== true) {
+                throw new InvalidArgumentException('Google chưa xác minh email của tài khoản này.');
+            }
+
+            $user = $this->auth->loginOrCreateGoogleUser($email, $name);
+            Auth::login($user);
+
+            $redirect = (string) Session::get('google_oauth_redirect', '');
+            Session::forget('google_oauth_redirect');
+            $this->redirect($this->intendedPathFrom($redirect));
+        } catch (InvalidArgumentException | RuntimeException $exception) {
+            Session::flash('error', $exception->getMessage());
+            $this->redirect('/login');
+        } catch (Throwable) {
+            Session::flash('error', 'Không thể đăng nhập bằng Google lúc này. Vui lòng thử lại sau.');
+            $this->redirect('/login');
+        }
+    }
+
     public function logout(): void
     {
         Auth::logout();
@@ -160,6 +232,11 @@ final class AuthController extends Controller
     private function intendedPath(): string
     {
         $path = (string) ($_GET['redirect'] ?? $_POST['redirect'] ?? '');
+        return $this->intendedPathFrom($path);
+    }
+
+    private function intendedPathFrom(string $path): string
+    {
         if ($path === '' || !str_starts_with($path, '/') || str_starts_with($path, '//')) {
             return Auth::isAdmin() ? '/admin' : '/';
         }
@@ -169,6 +246,11 @@ final class AuthController extends Controller
         }
 
         return $path;
+    }
+
+    private function safeRedirectPath(string $path): string
+    {
+        return $path !== '' && str_starts_with($path, '/') && !str_starts_with($path, '//') ? $path : '';
     }
 
     private function hasIntendedPath(): bool
@@ -183,5 +265,39 @@ final class AuthController extends Controller
             'email' => trim((string) ($_POST['email'] ?? '')),
             'phone' => trim((string) ($_POST['phone'] ?? '')),
         ];
+    }
+
+    private function googleProvider(): Google
+    {
+        $config = \config('google');
+        $clientId = trim((string) ($config['client_id'] ?? ''));
+        $clientSecret = trim((string) ($config['client_secret'] ?? ''));
+
+        if ($clientId === '' || $clientSecret === '') {
+            throw new RuntimeException('Chưa cấu hình Google Client ID hoặc Client Secret.');
+        }
+
+        return new Google([
+            'clientId' => $clientId,
+            'clientSecret' => $clientSecret,
+            'redirectUri' => $this->googleRedirectUri($config),
+        ]);
+    }
+
+    private function googleRedirectUri(array $config): string
+    {
+        $redirectUri = trim((string) ($config['redirect_uri'] ?? ''));
+        return $redirectUri !== '' ? $redirectUri : $this->absoluteUrl('/auth/google/callback');
+    }
+
+    private function absoluteUrl(string $path): string
+    {
+        $scheme = (
+            (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || (int) ($_SERVER['SERVER_PORT'] ?? 0) === 443
+        ) ? 'https' : 'http';
+        $host = (string) ($_SERVER['HTTP_HOST'] ?? 'localhost');
+
+        return $scheme . '://' . $host . \url($path);
     }
 }

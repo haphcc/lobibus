@@ -60,6 +60,11 @@ if (!function_exists('isNavActive')) {
                             <strong class="text-dark"><?= e($currentUser['name'] ?: $currentUser['email']) ?></strong>
                         </li>
                         <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="<?= url('/account') ?>">
+                                <span>👤</span> Tài khoản
+                            </a>
+                        </li>
                         <?php if ($isAdmin): ?>
                             <li>
                                 <a class="dropdown-item d-flex align-items-center gap-2" href="<?= url('/admin') ?>">
