@@ -5,7 +5,8 @@
   "license": "proprietary",
   "require": {
     "php": ">=8.0",
-    "phpmailer/phpmailer": "^7.1"
+    "phpmailer/phpmailer": "^7.1",
+    "league/oauth2-google": "^5.0"
   },
   "suggest": {
     "endroid/qr-code": "Generate QR code images for tickets."

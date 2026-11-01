@@ -150,6 +150,21 @@ final class User extends Model
         ]);
     }
 
+    public function updateProfile(int $id, string $name, ?string $phone): bool
+    {
+        $stmt = $this->db()->prepare(
+            'UPDATE users
+             SET name = :name, phone = :phone
+             WHERE id = :id'
+        );
+
+        return $stmt->execute([
+            'id' => $id,
+            'name' => trim($name),
+            'phone' => $this->nullable($phone),
+        ]);
+    }
+
     private function nullable(mixed $value): ?string
     {
         $value = trim((string) $value);
