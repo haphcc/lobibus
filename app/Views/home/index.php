@@ -1,6 +1,8 @@
 <?php
 $pageCss = ['datchuyen.css'];
 $pageJs = ['trip-search.js', 'recommendation.js', 'chatbot.js'];
+// Ensure $locations is defined to avoid "Undefined variable" notices
+$locations = isset($locations) && is_array($locations) ? $locations : [];
 ?>
 <section class="booking-hero">
     <div class="booking-form-wrapper">
