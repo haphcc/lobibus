@@ -1,6 +1,6 @@
 <?php
 $pageCss = ['datchuyen.css'];
-$pageJs = ['trip-search.js', 'recommendation.js', 'chatbot.js'];
+$pageJs = ['trip-search.js', 'recommendation.js'];
 // Ensure $locations is defined to avoid "Undefined variable" notices
 $locations = isset($locations) && is_array($locations) ? $locations : [];
 ?>

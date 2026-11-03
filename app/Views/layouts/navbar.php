@@ -40,7 +40,7 @@ if (!function_exists('isNavActive')) {
             <a class="nav-link px-3 <?= isNavActive('/trips/schedule', $currentPath) ?>" href="<?= url('/trips/search') ?>">Lịch trình</a>
             <a class="nav-link px-3 <?= isNavActive('/booking/history', $currentPath) ?>" href="<?= url('/booking/history') ?>">Tra cứu vé</a>
             <a class="nav-link px-3 <?= isNavActive('/recommendations', $currentPath) ?>" href="<?= url('/recommendations') ?>">Gợi ý chuyến</a>
-            <a class="nav-link px-3 <?= isNavActive('/chatbot', $currentPath) ?>" href="<?= url('/chatbot') ?>">Trợ lý</a>
+            <a class="nav-link px-3 <?= isNavActive('/news', $currentPath) ?>" href="<?= url('/news') ?>">Tin tức</a>
         </nav>
 
         <div class="actions d-flex align-items-center gap-2">
@@ -111,7 +111,7 @@ if (!function_exists('isNavActive')) {
             <a class="drawer-link p-3 rounded text-decoration-none <?= isNavActive('/trips/schedule', $currentPath) ?>" href="<?= url('/trips/search') ?>">Lịch trình</a>
             <a class="drawer-link p-3 rounded text-decoration-none <?= isNavActive('/booking/history', $currentPath) ?>" href="<?= url('/booking/history') ?>">Tra cứu vé</a>
             <a class="drawer-link p-3 rounded text-decoration-none <?= isNavActive('/recommendations', $currentPath) ?>" href="<?= url('/recommendations') ?>">Gợi ý chuyến</a>
-            <a class="drawer-link p-3 rounded text-decoration-none <?= isNavActive('/chatbot', $currentPath) ?>" href="<?= url('/chatbot') ?>">Trợ lý ảo LobiBus</a>
+            <a class="drawer-link p-3 rounded text-decoration-none <?= isNavActive('/news', $currentPath) ?>" href="<?= url('/news') ?>">Tin tức</a>
         </nav>
     </div>
 </div>

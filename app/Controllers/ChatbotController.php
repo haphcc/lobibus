@@ -10,6 +10,7 @@ final class ChatbotController extends Controller
 {
     public function index(): void
     {
-        $this->view('chatbot.widget', ['title' => 'Chatbot']);
+        header('Location: ' . \url('/') . '?open_chat=1');
+        exit;
     }
 }

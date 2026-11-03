@@ -10,7 +10,7 @@ $pageJs = ['recommendation.js'];
             <div>
                 <span class="section-kicker">Gợi ý thông minh</span>
                 <h1>Chuyến xe phù hợp cho bạn</h1>
-                <p>Danh sách được AI tổng hợp dựa trên thói quen đặt vé, giá cả, và lịch trình tối ưu nhất.</p>
+                <p>Danh sách được hệ thống tổng hợp dựa trên thói quen đặt vé, giá cả, và lịch trình tối ưu nhất.</p>
             </div>
         </div>
 

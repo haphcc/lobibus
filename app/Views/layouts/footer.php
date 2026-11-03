@@ -30,7 +30,7 @@
                     <li><a href="<?= url('/trips/search') ?>">Đặt vé xe</a></li>
                     <li><a href="<?= url('/trips/search') ?>">Lịch trình</a></li>
                     <li><a href="<?= url('/recommendations') ?>">Gợi ý chuyến</a></li>
-                    <li><a href="<?= url('/chatbot') ?>">Trợ lý ảo LobiBus</a></li>
+                    <li><a href="<?= url('/news') ?>">Tin tức LobiBus</a></li>
                 </ul>
             </div>
 
