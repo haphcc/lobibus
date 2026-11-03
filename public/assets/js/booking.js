@@ -11,7 +11,10 @@
 
     const response = await fetch(`${base}/api/bookings/create`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': window.CSRF_TOKEN || '',
+      },
       body: JSON.stringify(payload),
     });
     const result = await response.json();

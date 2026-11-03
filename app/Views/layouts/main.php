@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="<?= e(csrf_token()) ?>">
     <title><?= e($title) ?> | LobiBus</title>
     <link rel="icon" href="<?= asset('images/logo.svg') ?>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -25,7 +26,10 @@
 <?php require dirname(__DIR__) . '/chatbot/bubble.php'; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>window.APP_BASE_URL = '<?= e(url()) ?>'.replace(/\/$/, '');</script>
+<script>
+window.APP_BASE_URL = '<?= e(url()) ?>'.replace(/\/$/, '');
+window.CSRF_TOKEN = '<?= e(csrf_token()) ?>';
+</script>
 <?php foreach (($pageJs ?? []) as $js): ?>
     <script src="<?= asset('js/' . $js) ?>"></script>
 <?php endforeach; ?>
