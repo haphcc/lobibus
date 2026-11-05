@@ -28,7 +28,7 @@
                 <h5 class="footer-title">Khám phá</h5>
                 <ul class="list-unstyled">
                     <li><a href="<?= url('/trips/search') ?>">Đặt vé xe</a></li>
-                    <li><a href="<?= url('/trips/search') ?>">Lịch trình</a></li>
+                    <li><a href="<?= url('/trips/schedule') ?>">Lịch trình</a></li>
                     <li><a href="<?= url('/recommendations') ?>">Gợi ý chuyến</a></li>
                     <li><a href="<?= url('/news') ?>">Tin tức LobiBus</a></li>
                 </ul>

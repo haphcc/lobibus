@@ -8,13 +8,16 @@ $locations = isset($locations) && is_array($locations) ? $locations : [];
     <div class="booking-form-wrapper">
         <div class="container">
         <form id="tripSearchForm" class="booking-form">
-            <div class="trip-type-selector">
+            <div class="trip-type-selector d-flex flex-wrap align-items-center justify-content-between gap-3">
                 <div class="trip-type-group">
                     <input type="radio" class="btn-check" name="tripType" id="oneWay" value="oneway" checked>
                     <label class="trip-type-label" for="oneWay">Một chiều</label>
                     <input type="radio" class="btn-check" name="tripType" id="roundTrip" value="roundtrip">
                     <label class="trip-type-label" for="roundTrip">Khứ hồi</label>
                 </div>
+                <a href="<?= url('/trips/schedule') ?>" class="trip-schedule-link ms-auto">
+                    Xem lịch trình
+                </a>
             </div>
             <div class="form-row-full">
                 <div class="form-col-half">
