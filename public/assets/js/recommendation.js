@@ -217,6 +217,14 @@
   const amenityWater = document.getElementById('amenityWater');
   const amenityAc = document.getElementById('amenityAc');
 
+  // Slider Elements
+  const priceMinInput = document.getElementById('priceMinInput');
+  const priceMaxInput = document.getElementById('priceMaxInput');
+  const sliderTrack = document.getElementById('sliderTrack');
+  const priceMinLabel = document.getElementById('priceMinLabel');
+  const priceMaxLabel = document.getElementById('priceMaxLabel');
+  const minGap = 20000; // Khoảng cách tối thiểu giữa 2 đầu là 20.000đ
+
   function getHour(dateTimeStr) {
     if (!dateTimeStr) return 0;
     const date = new Date(dateTimeStr.replace(' ', 'T'));
@@ -224,19 +232,117 @@
     return date.getHours();
   }
 
+  // Cập nhật vị trí thanh track xanh và nhãn hiển thị khoảng giá
+  function updateSliderTrack() {
+    if (!priceMinInput || !priceMaxInput || !sliderTrack || !priceMinLabel || !priceMaxLabel) return;
+
+    let minVal = parseInt(priceMinInput.value);
+    let maxVal = parseInt(priceMaxInput.value);
+    const minLimit = parseInt(priceMinInput.min);
+    const maxLimit = parseInt(priceMaxInput.max);
+
+    // Ngăn chặn 2 nút trượt chồng lấn hoặc vượt qua nhau
+    if (maxVal - minVal < minGap) {
+      if (document.activeElement === priceMinInput) {
+        priceMinInput.value = maxVal - minGap;
+        minVal = parseInt(priceMinInput.value);
+      } else {
+        priceMaxInput.value = minVal + minGap;
+        maxVal = parseInt(priceMaxInput.value);
+      }
+    }
+
+    const range = maxLimit - minLimit;
+    const minPercent = range > 0 ? ((minVal - minLimit) / range) * 100 : 0;
+    const maxPercent = range > 0 ? ((maxVal - minLimit) / range) * 100 : 100;
+
+    sliderTrack.style.left = minPercent + '%';
+    sliderTrack.style.right = (100 - maxPercent) + '%';
+
+    priceMinLabel.textContent = formatMoney(minVal);
+    priceMaxLabel.textContent = formatMoney(maxVal);
+  }
+
+  // Khởi tạo giới hạn giá trị dựa trên chuyến đi thực tế để nút kéo trực quan
+  function initPriceSliderLimits() {
+    if (!priceMinInput || !priceMaxInput || trips.length === 0) return;
+
+    const prices = trips.map(t => Number(t.price || 0));
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+
+    // Làm tròn giới hạn về 50.000đ gần nhất để giao diện đẹp hơn
+    const sliderMin = Math.max(0, Math.floor(minPrice / 50000) * 50000);
+    const sliderMax = Math.ceil(maxPrice / 50000) * 50000;
+
+    priceMinInput.min = sliderMin;
+    priceMinInput.max = sliderMax;
+    priceMaxInput.min = sliderMin;
+    priceMaxInput.max = sliderMax;
+
+    priceMinInput.value = sliderMin;
+    priceMaxInput.value = sliderMax;
+
+    updateSliderTrack();
+  }
+
+  // Khi kéo thanh trượt thủ công, bỏ chọn các checkbox nhanh
+  function handleSliderInput() {
+    [price1, price2, price3].forEach(cb => {
+      if (cb) cb.checked = false;
+    });
+    updateSliderTrack();
+    render();
+  }
+
+  // Khi nhấn vào checkbox nhanh (preset), đồng bộ thanh trượt nhảy về mốc tương ứng
+  function handlePresetChange(e) {
+    if (!priceMinInput || !priceMaxInput) return;
+    
+    if (!e.target.checked) {
+      // Nếu bỏ check, khôi phục khoảng giá đầy đủ
+      priceMinInput.value = priceMinInput.min;
+      priceMaxInput.value = priceMaxInput.max;
+      updateSliderTrack();
+      render();
+      return;
+    }
+
+    // Bỏ check các checkbox giá khác
+    [price1, price2, price3].forEach(cb => {
+      if (cb && cb !== e.target) cb.checked = false;
+    });
+
+    const sliderMin = parseInt(priceMinInput.min);
+    const sliderMax = parseInt(priceMaxInput.max);
+
+    if (e.target === price1) {
+      priceMinInput.value = sliderMin;
+      priceMaxInput.value = Math.min(200000, sliderMax);
+    } else if (e.target === price2) {
+      priceMinInput.value = Math.max(200000, sliderMin);
+      priceMaxInput.value = Math.min(500000, sliderMax);
+    } else if (e.target === price3) {
+      priceMinInput.value = Math.max(500000, sliderMin);
+      priceMaxInput.value = sliderMax;
+    }
+
+    updateSliderTrack();
+    render();
+  }
+
   function render() {
     let visibleTrips = activeFilter === 'all'
       ? trips
       : trips.filter((item) => item.reason === activeFilter);
 
-    // Filter by Price
-    if (price1?.checked || price2?.checked || price3?.checked) {
+    // Lọc theo khoảng giá của thanh trượt (nguồn chân lý duy nhất cho giá)
+    if (priceMinInput && priceMaxInput) {
+      const minP = Number(priceMinInput.value);
+      const maxP = Number(priceMaxInput.value);
       visibleTrips = visibleTrips.filter((item) => {
         const p = Number(item.price || 0);
-        if (price1?.checked && p < 200000) return true;
-        if (price2?.checked && p >= 200000 && p <= 500000) return true;
-        if (price3?.checked && p > 500000) return true;
-        return false;
+        return p >= minP && p <= maxP;
       });
     }
 
@@ -273,10 +379,19 @@
     visibleTrips.forEach((item) => list.appendChild(renderTrip(item)));
   }
 
-  // Add event listeners to checkboxes
-  [price1, price2, price3, time1, time2, time3, amenityWifi, amenityUsb, amenityWater, amenityAc].forEach(cb => {
+  // Đăng ký sự kiện thay đổi cho các checkbox khác
+  [time1, time2, time3, amenityWifi, amenityUsb, amenityWater, amenityAc].forEach(cb => {
     if (cb) cb.addEventListener('change', render);
   });
+
+  // Đăng ký sự kiện đồng bộ cho các checkbox giá nhanh
+  [price1, price2, price3].forEach(cb => {
+    if (cb) cb.addEventListener('change', handlePresetChange);
+  });
+
+  // Đăng ký sự kiện kéo thả cho sliders
+  if (priceMinInput) priceMinInput.addEventListener('input', handleSliderInput);
+  if (priceMaxInput) priceMaxInput.addEventListener('input', handleSliderInput);
 
   filters.forEach((button) => {
     button.addEventListener('click', () => {
@@ -287,13 +402,15 @@
     });
   });
 
-  // Show skeleton loading initially
+  // Hiển thị trạng thái tải skeleton ban đầu
   renderSkeleton();
+  updateSliderTrack();
 
   fetch(`${base}/api/recommendations`)
     .then((response) => response.json())
     .then((payload) => {
       trips = payload.data || [];
+      initPriceSliderLimits(); // Khởi tạo khoảng trượt tối ưu từ dữ liệu thật
       render();
     })
     .catch(() => {
