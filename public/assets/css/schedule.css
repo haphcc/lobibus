@@ -1,0 +1,425 @@
+/* LobiBus Schedule Page Premium Stylesheet */
+
+/* Hero Banner */
+.schedule-hero {
+    background: linear-gradient(135deg, #0f766e 0%, #115e59 50%, #042f2e 100%);
+    padding: 60px 0;
+    border-radius: 20px;
+    box-shadow: 0 12px 36px rgba(15, 118, 110, 0.15);
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.schedule-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(20, 184, 166, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* Quick Statistics Grid */
+.stat-pill {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 12px 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stat-pill:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateY(-2px);
+}
+
+.stat-pill i {
+    font-size: 20px;
+    color: #38bdf8;
+}
+
+/* Smart Search Panel */
+.search-panel {
+    background: #ffffff;
+    border: 1px solid #e2ece7;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(18, 56, 42, 0.05);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.swap-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #0f766e;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0 auto;
+}
+
+.swap-btn:hover {
+    background: #0f766e;
+    color: #ffffff;
+    border-color: #0f766e;
+    transform: rotate(180deg);
+}
+
+/* Filter Controls styling */
+.filter-card {
+    background: #ffffff;
+    border: 1px solid #e2ece7;
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(18, 56, 42, 0.03);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.filter-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+}
+
+.time-pill-btn, .type-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.time-pill-btn:hover, .type-pill-btn:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #0f766e;
+}
+
+.time-pill-btn.active, .type-pill-btn.active {
+    background: #e6f4f2;
+    border-color: #0f766e;
+    color: #0f766e;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.08);
+}
+
+.time-pill-btn input[type="checkbox"], .type-pill-btn input[type="checkbox"] {
+    display: none;
+}
+
+/* Grouped Route Cards */
+.route-group-card {
+    background: #ffffff;
+    border: 1px solid #e2ece7;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(18, 56, 42, 0.04);
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.route-group-card:hover {
+    box-shadow: 0 12px 32px rgba(18, 56, 42, 0.08);
+    transform: translateY(-2px);
+}
+
+.route-group-header {
+    background: #fcfdfe;
+    border-bottom: 1px solid #f1f5f9;
+    padding: 20px 24px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.route-group-header:hover {
+    background: #f8fafc;
+}
+
+.route-badge {
+    background: #e6f4f2;
+    color: #0f766e;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.route-duration-badge {
+    background: #f1f5f9;
+    color: #475569;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Timeline/Route visual representation */
+.timeline-path {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.timeline-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #0f766e;
+}
+
+.timeline-line {
+    flex-grow: 1;
+    height: 2px;
+    border-top: 2px dashed #cbd5e1;
+}
+
+.timeline-arrow {
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+/* Timetable styling */
+.timetable-table {
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+
+.timetable-table th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 14px 20px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.timetable-table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.timetable-row {
+    transition: background-color 0.25s ease;
+}
+
+.timetable-row:hover {
+    background-color: #fafbfc;
+}
+
+/* Dynamic badges for bus types */
+.badge-vip {
+    background-color: #fffbeb;
+    color: #d97706;
+    border: 1px solid #fde68a;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge-sleeper {
+    background-color: #f0fdfa;
+    color: #0f766e;
+    border: 1px solid #99f6e4;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge-seating {
+    background-color: #f8fafc;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Seat progress badge */
+.seat-indicator {
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.seat-status-high {
+    color: #16a34a;
+}
+
+.seat-status-medium {
+    color: #ea580c;
+}
+
+.seat-status-low {
+    color: #dc2626;
+}
+
+.seat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.seat-status-high .seat-dot { background-color: #16a34a; }
+.seat-status-medium .seat-dot { background-color: #ea580c; }
+.seat-status-low .seat-dot { background-color: #dc2626; }
+
+/* Booking direct link */
+.btn-book-now {
+    background: #0f766e;
+    color: #ffffff;
+    border: none;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.15);
+}
+
+.btn-book-now:hover {
+    background: #115e59;
+    color: #ffffff;
+    box-shadow: 0 6px 16px rgba(15, 118, 110, 0.25);
+    transform: translateY(-1px);
+}
+
+.btn-book-now:active {
+    transform: translateY(0);
+}
+
+/* Accordion Animation and style */
+.route-group-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.route-group-card.expanded .route-group-body {
+    max-height: 1200px; /* High enough to contain multiple rows */
+}
+
+.chevron-icon {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #94a3b8;
+}
+
+.route-group-card.expanded .chevron-icon {
+    transform: rotate(180deg);
+    color: #0f766e;
+}
+
+/* Empty search states */
+.empty-state-card {
+    background: #ffffff;
+    border: 1px dashed #cbd5e1;
+    border-radius: 16px;
+    padding: 48px;
+    text-align: center;
+    color: #64748b;
+    margin: 20px 0;
+}
+
+.empty-state-card i {
+    font-size: 48px;
+    color: #cbd5e1;
+    margin-bottom: 16px;
+}
+
+/* Pulse animation for a modern loaded feel */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animated-item {
+    animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Responsive adjustment */
+@media (max-width: 767.98px) {
+    .timetable-table thead {
+        display: none; /* Hide header, show card-like format instead */
+    }
+    .timetable-table tr {
+        display: block;
+        padding: 16px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .timetable-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border: none;
+        width: 100%;
+        text-align: right;
+    }
+    .timetable-table td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: #475569;
+        text-align: left;
+        margin-right: 12px;
+    }
+    
+    .swap-btn {
+        margin: 10px auto;
+        transform: rotate(90deg);
+    }
+    
+    .swap-btn:hover {
+        transform: rotate(270deg);
+    }
+    
+    .route-group-header {
+        padding: 16px;
+    }
+}

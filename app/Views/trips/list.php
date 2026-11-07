@@ -8,9 +8,9 @@ $pageJs = ['recommendation.js'];
 
         <div class="recommendation-header mt-2">
             <div>
-                <span class="section-kicker">Gợi ý thông minh</span>
+                <span class="section-kicker"><i class="bi bi-stars me-1"></i>Gợi ý thông minh</span>
                 <h1>Chuyến xe phù hợp cho bạn</h1>
-                <p>Danh sách được hệ thống tổng hợp dựa trên thói quen đặt vé, giá cả, và lịch trình tối ưu nhất.</p>
+                <p>Danh sách được hệ thống tổng hợp và phân tích dựa trên thói quen đặt vé, giá cả tối ưu và lịch trình thích hợp nhất.</p>
             </div>
         </div>
 
@@ -73,6 +73,27 @@ $pageJs = ['recommendation.js'];
                         <div class="form-check mb-2">
                             <input class="form-check-input" type="checkbox" id="time3">
                             <label class="form-check-label" for="time3">Tối (18:00 - 24:00)</label>
+                        </div>
+                    </div>
+
+                    <hr class="my-4 text-muted">
+                    <div class="filter-section">
+                        <h6 class="filter-subtitle text-muted mb-3">Tiện ích chuyến xe</h6>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="amenityWifi" value="Wifi">
+                            <label class="form-check-label" for="amenityWifi"><i class="bi bi-wifi me-2 text-success"></i>Wifi miễn phí</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="amenityUsb" value="Sạc USB">
+                            <label class="form-check-label" for="amenityUsb"><i class="bi bi-usb-plug me-2 text-success"></i>Cổng sạc USB</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="amenityWater" value="Nước suối">
+                            <label class="form-check-label" for="amenityWater"><i class="bi bi-droplet-fill me-2 text-success"></i>Nước uống</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="amenityAc" value="Điều hòa">
+                            <label class="form-check-label" for="amenityAc"><i class="bi bi-snow me-2 text-success"></i>Điều hòa</label>
                         </div>
                     </div>
                 </div>
