@@ -4,6 +4,7 @@ $pageJs = ['trip-search.js'];
 $locations = isset($locations) && is_array($locations) ? $locations : [];
 $featuredTrips = isset($featuredTrips) && is_array($featuredTrips) ? $featuredTrips : [];
 $featuredNews = isset($featuredNews) && is_array($featuredNews) ? $featuredNews : [];
+$featuredPromotions = isset($featuredPromotions) && is_array($featuredPromotions) ? $featuredPromotions : [];
 ?>
 
 <style>
@@ -489,54 +490,364 @@ $featuredNews = isset($featuredNews) && is_array($featuredNews) ? $featuredNews 
         justify-content: center;
     }
 }
+
+/* Premium Carousel Custom Styles */
+#homeCarousel {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 12px 36px rgba(15, 118, 110, 0.15);
+}
+.max-width-600 {
+    max-width: 600px;
+}
+.carousel-image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(15, 118, 110, 0.3) 0%, rgba(15, 118, 110, 0.8) 100%);
+    z-index: 1;
+}
+#homeCarousel .carousel-caption {
+    z-index: 2;
+    left: 10%;
+    right: 10%;
+    bottom: 12%;
+}
+#homeCarousel .carousel-indicators [data-bs-target] {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-left: 6px;
+    margin-right: 6px;
+    background-color: #ffffff;
+    opacity: 0.5;
+    transition: all 0.3s ease;
+}
+#homeCarousel .carousel-indicators .active {
+    opacity: 1;
+    background-color: #2dd4bf;
+    transform: scale(1.25);
+}
+#homeCarousel .carousel-control-prev {
+    left: 24px;
+    width: 48px;
+    height: 48px;
+    background-color: rgba(15, 118, 110, 0.35);
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: all 0.3s ease;
+}
+#homeCarousel .carousel-control-next {
+    right: 24px;
+    width: 48px;
+    height: 48px;
+    background-color: rgba(15, 118, 110, 0.35);
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: all 0.3s ease;
+}
+#homeCarousel .carousel-control-prev:hover,
+#homeCarousel .carousel-control-next:hover {
+    background-color: rgba(15, 118, 110, 0.85);
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
+}
+@media (max-width: 767.98px) {
+    #homeCarousel .carousel-inner {
+        height: 320px !important;
+    }
+    #homeCarousel .carousel-caption {
+        bottom: 8%;
+        left: 6%;
+        right: 6%;
+    }
+    #homeCarousel .carousel-caption h1 {
+        font-size: 1.6rem !important;
+    }
+    #homeCarousel .carousel-caption p {
+        font-size: 0.85rem !important;
+    }
+    #homeCarousel .carousel-control-prev,
+    #homeCarousel .carousel-control-next {
+        display: none;
+    }
+}
+
+/* Reviews & Stats Showcase Section Styles */
+.review-card {
+    background: #ffffff;
+    border: 1px solid #e2ece7;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(15, 118, 110, 0.04);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.review-card:hover {
+    transform: translateY(-5px);
+    border-color: #0f766e;
+    box-shadow: 0 20px 40px rgba(15, 118, 110, 0.1);
+}
+.avatar-wrapper {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.avatar-initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+.bg-teal-subtle {
+    background-color: #e6f4f2 !important;
+}
+.text-success-light {
+    color: #2dd4bf !important;
+}
+.text-teal-light {
+    color: #2dd4bf;
+}
+.fw-extrabold {
+    font-weight: 850 !important;
+}
+.number-item {
+    transition: all 0.3s ease;
+}
+.number-item:hover {
+    transform: scale(1.05);
+}
+.number-icon-wrapper {
+    background-color: rgba(255, 255, 255, 0.08);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+.number-item:hover .number-icon-wrapper {
+    background-color: rgba(255, 255, 255, 0.16);
+    transform: rotate(15deg);
+}
+
+/* Promotions Custom Styles */
+.promo-code-badge {
+    display: inline-block;
+    background: #e6f4f2;
+    color: #0f766e;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 1px dashed #0f766e;
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin-top: 8px;
+    align-self: flex-start;
+}
+.home-promo-card {
+    background: #ffffff;
+    border: 1px solid #e2ece7;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(15, 118, 110, 0.04);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.home-promo-card:hover {
+    transform: translateY(-5px);
+    border-color: #0f766e;
+    box-shadow: 0 20px 40px rgba(15, 118, 110, 0.12);
+}
+.home-promo-media {
+    position: relative;
+    height: 190px;
+    overflow: hidden;
+}
+.home-promo-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+.home-promo-card:hover .home-promo-media img {
+    transform: scale(1.08);
+}
+.home-promo-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #ea580c;
+    color: #ffffff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    z-index: 2;
+}
+.home-promo-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+.home-promo-title {
+    font-size: 1.08rem;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 10px;
+}
+.home-promo-title a {
+    color: #0f172a;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+.home-promo-title a:hover {
+    color: #0f766e;
+}
+.home-promo-summary {
+    color: #475569;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex-grow: 1;
+}
+.home-promo-link {
+    color: #ea580c;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: gap 0.2s ease;
+    align-self: flex-start;
+}
+.home-promo-link:hover {
+    gap: 10px;
+    color: #c2410c;
+}
+.home-promo-section {
+    margin-top: 4rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid #e2ece7;
+}
 </style>
 
 <div class="container-fluid px-lg-5 py-5" style="max-width: 1500px; margin: 0 auto;">
-    <!-- Home Hero Banner -->
-    <div class="schedule-hero text-white p-4 p-md-5 mb-4">
-        <div class="row align-items-center g-4 position-relative z-3">
-            <div class="col-lg-7">
-                <span class="badge bg-teal-subtle text-success-light mb-3 px-3 py-2 fs-7 fw-bold" style="background-color: rgba(255, 255, 255, 0.15); color: #2dd4bf; border: 1px solid rgba(255, 255, 255, 0.2);">
-                    <i class="bi bi-bus-front-fill me-1"></i> Đặt Vé Xe Khách LobiBus Trực Tuyến
-                </span>
-                <h1 class="display-5 fw-bold mb-3">Hành Trình Trọn Vẹn, Đặt Vé Dễ Dàng</h1>
-                <p class="lead mb-0 text-white-75">
-                    Hệ thống đặt vé trực tuyến nhanh chóng, an toàn và tối ưu chi phí. Tra cứu giờ đi, lựa chọn loại xe ưa thích và chọn chỗ ngồi ưng ý chỉ trong 1 nốt nhạc.
-                </p>
+    <!-- Home Hero Carousel Showcase -->
+    <div id="homeCarousel" class="carousel slide carousel-fade mb-4 shadow" data-bs-ride="carousel" data-bs-interval="6000">
+        <!-- Indicators/dots -->
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+            <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="4" aria-label="Slide 5"></button>
+        </div>
+
+        <!-- The slideshow/carousel -->
+        <div class="carousel-inner" style="border-radius: 20px; overflow: hidden; height: 420px; position: relative;">
+            <!-- Slide 1 -->
+            <div class="carousel-item active" style="height: 100%;">
+                <div class="carousel-image-overlay"></div>
+                <img src="<?= asset('images/news/limousine_vip.png') ?>" class="d-block w-100" style="object-fit: cover; height: 100%;" alt="VIP Limousine LobiBus">
+                <div class="carousel-caption text-start d-flex flex-column justify-content-end h-100 pb-4">
+                    <span class="badge bg-teal-subtle text-success-light mb-2 px-3 py-2 fs-7 fw-bold align-self-start" style="background-color: rgba(255, 255, 255, 0.15); color: #2dd4bf; border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <i class="bi bi-gem me-1"></i> Dịch Vụ Đẳng Cấp 5 Sao
+                    </span>
+                    <h1 class="display-6 fw-bold mb-2 text-white">VIP Limousine Đẳng Cấp & Sang Trọng</h1>
+                    <p class="lead mb-0 text-white-75 max-width-600">
+                        Dòng xe VIP Limousine đời mới nhất với ghế massage êm ái, cổng sạc tiện dụng, wifi tốc độ cao và nước uống miễn phí suốt hành trình.
+                    </p>
+                </div>
             </div>
-            <div class="col-lg-5">
-                <div class="row g-3">
-                    <div class="col-6">
-                        <div class="stat-pill text-center h-100">
-                            <i class="bi bi-signpost-2-fill mb-2 d-inline-block"></i>
-                            <div class="h3 fw-bold mb-0 text-white" id="statRouteCount">-</div>
-                            <small class="text-white-50">Tuyến đường</small>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="stat-pill text-center h-100">
-                            <i class="bi bi-bus-front-fill mb-2 d-inline-block"></i>
-                            <div class="h3 fw-bold mb-0 text-white" id="statTripCount">-</div>
-                            <small class="text-white-50">Chuyến đang mở bán</small>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="stat-pill text-center h-100">
-                            <i class="bi bi-shield-check mb-2 d-inline-block"></i>
-                            <div class="h5 fw-bold mb-0 text-white">An Toàn</div>
-                            <small class="text-white-50">Chất lượng 5★</small>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="stat-pill text-center h-100">
-                            <i class="bi bi-percent mb-2 d-inline-block"></i>
-                            <div class="h5 fw-bold mb-0 text-white">Giá Tối Ưu</div>
-                            <small class="text-white-50">Nhiều ưu đãi</small>
-                        </div>
-                    </div>
+
+            <!-- Slide 2 -->
+            <div class="carousel-item" style="height: 100%;">
+                <div class="carousel-image-overlay"></div>
+                <img src="<?= asset('images/news/30discount.png') ?>" class="d-block w-100" style="object-fit: cover; height: 100%;" alt="Khuyến Mãi Đặt Vé">
+                <div class="carousel-caption text-start d-flex flex-column justify-content-end h-100 pb-4">
+                    <span class="badge bg-teal-subtle text-success-light mb-2 px-3 py-2 fs-7 fw-bold align-self-start" style="background-color: rgba(255, 255, 255, 0.15); color: #2dd4bf; border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <i class="bi bi-percent me-1"></i> Ưu Đãi Cực Hấp Dẫn
+                    </span>
+                    <h1 class="display-6 fw-bold mb-2 text-white">Hành Trình Trọn Vẹn - Đặt Vé Dễ Dàng</h1>
+                    <p class="lead mb-0 text-white-75 max-width-600">
+                        Hệ thống đặt vé xe trực tuyến nhanh chóng, an toàn và tối ưu chi phí. Ưu đãi giảm ngay 30% cho khách hàng mới đặt vé lần đầu!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Slide 3 -->
+            <div class="carousel-item" style="height: 100%;">
+                <div class="carousel-image-overlay"></div>
+                <img src="<?= asset('images/news/green_bus.png') ?>" class="d-block w-100" style="object-fit: cover; height: 100%;" alt="Xe Khách LobiBus An Toàn">
+                <div class="carousel-caption text-start d-flex flex-column justify-content-end h-100 pb-4">
+                    <span class="badge bg-teal-subtle text-success-light mb-2 px-3 py-2 fs-7 fw-bold align-self-start" style="background-color: rgba(255, 255, 255, 0.15); color: #2dd4bf; border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <i class="bi bi-shield-check me-1"></i> An Toàn & Lịch Thiệp
+                    </span>
+                    <h1 class="display-6 fw-bold mb-2 text-white">Mỗi Chuyến Đi Là Một Niềm Vui Trọn Vẹn</h1>
+                    <p class="lead mb-0 text-white-75 max-width-600">
+                        Đội ngũ tài xế giàu kinh nghiệm, cam kết không phóng nhanh vượt ẩu, xe khởi hành đúng giờ, mang đến sự an tâm tuyệt đối trên mọi nẻo đường.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Slide 4 -->
+            <div class="carousel-item" style="height: 100%;">
+                <div class="carousel-image-overlay"></div>
+                <img src="<?= asset('images/news/sinhvien.jpg') ?>" class="d-block w-100" style="object-fit: cover; height: 100%;" alt="Ưu Đãi Học Sinh Sinh Viên">
+                <div class="carousel-caption text-start d-flex flex-column justify-content-end h-100 pb-4">
+                    <span class="badge bg-teal-subtle text-success-light mb-2 px-3 py-2 fs-7 fw-bold align-self-start" style="background-color: rgba(255, 255, 255, 0.15); color: #2dd4bf; border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <i class="bi bi-mortarboard-fill me-1"></i> Ưu Đãi Học Đường
+                    </span>
+                    <h1 class="display-6 fw-bold mb-2 text-white">Đồng Hành Cùng Học Sinh Sinh Viên</h1>
+                    <p class="lead mb-0 text-white-75 max-width-600">
+                        Ưu đãi giảm giá vé đặc biệt dành riêng cho các bạn học sinh, sinh viên khi đặt vé xe khách trực tuyến. Tiếp sức trên con đường học vấn!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Slide 5 -->
+            <div class="carousel-item" style="height: 100%;">
+                <div class="carousel-image-overlay"></div>
+                <img src="<?= asset('images/news/secure_payment.png') ?>" class="d-block w-100" style="object-fit: cover; height: 100%;" alt="Thanh Toán An Toàn">
+                <div class="carousel-caption text-start d-flex flex-column justify-content-end h-100 pb-4">
+                    <span class="badge bg-teal-subtle text-success-light mb-2 px-3 py-2 fs-7 fw-bold align-self-start" style="background-color: rgba(255, 255, 255, 0.15); color: #2dd4bf; border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <i class="bi bi-shield-lock-fill me-1"></i> Thanh Toán Tiện Lợi
+                    </span>
+                    <h1 class="display-6 fw-bold mb-2 text-white">Thanh Toán Nhanh Chóng & An Toàn Tuyệt Đối</h1>
+                    <p class="lead mb-0 text-white-75 max-width-600">
+                        Hỗ trợ đa dạng cổng thanh toán: Ví điện tử VNPAY, MoMo, thẻ ATM nội địa & quốc tế. Giao dịch an toàn, bảo mật và xác nhận tức thì.
+                    </p>
                 </div>
             </div>
         </div>
+
+        <!-- Controls -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#homeCarousel" data-bs-slide="prev" style="z-index: 3;">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Trước</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#homeCarousel" data-bs-slide="next" style="z-index: 3;">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Sau</span>
+        </button>
     </div>
 
     <!-- Search Section Panel -->
@@ -545,7 +856,7 @@ $featuredNews = isset($featuredNews) && is_array($featuredNews) ? $featuredNews 
             <i class="bi bi-search-heart me-2"></i>Tìm kiếm hành trình đặt vé
         </h5>
         
-        <form id="tripSearchForm" class="row g-3 align-items-center">
+        <form id="tripSearchForm" method="GET" action="<?= url('/trips/search') ?>" class="row g-3 align-items-center">
             <!-- Trip Type Selector -->
             <div class="col-12 d-flex flex-wrap align-items-center justify-content-between gap-3 mb-2">
                 <div class="trip-type-group">
@@ -716,19 +1027,81 @@ $featuredNews = isset($featuredNews) && is_array($featuredNews) ? $featuredNews 
                         if ($routeLabel === '→') {
                             $routeLabel = (string) ($trip['route'] ?? '');
                         }
-                        $busImage = trim((string) ($trip['bus_image'] ?? ''));
-                        if ($busImage !== '') {
-                            $busImage = preg_replace('#^/?assets/#', '', $busImage) ?? ltrim($busImage, '/');
-                            $busImage = asset($busImage);
+
+                        // Lấy tên bến/điểm đến để ánh xạ sang ảnh địa danh
+                        $toName = trim((string) ($trip['to'] ?? ''));
+                        $destinationImage = '';
+
+                        if ($toName !== '') {
+                            // Chuyển chữ thường và loại bỏ dấu tiếng Việt để so khớp chính xác với tên file
+                            $cleanName = mb_strtolower($toName, 'UTF-8');
+                            $unicode = [
+                                'a' => 'á|à|ả|ã|ạ|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ',
+                                'd' => 'đ',
+                                'e' => 'é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ',
+                                'i' => 'í|ì|ỉ|ĩ|ị',
+                                'o' => 'ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ',
+                                'u' => 'ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự',
+                                'y' => 'ý|ỳ|ỷ|ỹ|ỵ',
+                            ];
+                            foreach ($unicode as $nonUni => $uni) {
+                                $cleanName = preg_replace("/($uni)/i", $nonUni, $cleanName);
+                            }
+                            $cleanName = str_replace([' ', '.', '-'], '', $cleanName);
+
+                            // Định nghĩa ánh xạ đặc biệt cho một số thành phố/địa danh
+                            $specialMap = [
+                                'vinh' => 'nghean.jpg',
+                                'tphcm' => 'hochiminh.jpg',
+                                'saigon' => 'hochiminh.jpg',
+                                'halong' => 'haiphong.webp', 
+                                'hatinh' => 'nghean.jpg', // Dùng ảnh Nghệ An làm fallback lân cận nếu thiếu ảnh Hà Tĩnh
+                            ];
+
+                            if (isset($specialMap[$cleanName])) {
+                                $imgName = $specialMap[$cleanName];
+                            } else {
+                                // Một số tỉnh có phần mở rộng đặc biệt (.webp, .png, .jpeg) thay vì .jpg
+                                $extensions = [
+                                    'haiphong' => 'webp',
+                                    'thanhhoa' => 'webp',
+                                    'tamky' => 'webp',
+                                    'backan' => 'webp',
+                                    'thainguyen' => 'webp',
+                                    'dongnai' => 'webp',
+                                    'namdinh' => 'png',
+                                    'camau' => 'png',
+                                    'binhdinh' => 'jpeg',
+                                ];
+                                $ext = $extensions[$cleanName] ?? 'jpg';
+                                $imgName = $cleanName . '.' . $ext;
+                            }
+
+                            // Đường dẫn vật lý trên đĩa
+                            $routesDir = dirname(__DIR__, 3) . '/public/assets/images/routes/';
+                            if (file_exists($routesDir . $imgName)) {
+                                $destinationImage = asset('images/routes/' . $imgName);
+                            }
+                        }
+
+                        // Nếu tìm thấy ảnh địa điểm đến thì dùng, ngược lại fallback về ảnh dòng xe
+                        if ($destinationImage !== '') {
+                            $tripCardImage = $destinationImage;
                         } else {
-                            $busImage = asset('images/news/booking_online.png');
+                            $busImage = trim((string) ($trip['bus_image'] ?? ''));
+                            if ($busImage !== '') {
+                                $busImage = preg_replace('#^/?assets/#', '', $busImage) ?? ltrim($busImage, '/');
+                                $tripCardImage = asset($busImage);
+                            } else {
+                                $tripCardImage = asset('images/news/booking_online.png');
+                            }
                         }
                     ?>
                     <div class="col-12 col-md-4">
                         <article class="home-trip-card">
                             <div class="home-trip-media">
                                 <span class="home-trip-price-pill"><?= e(number_format((float) $trip['price'], 0, ',', '.')) ?>đ</span>
-                                <img src="<?= e($busImage) ?>" alt="<?= e($trip['bus_name'] ?? 'Xe khách') ?>" loading="lazy">
+                                <img src="<?= e($tripCardImage) ?>" alt="<?= e($trip['bus_name'] ?? 'Xe khách') ?>" loading="lazy">
                             </div>
                             <div class="home-trip-content">
                                 <div class="home-trip-route">
@@ -757,6 +1130,53 @@ $featuredNews = isset($featuredNews) && is_array($featuredNews) ? $featuredNews 
             <?php else: ?>
                 <div class="col-12">
                     <div class="home-trip-empty">Hiện chưa có chuyến đi nổi bật nào.</div>
+                </div>
+            <?php endif; ?>
+        </div>
+    </section>
+
+    <!-- Featured Promotions Section -->
+    <section class="home-promo-section">
+        <div class="home-section-header">
+            <span class="section-kicker" style="background: #ffebe6; color: #ea580c;">Khuyến mãi hot</span>
+            <div class="home-section-header-inner">
+                <div>
+                    <h3 class="home-section-title">Ưu đãi và Khuyến mãi nổi bật</h3>
+                    <p class="home-section-subtitle">Săn mã giảm giá, cơ hội hoàn tiền cực khủng và nhiều voucher hấp dẫn khi đặt vé xe khách LobiBus trực tuyến.</p>
+                </div>
+                <a href="<?= url('/news') ?>" class="home-view-all-btn" style="color: #ea580c; border-color: #ffccbc; background: #ffffff;">
+                    Xem tất cả khuyến mãi <i class="bi bi-arrow-right-short" style="color: #ea580c;"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <?php if (!empty($featuredPromotions)): ?>
+                <?php foreach ($featuredPromotions as $promo): ?>
+                    <div class="col-12 col-md-6">
+                        <article class="home-promo-card">
+                            <div class="home-promo-media">
+                                <span class="home-promo-badge">Khuyến mãi</span>
+                                <img src="<?= asset(e($promo['image'])) ?>" alt="<?= e($promo['title']) ?>" loading="lazy">
+                            </div>
+                            <div class="home-promo-content">
+                                <span class="promo-code-badge"><i class="bi bi-tag-fill me-1"></i>Mã KM: <?= e($promo['code']) ?></span>
+                                <h4 class="home-promo-title mt-2">
+                                    <a href="<?= url('/news/detail?id=' . $promo['id']) ?>">
+                                        <?= e($promo['title']) ?>
+                                    </a>
+                                </h4>
+                                <p class="home-promo-summary"><?= e($promo['summary']) ?></p>
+                                <a href="<?= url('/news/detail?id=' . $promo['id']) ?>" class="home-promo-link">
+                                    Nhận ưu đãi ngay <i class="bi bi-arrow-right-short"></i>
+                                </a>
+                            </div>
+                        </article>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12">
+                    <div class="home-trip-empty">Hiện chưa có chương trình khuyến mãi nào mở bán.</div>
                 </div>
             <?php endif; ?>
         </div>
@@ -800,6 +1220,165 @@ $featuredNews = isset($featuredNews) && is_array($featuredNews) ? $featuredNews 
                     </article>
                 </div>
             <?php endforeach; ?>
+        </div>
+    </section>
+
+    <!-- LobiBus by the Numbers Section -->
+    <section class="home-numbers-section mt-5 py-5 px-4 text-white text-center position-relative overflow-hidden" style="background: linear-gradient(135deg, #0f766e 0%, #115e59 50%, #042f2e 100%); border-radius: 24px; box-shadow: 0 12px 36px rgba(15, 118, 110, 0.15);">
+        <!-- Background graphics -->
+        <div class="position-absolute" style="top: -50%; right: -20%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(45, 212, 191, 0.15) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
+        <div class="position-absolute" style="bottom: -50%; left: -20%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(45, 212, 191, 0.15) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
+
+        <div class="row align-items-center g-4 position-relative z-3">
+            <div class="col-lg-4 text-lg-start mb-4 mb-lg-0">
+                <span class="badge bg-teal-subtle text-success-light mb-2 px-3 py-2 fs-7 fw-bold" style="background-color: rgba(255, 255, 255, 0.15); color: #2dd4bf; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <i class="bi bi-rocket-takeoff-fill me-1"></i> Hành Trình Phát Triển
+                </span>
+                <h3 class="fw-bold mb-2 text-white" style="font-size: 2.1rem;">LobiBus Bằng Những Con Số</h3>
+                <p class="mb-0 text-white-75">
+                    Sự tin tưởng của quý khách là động lực to lớn giúp chúng tôi không ngừng cải tiến và mở rộng quy mô phục vụ trên mọi miền Tổ quốc.
+                </p>
+            </div>
+            
+            <div class="col-lg-8">
+                <div class="row g-4">
+                    <div class="col-6 col-md-3">
+                        <div class="number-item p-3">
+                            <div class="number-icon-wrapper mb-2">
+                                <i class="bi bi-emoji-smile-fill text-teal-light fs-2"></i>
+                            </div>
+                            <div class="display-5 fw-extrabold text-white mb-1">98%</div>
+                            <small class="text-white-50">Khách Hàng Hài Lòng</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="number-item p-3">
+                            <div class="number-icon-wrapper mb-2">
+                                <i class="bi bi-people-fill text-teal-light fs-2"></i>
+                            </div>
+                            <div class="display-5 fw-extrabold text-white mb-1">1M+</div>
+                            <small class="text-white-50">Lượt Khách Phục Vụ</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="number-item p-3">
+                            <div class="number-icon-wrapper mb-2">
+                                <i class="bi bi-bus-front-fill text-teal-light fs-2"></i>
+                            </div>
+                            <div class="display-5 fw-extrabold text-white mb-1">50+</div>
+                            <small class="text-white-50">Xe Limousine Đời Mới</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="number-item p-3">
+                            <div class="number-icon-wrapper mb-2">
+                                <i class="bi bi-patch-check-fill text-teal-light fs-2"></i>
+                            </div>
+                            <div class="display-5 fw-extrabold text-white mb-1">5+</div>
+                            <small class="text-white-50">Năm Hoạt Động</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Customer Reviews Section -->
+    <section class="home-reviews-section mt-5">
+        <div class="home-section-header">
+            <span class="section-kicker">Đánh giá thực tế</span>
+            <div class="home-section-header-inner">
+                <div>
+                    <h3 class="home-section-title">Khách hàng nói gì về LobiBus?</h3>
+                    <p class="home-section-subtitle">Hàng ngàn hành khách đã trải nghiệm dịch vụ của chúng tôi và chia sẻ những cảm nhận tích cực.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Review 1 -->
+            <div class="col-12 col-md-4">
+                <div class="review-card p-4 h-100 position-relative d-flex flex-column">
+                    <div class="quote-icon position-absolute" style="top: 20px; right: 25px; opacity: 0.15; font-size: 2.5rem; color: #0f766e;">
+                        <i class="bi bi-quote"></i>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="avatar-wrapper">
+                            <span class="avatar-initials bg-teal-subtle text-teal">TH</span>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark" style="font-size: 1.05rem;">Trần Minh Hoàng</h5>
+                            <small class="text-secondary">Doanh nhân • Tuyến TP.HCM - Đà Lạt</small>
+                        </div>
+                    </div>
+                    <div class="rating-stars mb-3">
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                    </div>
+                    <p class="review-text text-secondary mb-0 flex-grow-1" style="font-size: 0.95rem; line-height: 1.6; font-style: italic;">
+                        "Tôi cực kỳ hài lòng với dịch vụ xe VIP Limousine của LobiBus. Xe chạy rất êm, ghế massage cực thoải mái và đặc biệt là đúng giờ, không bắt khách dọc đường. Chắc chắn tôi sẽ tiếp tục ủng hộ!"
+                    </p>
+                </div>
+            </div>
+
+            <!-- Review 2 -->
+            <div class="col-12 col-md-4">
+                <div class="review-card p-4 h-100 position-relative d-flex flex-column">
+                    <div class="quote-icon position-absolute" style="top: 20px; right: 25px; opacity: 0.15; font-size: 2.5rem; color: #0f766e;">
+                        <i class="bi bi-quote"></i>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="avatar-wrapper">
+                            <span class="avatar-initials bg-teal-subtle text-teal">MA</span>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark" style="font-size: 1.05rem;">Nguyễn Mai Anh</h5>
+                            <small class="text-secondary">Sinh viên • Tuyến Hà Nội - Sa Pa</small>
+                        </div>
+                    </div>
+                    <div class="rating-stars mb-3">
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                    </div>
+                    <p class="review-text text-secondary mb-0 flex-grow-1" style="font-size: 0.95rem; line-height: 1.6; font-style: italic;">
+                        "Hệ thống đặt vé trực tuyến rất dễ dùng, đặc biệt lại còn được giảm giá sinh viên cực hời. Nhân viên tổng đài và phụ xe lịch thiệp, chu đáo hỗ trợ tôi mang vác hành lý cẩn thận."
+                    </p>
+                </div>
+            </div>
+
+            <!-- Review 3 -->
+            <div class="col-12 col-md-4">
+                <div class="review-card p-4 h-100 position-relative d-flex flex-column">
+                    <div class="quote-icon position-absolute" style="top: 20px; right: 25px; opacity: 0.15; font-size: 2.5rem; color: #0f766e;">
+                        <i class="bi bi-quote"></i>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="avatar-wrapper">
+                            <span class="avatar-initials bg-teal-subtle text-teal">DV</span>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark" style="font-size: 1.05rem;">David Watson</h5>
+                            <small class="text-secondary">Khách du lịch • Tuyến Đà Nẵng - Huế</small>
+                        </div>
+                    </div>
+                    <div class="rating-stars mb-3">
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-half text-warning"></i>
+                    </div>
+                    <p class="review-text text-secondary mb-0 flex-grow-1" style="font-size: 0.95rem; line-height: 1.6; font-style: italic;">
+                        "Great experience booking tickets through LobiBus! The bus was modern and clean, wifi was fast, and the driver was friendly. Highly recommend LobiBus for everyone traveling in Vietnam!"
+                    </p>
+                </div>
+            </div>
         </div>
     </section>
 </div>

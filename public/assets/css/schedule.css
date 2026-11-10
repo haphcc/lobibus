@@ -423,3 +423,18 @@
         padding: 16px;
     }
 }
+
+/* Fix Bootstrap Modal Backdrop & Z-Index issues on LobiBus (ensures full coverage over sticky headers/footers) */
+.modal-backdrop {
+    z-index: 10000 !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background-color: #000 !important;
+}
+
+.modal {
+    z-index: 10001 !important;
+}

@@ -770,11 +770,12 @@
 /* Make sure the floating chat is fully responsive on mobile */
 @media (max-width: 575.98px) {
     .chatbot-floating-container {
-        bottom: 85px;
+        bottom: 80px;
         right: 15px;
         left: 15px;
         width: auto;
-        height: 480px;
+        height: 420px; /* Reduced to fit mobile viewports nicely */
+        max-height: calc(100vh - 100px); /* Prevents overflow */
         max-width: none;
     }
     
@@ -782,4 +783,24 @@
         bottom: 15px;
         right: 15px;
     }
+}
+
+/* Chatbot Background Overlay */
+.chatbot-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(15, 23, 42, 0.45); /* Slate dark overlay */
+    backdrop-filter: blur(4px); /* Modern blur effect */
+    z-index: 99998; /* Just below trigger & container (99999) */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chatbot-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
 }

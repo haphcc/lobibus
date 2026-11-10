@@ -31,6 +31,59 @@
     });
   }
 
+  // Khớp tên địa điểm đến với ảnh tương ứng
+  function getDestinationImageFile(toName) {
+    if (!toName) return '';
+    let name = toName.toLowerCase().trim();
+    
+    // Loại bỏ dấu tiếng Việt để map với tên file
+    const unicodeMap = {
+      'a': 'á|à|ả|ã|ạ|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ',
+      'd': 'đ',
+      'e': 'é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ',
+      'i': 'í|ì|ỉ|ĩ|ị',
+      'o': 'ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ',
+      'u': 'ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự',
+      'y': 'ý|ỳ|ỷ|ỹ|ỵ'
+    };
+    
+    for (let char in unicodeMap) {
+      const regex = new RegExp(unicodeMap[char], 'gi');
+      name = name.replace(regex, char);
+    }
+    
+    name = name.replace(/\s+/g, '');
+    name = name.replace(/\./g, '');
+    name = name.replace(/-/g, '');
+    
+    const specialMap = {
+      'vinh': 'nghean.jpg',
+      'tphcm': 'hochiminh.jpg',
+      'saigon': 'hochiminh.jpg',
+      'halong': 'haiphong.webp',
+      'hatinh': 'nghean.jpg'
+    };
+    
+    if (specialMap[name]) {
+      return specialMap[name];
+    }
+    
+    const extensions = {
+      'haiphong': 'webp',
+      'thanhhoa': 'webp',
+      'tamky': 'webp',
+      'backan': 'webp',
+      'thainguyen': 'webp',
+      'dongnai': 'webp',
+      'namdinh': 'png',
+      'camau': 'png',
+      'binhdinh': 'jpeg'
+    };
+    
+    const ext = extensions[name] || 'jpg';
+    return `${name}.${ext}`;
+  }
+
   function getTripAmenities(price) {
     const p = Number(price || 0);
     const amenitiesList = [
@@ -123,6 +176,32 @@
     
     appendText(header, 'strong', formatMoney(item.price), 'recommendation-price');
     card.appendChild(header);
+
+    // Chèn hình ảnh địa danh điểm đến
+    const routeStr = item.route || '';
+    let toName = '';
+    if (routeStr.includes('->')) {
+      toName = routeStr.split('->')[1].trim();
+    } else if (routeStr.includes('→')) {
+      toName = routeStr.split('→')[1].trim();
+    } else if (routeStr.includes('-')) {
+      toName = routeStr.split('-')[1].trim();
+    }
+
+    const imgFile = getDestinationImageFile(toName);
+    if (imgFile) {
+      const mediaDiv = document.createElement('div');
+      mediaDiv.className = 'recommendation-card-media';
+      const img = document.createElement('img');
+      img.src = `${base}/assets/images/routes/${imgFile}`;
+      img.alt = toName;
+      img.loading = 'lazy';
+      img.onerror = () => {
+        mediaDiv.style.display = 'none';
+      };
+      mediaDiv.appendChild(img);
+      card.appendChild(mediaDiv);
+    }
 
     appendText(card, 'h2', item.route || 'Chuyến xe');
     appendText(card, 'p', item.bus_name || '', 'recommendation-bus');

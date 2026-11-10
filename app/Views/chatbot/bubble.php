@@ -65,3 +65,6 @@
         </form>
     </div>
 </div>
+
+<!-- Chatbot Background Overlay Backdrop -->
+<div id="chatbotOverlay" class="chatbot-overlay"></div>

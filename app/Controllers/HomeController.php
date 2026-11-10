@@ -45,11 +45,31 @@ final class HomeController extends Controller
             ],
         ];
 
+        $featuredPromotions = [
+            [
+                'id' => 9,
+                'title' => 'Đặt vé xe LobiBus qua ví điện tử VNPay nhận ngàn ưu đãi hấp dẫn',
+                'summary' => 'Sự kết hợp hoàn hảo giữa LobiBus và VNPay mang lại ưu đãi giảm giá vé cực khủng khi nhập mã LOBIBUS99.',
+                'code' => 'LOBIBUS99',
+                'image' => 'images/news/vnpay_promo.png',
+                'date' => '01-05-2026',
+            ],
+            [
+                'id' => 1,
+                'title' => 'LobiBus khai trương 10 tuyến xe giường nằm miền Tây giảm 20% giá vé',
+                'summary' => 'Mở rộng mạng lưới phục vụ đi các tỉnh miền Tây với dịch vụ chất lượng cao và ưu đãi giảm ngay 20% giá vé trực tuyến.',
+                'code' => 'MIENTAY20',
+                'image' => 'images/news/mientay_bus.png',
+                'date' => '20-05-2026',
+            ],
+        ];
+
         $this->view('home.index', [
             'title' => 'Trang chủ',
             'locations' => $locations,
             'featuredTrips' => $featuredTrips,
             'featuredNews' => $featuredNews,
+            'featuredPromotions' => $featuredPromotions,
         ]);
     }
 }

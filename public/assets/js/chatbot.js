@@ -111,6 +111,7 @@
   const trigger = document.getElementById('chatbotTrigger');
   const container = document.getElementById('chatbotContainer');
   const closeBtn = document.getElementById('chatbotCloseBtn');
+  const overlay = document.getElementById('chatbotOverlay');
 
   if (trigger && container) {
     const chatIcon = trigger.querySelector('.chat-icon');
@@ -119,6 +120,9 @@
     function toggleChat() {
       const isActive = container.classList.toggle('active');
       trigger.classList.toggle('active');
+      if (overlay) {
+        overlay.classList.toggle('active', isActive);
+      }
       
       if (chatIcon && closeIcon) {
         if (isActive) {
@@ -139,6 +143,7 @@
         e.stopPropagation();
         container.classList.remove('active');
         trigger.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
         if (chatIcon && closeIcon) {
           chatIcon.style.display = 'block';
           closeIcon.style.display = 'none';
@@ -151,6 +156,7 @@
       if (!container.contains(e.target) && !trigger.contains(e.target) && container.classList.contains('active')) {
         container.classList.remove('active');
         trigger.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
         if (chatIcon && closeIcon) {
           chatIcon.style.display = 'block';
           closeIcon.style.display = 'none';
@@ -163,6 +169,7 @@
     if (urlParams.has('open_chat')) {
       container.classList.add('active');
       trigger.classList.add('active');
+      if (overlay) overlay.classList.add('active');
       if (chatIcon && closeIcon) {
         chatIcon.style.display = 'none';
         closeIcon.style.display = 'block';

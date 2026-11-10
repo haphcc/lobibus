@@ -170,12 +170,116 @@
         applyFiltersAndRender();
       });
     }
+
+    // 6. Pre-fill Search parameters if on Search results page
+    const isSearchPage = window.location.pathname.includes('/trips/search');
+    if (isSearchPage) {
+      const params = new URLSearchParams(window.location.search);
+      const fromVal = params.get('from') || '';
+      const toVal = params.get('to') || '';
+      const dateVal = params.get('date') || '';
+      const returnDateVal = params.get('return_date') || '';
+      const seatsVal = params.get('seats') || '1';
+      const tripTypeVal = params.get('tripType') || 'oneway';
+
+      const fromSelect = document.getElementById('fromLocationSelect');
+      const toSelect = document.getElementById('toLocationSelect');
+      const dateInput = document.getElementById('dateInput');
+      const seatsSelect = document.getElementById('seatsSelect');
+      const oneWayRadio = document.getElementById('oneWay');
+      const roundTripRadio = document.getElementById('roundTrip');
+
+      if (fromSelect) fromSelect.value = fromVal;
+      if (toSelect) toSelect.value = toVal;
+      if (dateInput) dateInput.value = dateVal;
+      if (returnInput) returnInput.value = returnDateVal;
+      if (seatsSelect) seatsSelect.value = seatsVal;
+      if (tripTypeVal === 'roundtrip' && roundTripRadio) {
+        roundTripRadio.checked = true;
+      } else if (oneWayRadio) {
+        oneWayRadio.checked = true;
+      }
+      updateReturnDateVisibility();
+
+      if (fromVal && toVal && dateVal) {
+        performSearch(fromVal, toVal, dateVal, returnDateVal, seatsVal, tripTypeVal);
+      }
+    }
+
+    // 7. Setup Date Strip navigation prev/next arrows
+    const prevBtn = document.getElementById('datePrevBtn');
+    const nextBtn = document.getElementById('dateNextBtn');
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        const dateInput = document.getElementById('dateInput');
+        if (!dateInput || !dateInput.value) return;
+        const newDate = addDays(dateInput.value, -1);
+        dateInput.value = newDate;
+        
+        // Update URL query string
+        const newUrl = updateQueryStringParameter(window.location.href, 'date', newDate);
+        window.history.pushState({ path: newUrl }, '', newUrl);
+
+        // Re-execute search from fields
+        triggerSearchFromForm();
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        const dateInput = document.getElementById('dateInput');
+        if (!dateInput || !dateInput.value) return;
+        const newDate = addDays(dateInput.value, 1);
+        dateInput.value = newDate;
+        
+        // Update URL query string
+        const newUrl = updateQueryStringParameter(window.location.href, 'date', newDate);
+        window.history.pushState({ path: newUrl }, '', newUrl);
+
+        // Re-execute search from fields
+        triggerSearchFromForm();
+      });
+    }
+
+    function triggerSearchFromForm() {
+      const form = document.getElementById('tripSearchForm');
+      if (form) {
+        const formData = new FormData(form);
+        const from = formData.get('from');
+        const to = formData.get('to');
+        const date = formData.get('date');
+        const returnDate = formData.get('return_date');
+        const seats = formData.get('seats');
+        const tripType = formData.get('tripType') || 'oneway';
+        performSearch(from, to, date, returnDate, seats, tripType);
+      }
+    }
   });
 
   // Handle Event Delegation
   document.addEventListener('click', (ev) => {
     const target = ev.target;
     
+    // View Map Modal Action
+    const mapBtn = target.closest('.js-view-map');
+    if (mapBtn) {
+      ev.preventDefault();
+      if (window.LobiBusMap) {
+        window.LobiBusMap.showMap(
+          mapBtn.getAttribute('data-from'),
+          mapBtn.getAttribute('data-from-addr'),
+          mapBtn.getAttribute('data-from-lat'),
+          mapBtn.getAttribute('data-from-lng'),
+          mapBtn.getAttribute('data-to'),
+          mapBtn.getAttribute('data-to-addr'),
+          mapBtn.getAttribute('data-to-lat'),
+          mapBtn.getAttribute('data-to-lng')
+        );
+      }
+      return;
+    }
+
     // Select Ticket Action
     const selectBtn = target.closest('.js-select-ticket');
     if (selectBtn) {
@@ -253,11 +357,11 @@
   function getBusType(busName) {
     const name = (busName || '').toLowerCase();
     if (name.includes('limousine') || name.includes('vip') || name.includes('luxury')) {
-      return { id: 'vip', label: 'VIP Limousine', badgeClass: 'badge-vip', icon: 'bi-gem' };
+      return { id: 'vip', label: 'VIP Limousine', badgeClass: 'badge-vip', icon: 'bi-gem', img: 'images/bus/limousine.jpg' };
     } else if (name.includes('giường') || name.includes('sleeper') || name.includes('nằm')) {
-      return { id: 'sleeper', label: 'Giường nằm', badgeClass: 'badge-sleeper', icon: 'bi-moon-stars' };
+      return { id: 'sleeper', label: 'Giường nằm', badgeClass: 'badge-sleeper', icon: 'bi-moon-stars', img: 'images/bus/giuong-nam.png' };
     } else {
-      return { id: 'seat', label: 'Ghế ngồi', badgeClass: 'badge-seating', icon: 'bi-person-workspace' };
+      return { id: 'seat', label: 'Ghế ngồi', badgeClass: 'badge-seating', icon: 'bi-person-workspace', img: 'images/bus/ghe-ngoi.jpg' };
     }
   }
 
@@ -278,6 +382,12 @@
   // Handle Form Search Submit
   if (form) {
     form.addEventListener('submit', async (e) => {
+      const isSearchPage = window.location.pathname.includes('/trips/search');
+      if (!isSearchPage) {
+        // Let homepage form submit naturally to search page
+        return;
+      }
+
       e.preventDefault();
       const formData = new FormData(form);
       const tripType = formData.get('tripType') || 'oneway';
@@ -288,62 +398,21 @@
       const returnDate = formData.get('return_date');
       const seats = formData.get('seats');
 
-      showLoadingState();
-      
-      const filterCardWrapper = document.getElementById('filterCardWrapper');
-      if (filterCardWrapper) filterCardWrapper.style.display = 'none';
+      // Update URL query string dynamically
+      const newUrl = `${window.location.pathname}?tripType=${tripType}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${date}&return_date=${returnDate}&seats=${seats}`;
+      window.history.pushState({ path: newUrl }, '', newUrl);
 
-      try {
-        if (tripType === 'roundtrip') {
-          const paramsOut = new URLSearchParams();
-          paramsOut.set('from', from || '');
-          paramsOut.set('to', to || '');
-          if (date) paramsOut.set('date', date);
-          if (seats) paramsOut.set('seats', seats);
-
-          const paramsReturn = new URLSearchParams();
-          paramsReturn.set('from', to || '');
-          paramsReturn.set('to', from || '');
-          if (returnDate) paramsReturn.set('date', returnDate);
-          if (seats) paramsReturn.set('seats', seats);
-
-          const [respOut, respReturn] = await Promise.all([
-            fetch(`${base}/api/trips/search?${paramsOut.toString()}`),
-            fetch(`${base}/api/trips/search?${paramsReturn.toString()}`)
-          ]);
-          const payloadOut = await respOut.json();
-          const payloadReturn = await respReturn.json();
-
-          allOutboundTrips = payloadOut.data || [];
-          allReturnTrips = payloadReturn.data || [];
-        } else {
-          const params = new URLSearchParams();
-          params.set('from', from || '');
-          params.set('to', to || '');
-          if (date) params.set('date', date);
-          if (seats) params.set('seats', seats);
-
-          const response = await fetch(`${base}/api/trips/search?${params.toString()}`);
-          const payload = await response.json();
-          
-          allOutboundTrips = payload.data || [];
-          allReturnTrips = [];
-        }
-
-        if (filterCardWrapper && (allOutboundTrips.length > 0 || allReturnTrips.length > 0)) {
-          filterCardWrapper.style.display = '';
-        }
-        
-        applyFiltersAndRender();
-      } catch (error) {
-        console.error('Lỗi khi tìm chuyến xe:', error);
-        showErrorState();
-      }
+      performSearch(from, to, date, returnDate, seats, tripType);
     });
   }
 
-  function processTrips(trips) {
+  function processTrips(trips, activeDate) {
     let filtered = trips.filter(trip => {
+      // Date filter (YYYY-MM-DD match)
+      if (activeDate && !trip.departure_time.startsWith(activeDate)) {
+        return false;
+      }
+
       // Time filter
       if (activeTimeFilters.length > 0) {
         const matchesTime = activeTimeFilters.some(range => isTimeInRange(trip.departure_time, range));
@@ -403,8 +472,10 @@
   }
 
   function applyFiltersAndRender() {
-    const outboundProcessed = processTrips(allOutboundTrips);
-    const returnProcessed = processTrips(allReturnTrips);
+    const activeDate = document.getElementById('dateInput')?.value || '';
+    const outboundProcessed = processTrips(allOutboundTrips, activeDate);
+    const returnDate = document.getElementById('returnDate')?.value || activeDate;
+    const returnProcessed = processTrips(allReturnTrips, returnDate);
 
     const tripType = document.querySelector('input[name="tripType"]:checked')?.value || 'oneway';
 
@@ -547,20 +618,41 @@
                   return `
                     <tr class="timetable-row">
                       <td data-label="Giờ chạy">
-                        <div>
-                          <span class="fw-bold fs-5 text-dark">${depTimeStr}</span>
-                          <span class="text-muted mx-2">➔</span>
-                          <span class="text-secondary fw-semibold">${arrTimeStr}</span>
-                        </div>
-                        <div class="mt-1">
-                          <small class="text-muted"><i class="bi bi-calendar3 me-1"></i>${depDateStr}</small>
+                        <div class="text-end text-md-start">
+                          <div>
+                            <span class="fw-bold fs-5 text-dark">${depTimeStr}</span>
+                            <span class="text-muted mx-2">➔</span>
+                            <span class="text-secondary fw-semibold">${arrTimeStr}</span>
+                          </div>
+                          <div class="mt-1">
+                            <small class="text-muted"><i class="bi bi-calendar3 me-1"></i>${depDateStr}</small>
+                          </div>
+                          <div class="mt-2">
+                            <a href="#" class="text-teal text-decoration-none fw-semibold small js-view-map d-inline-flex align-items-center gap-1"
+                               style="color: #0f766e;"
+                               data-from="${trip.from}" 
+                               data-from-addr="${trip.from_address || ''}" 
+                               data-from-lat="${trip.from_lat || ''}" 
+                               data-from-lng="${trip.from_lng || ''}" 
+                               data-to="${trip.to}" 
+                               data-to-addr="${trip.to_address || ''}" 
+                               data-to-lat="${trip.to_lat || ''}" 
+                               data-to-lng="${trip.to_lng || ''}">
+                              <i class="bi bi-geo-alt-fill text-success"></i> Xem bản đồ
+                            </a>
+                          </div>
                         </div>
                       </td>
                       <td data-label="Dòng xe">
-                        <span class="${typeInfo.badgeClass}">
-                          <i class="bi ${typeInfo.icon} me-1"></i>${typeInfo.label}
-                        </span>
-                        <div class="mt-1"><small class="text-muted">${trip.bus_name}</small></div>
+                        <div class="d-flex align-items-center gap-2">
+                          <img src="${base}/assets/${typeInfo.img}" alt="${typeInfo.label}" class="rounded shadow-sm border" style="width: 55px; height: 38px; object-fit: cover; border-color: #e2ece7 !important; flex-shrink: 0;">
+                          <div>
+                            <span class="${typeInfo.badgeClass}">
+                              <i class="bi ${typeInfo.icon} me-1"></i>${typeInfo.label}
+                            </span>
+                            <div class="mt-1"><small class="text-muted">${trip.bus_name}</small></div>
+                          </div>
+                        </div>
                       </td>
                       <td data-label="Trạng thái">
                         <div class="seat-indicator ${seatClass}">
@@ -623,6 +715,211 @@
         
         applyFiltersAndRender();
       });
+    }
+  }
+
+  /* SEARCH PAGE REDIRECT & DATE STRIP SLIDER DYNAMIC HELPERS */
+  async function performSearch(from, to, date, returnDate, seats, tripType) {
+    showLoadingState();
+    
+    // 1. Draw flight header
+    renderFlightHeader(from, to, tripType);
+
+    const filterCardWrapper = document.getElementById('filterCardWrapper');
+    if (filterCardWrapper) filterCardWrapper.style.display = 'none';
+
+    try {
+      // Outbound start date: Fetch trips starting from (date - 2 days)
+      const startDate = addDays(date, -2);
+
+      let tripsOut = [];
+      let tripsReturn = [];
+
+      if (tripType === 'roundtrip') {
+        const paramsOut = new URLSearchParams();
+        paramsOut.set('from', from || '');
+        paramsOut.set('to', to || '');
+        paramsOut.set('date', startDate);
+        if (seats) paramsOut.set('seats', seats);
+
+        const paramsReturn = new URLSearchParams();
+        paramsReturn.set('from', to || '');
+        paramsReturn.set('to', from || '');
+        
+        // Return dates also centered around returnDate
+        const startReturnDate = addDays(returnDate || date, -2);
+        paramsReturn.set('date', startReturnDate);
+        if (seats) paramsReturn.set('seats', seats);
+
+        const [respOut, respReturn] = await Promise.all([
+          fetch(`${base}/api/trips/search?${paramsOut.toString()}`),
+          fetch(`${base}/api/trips/search?${paramsReturn.toString()}`)
+        ]);
+        const payloadOut = await respOut.json();
+        const payloadReturn = await respReturn.json();
+
+        tripsOut = payloadOut.data || [];
+        tripsReturn = payloadReturn.data || [];
+      } else {
+        const params = new URLSearchParams();
+        params.set('from', from || '');
+        params.set('to', to || '');
+        params.set('date', startDate);
+        if (seats) params.set('seats', seats);
+
+        const response = await fetch(`${base}/api/trips/search?${params.toString()}`);
+        const payload = await response.json();
+        
+        tripsOut = payload.data || [];
+        tripsReturn = [];
+      }
+
+      allOutboundTrips = tripsOut;
+      allReturnTrips = tripsReturn;
+
+      // 2. Render flight Date Carousel Slider based on the active selected date
+      renderDateStrip(date, tripsOut);
+
+      const outboundForActiveDate = tripsOut.filter(t => t.departure_time.startsWith(date));
+      const returnForActiveDate = tripsReturn.filter(t => t.departure_time.startsWith(date));
+
+      if (filterCardWrapper && (outboundForActiveDate.length > 0 || returnForActiveDate.length > 0)) {
+        filterCardWrapper.style.display = '';
+      }
+      
+      applyFiltersAndRender();
+    } catch (error) {
+      console.error('Lỗi khi tìm chuyến xe:', error);
+      showErrorState();
+    }
+  }
+
+  function renderDateStrip(selectedDate, tripsOut) {
+    const wrapper = document.getElementById('dateStripWrapper');
+    const container = document.getElementById('dateItemsRow');
+    if (!wrapper || !container) return;
+
+    wrapper.classList.remove('d-none');
+    container.innerHTML = '';
+
+    // Create 5 dates centered on the selected Date: D-2, D-1, D, D+1, D+2
+    const dates = [];
+    for (let i = -2; i <= 2; i++) {
+      dates.push(addDays(selectedDate, i));
+    }
+
+    dates.forEach(dateStr => {
+      const dateObj = new Date(dateStr);
+      const dowIndex = dateObj.getDay();
+      const dowNames = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
+      const dowLabel = dowNames[dowIndex];
+      
+      const day = dateObj.getDate();
+      const month = dateObj.getMonth() + 1;
+      const dayMonthLabel = `${day} tháng ${month}`;
+
+      // Calculate minimal starting price for this date
+      const tripsOnDate = tripsOut.filter(t => t.departure_time.startsWith(dateStr));
+      let priceLabel = 'K.Có Chuyến';
+      if (tripsOnDate.length > 0) {
+        const minPrice = Math.min(...tripsOnDate.map(t => parseFloat(t.price || 0)));
+        priceLabel = `Từ ${minPrice.toLocaleString('vi-VN')} VND`;
+      }
+
+      const isActive = dateStr === selectedDate;
+      const itemHtml = `
+        <div class="date-item ${isActive ? 'active' : ''}" data-date="${dateStr}">
+          <div class="date-item-dow">${dowLabel}</div>
+          <div class="date-item-day">${dayMonthLabel}</div>
+          <div class="date-item-price">${priceLabel}</div>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', itemHtml);
+    });
+
+    // Add click listeners to Date Strip tabs
+    container.querySelectorAll('.date-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const clickedDate = item.getAttribute('data-date');
+        document.getElementById('dateInput').value = clickedDate;
+        
+        // Update URL query string
+        const newUrl = updateQueryStringParameter(window.location.href, 'date', clickedDate);
+        window.history.pushState({ path: newUrl }, '', newUrl);
+
+        // Fetch matching search
+        const form = document.getElementById('tripSearchForm');
+        if (form) {
+          const formData = new FormData(form);
+          const from = formData.get('from');
+          const to = formData.get('to');
+          const returnDate = formData.get('return_date');
+          const seats = formData.get('seats');
+          const tripType = formData.get('tripType') || 'oneway';
+          performSearch(from, to, clickedDate, returnDate, seats, tripType);
+        }
+      });
+    });
+  }
+
+  const airportCodesMap = {
+    'hà nội': 'HAN',
+    'tp. hồ chí minh': 'SGN',
+    'hồ chí minh': 'SGN',
+    'sài gòn': 'SGN',
+    'đà nẵng': 'DAD',
+    'nha trang': 'CXR',
+    'đà lạt': 'DLI',
+    'cần thơ': 'VCA',
+    'sa pa': 'SQA',
+    'lào cai': 'SQA',
+    'hải phòng': 'HPH',
+    'huế': 'HUI',
+    'bình định': 'UIH',
+    'quy nhơn': 'UIH',
+    'vũng tàu': 'VTG',
+    'phan thiết': 'PHT'
+  };
+
+  function getAirportCode(cityName) {
+    const key = String(cityName || '').toLowerCase().trim();
+    return airportCodesMap[key] || key.substring(0, 3).toUpperCase();
+  }
+
+  function renderFlightHeader(from, to, tripType) {
+    const card = document.getElementById('searchHeaderCard');
+    const originCity = document.getElementById('originCityName');
+    const destCity = document.getElementById('destinationCityName');
+    const badgeTripType = document.getElementById('badgeTripType');
+
+    if (!card || !originCity || !destCity || !badgeTripType) return;
+
+    if (from && to) {
+      card.classList.remove('d-none');
+      originCity.innerText = from;
+      destCity.innerText = to;
+      badgeTripType.innerText = tripType === 'roundtrip' ? 'Vé khứ hồi' : 'Vé một chiều';
+    } else {
+      card.classList.add('d-none');
+    }
+  }
+
+  function addDays(dateStr, days) {
+    const d = new Date(dateStr);
+    d.setDate(d.getDate() + days);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  function updateQueryStringParameter(uri, key, value) {
+    const re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+    const separator = uri.indexOf('?') !== -1 ? "&" : "?";
+    if (uri.match(re)) {
+      return uri.replace(re, '$1' + key + "=" + value + '$2');
+    } else {
+      return uri + separator + key + "=" + value;
     }
   }
 })();

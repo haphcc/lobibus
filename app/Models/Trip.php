@@ -12,6 +12,8 @@ final class Trip extends Model
     {
         $sql = 'SELECT t.*, b.name AS bus_name, b.total_seats, b.image AS bus_image,
                        fl.name AS `from`, tl.name AS `to`,
+                       fl.address AS from_address, fl.latitude AS from_lat, fl.longitude AS from_lng,
+                       tl.address AS to_address, tl.latitude AS to_lat, tl.longitude AS to_lng,
                        r.distance_km, r.duration_minutes,
                        (b.total_seats - COUNT(booked.id)) AS available_seats
                 FROM trips t
