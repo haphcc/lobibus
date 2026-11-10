@@ -10,7 +10,7 @@ final class Trip extends Model
 {
     public function search(array $filters = []): array
     {
-        $sql = 'SELECT t.*, b.name AS bus_name, b.total_seats,
+        $sql = 'SELECT t.*, b.name AS bus_name, b.total_seats, b.image AS bus_image,
                        fl.name AS `from`, tl.name AS `to`,
                        r.distance_km, r.duration_minutes,
                        (b.total_seats - COUNT(booked.id)) AS available_seats
