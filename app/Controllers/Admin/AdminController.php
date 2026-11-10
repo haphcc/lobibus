@@ -17,7 +17,7 @@ abstract class AdminController extends Controller
 
         $target = url($path);
         if ($query !== []) {
-            $target .= '?' . http_build_query($query);
+            $target .= (str_contains($target, '?') ? '&' : '?') . http_build_query($query);
         }
 
         header('Location: ' . $target);

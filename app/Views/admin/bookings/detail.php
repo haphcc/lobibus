@@ -39,8 +39,14 @@
         </form>
         <div class="admin-card mt-3">
             <h2>Thanh toán</h2>
-            <p><?= e(admin_label($booking['payment_method'] ?? '-')) ?> / <?= e(admin_label($booking['payment_status'] ?? '-')) ?></p>
-            <p><?= e($booking['transaction_code'] ?? '') ?></p>
+            <dl class="mb-0">
+                <dt>Phương thức</dt>
+                <dd><?= e(admin_label($booking['payment_method'] ?? '-')) ?></dd>
+                <?php if (!empty($booking['transaction_code'])): ?>
+                    <dt>Mã giao dịch</dt>
+                    <dd><?= e($booking['transaction_code']) ?></dd>
+                <?php endif; ?>
+            </dl>
             <h2>Vé</h2>
             <p><?= e($booking['ticket_code'] ?? '-') ?> / <?= e(admin_label($booking['ticket_status'] ?? '-')) ?></p>
             <p><?= e($booking['qr_code_path'] ?? '') ?></p>

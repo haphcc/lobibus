@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Models\Location;
+use App\Models\Trip;
 
 final class TripController extends Controller
 {
@@ -30,6 +31,12 @@ final class TripController extends Controller
 
     public function detail(): void
     {
-        $this->view('trips.detail', ['title' => 'Chi tiết chuyến']);
+        $tripId = (int) ($_GET['id'] ?? $_GET['trip_id'] ?? 0);
+        $trip = $tripId > 0 ? (new Trip())->findWithDetails($tripId) : null;
+
+        $this->view('trips.detail', [
+            'title' => 'Chi tiết chuyến',
+            'trip' => $trip,
+        ]);
     }
 }
