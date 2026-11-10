@@ -8,6 +8,11 @@ use App\Core\Model;
 
 final class Payment extends Model
 {
+    public function createPayment(array $data): int
+    {
+        return $this->create($data);
+    }
+
     public function create(array $data): int
     {
         $stmt = $this->db()->prepare(
@@ -22,6 +27,14 @@ final class Payment extends Model
             'transaction_code' => $data['transaction_code'] ?? null,
         ]);
         return (int) $this->db()->lastInsertId();
+    }
+
+    public function getPaymentByBookingId(int $bookingId): ?array
+    {
+        $stmt = $this->db()->prepare('SELECT * FROM payments WHERE booking_id = :booking_id ORDER BY id ASC LIMIT 1');
+        $stmt->execute(['booking_id' => $bookingId]);
+        $payment = $stmt->fetch();
+        return $payment ?: null;
     }
 
     public function allWithBooking(): array
@@ -39,5 +52,26 @@ final class Payment extends Model
     {
         $stmt = $this->db()->prepare('UPDATE payments SET status = :status WHERE id = :id');
         return $stmt->execute(['id' => $id, 'status' => $status]);
+    }
+
+    public function updateStatusByBooking(int $bookingId, string $status): bool
+    {
+        $stmt = $this->db()->prepare('UPDATE payments SET status = :status WHERE booking_id = :booking_id');
+        return $stmt->execute(['booking_id' => $bookingId, 'status' => $status]);
+    }
+
+    public function markPaidByBooking(int $bookingId, string $transactionCode): bool
+    {
+        $stmt = $this->db()->prepare(
+            'UPDATE payments
+             SET status = :status, transaction_code = :transaction_code
+             WHERE booking_id = :booking_id'
+        );
+
+        return $stmt->execute([
+            'booking_id' => $bookingId,
+            'status' => 'paid',
+            'transaction_code' => $transactionCode,
+        ]);
     }
 }

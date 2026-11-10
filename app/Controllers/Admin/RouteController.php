@@ -19,7 +19,7 @@ final class RouteController extends AdminController
     public function index(): void
     {
         $this->view('admin.routes.index', [
-            'title' => 'Quan ly tuyen',
+            'title' => 'Quản lý tuyến',
             'routes' => $this->routes->allWithLocations(),
         ], 'admin');
     }

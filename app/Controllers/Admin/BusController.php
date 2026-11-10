@@ -18,7 +18,7 @@ final class BusController extends AdminController
     public function index(): void
     {
         $this->view('admin.buses.index', [
-            'title' => 'Quan ly xe',
+            'title' => 'Quản lý xe',
             'buses' => $this->buses->all(),
         ], 'admin');
     }

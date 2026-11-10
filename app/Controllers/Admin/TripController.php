@@ -20,7 +20,7 @@ final class TripController extends AdminController
     public function index(): void
     {
         $this->view('admin.trips.index', [
-            'title' => 'Quan ly chuyen',
+            'title' => 'Quản lý chuyến',
             'trips' => $this->trips->allWithDetails(),
         ], 'admin');
     }

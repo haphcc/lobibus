@@ -89,6 +89,9 @@ CREATE TABLE bookings (
     user_id INT,
     trip_id INT NOT NULL,
     booking_code VARCHAR(30) NOT NULL UNIQUE,
+    booking_group_code VARCHAR(40),
+    trip_type ENUM('oneway','roundtrip') NOT NULL DEFAULT 'oneway',
+    direction ENUM('outbound','return') NOT NULL DEFAULT 'outbound',
     customer_name VARCHAR(120) NOT NULL,
     customer_phone VARCHAR(20) NOT NULL,
     customer_email VARCHAR(150),
@@ -101,6 +104,9 @@ CREATE TABLE bookings (
     CONSTRAINT fk_bookings_user FOREIGN KEY (user_id) REFERENCES users(id),
     CONSTRAINT fk_bookings_trip FOREIGN KEY (trip_id) REFERENCES trips(id)
 );
+
+CREATE INDEX idx_bookings_group
+ON bookings(booking_group_code);
 
 CREATE TABLE booking_details (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -165,8 +171,8 @@ ALTER TABLE booking_details
 ADD CONSTRAINT fk_booking_details_trip
 FOREIGN KEY (trip_id) REFERENCES trips(id);
 
-ALTER TABLE booking_details
-ADD UNIQUE KEY uq_trip_seat (trip_id, seat_id);
+CREATE INDEX idx_booking_details_trip_seat
+ON booking_details(trip_id, seat_id);
 
 -- thêm check
 ALTER TABLE roles
