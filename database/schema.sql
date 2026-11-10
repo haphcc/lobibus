@@ -76,6 +76,7 @@ CREATE TABLE trips (
     departure_time DATETIME NOT NULL,
     arrival_time DATETIME NOT NULL,
     price DECIMAL(12, 2) NOT NULL,
+    available_seats INT NOT NULL,
     status ENUM('scheduled','running','completed','cancelled') NOT NULL DEFAULT 'scheduled',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -168,6 +169,12 @@ ALTER TABLE booking_details
 ADD UNIQUE KEY uq_trip_seat (trip_id, seat_id);
 
 -- thêm check
+ALTER TABLE roles
+ADD CONSTRAINT chk_roles_name CHECK (name IN ('admin', 'customer'));
+
+ALTER TABLE users
+ADD CONSTRAINT chk_users_role_id CHECK (role_id IN (1, 2));
+
 ALTER TABLE reviews
 ADD CONSTRAINT chk_reviews_rating CHECK (rating BETWEEN 1 AND 5);
 
@@ -176,6 +183,9 @@ ADD CONSTRAINT chk_trips_time CHECK (arrival_time > departure_time);
 
 ALTER TABLE trips
 ADD CONSTRAINT chk_trips_price CHECK (price >= 0);
+
+ALTER TABLE trips
+ADD CONSTRAINT chk_trips_available_seats CHECK (available_seats >= 0);
 
 ALTER TABLE buses
 ADD CONSTRAINT chk_buses_total_seats CHECK (total_seats > 0);
@@ -196,6 +206,9 @@ ON trips(route_id, departure_time, status);
 
 CREATE INDEX idx_trips_bus_departure
 ON trips(bus_id, departure_time);
+
+CREATE INDEX idx_trips_status_departure
+ON trips(status, departure_time);
 
 -- tìm booking
 CREATE INDEX idx_tickets_booking

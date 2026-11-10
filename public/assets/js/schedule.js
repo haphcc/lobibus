@@ -2,6 +2,10 @@
   const form = document.getElementById('tripSearchForm');
   const resultsContainer = document.getElementById('tripResults');
   const base = window.APP_BASE_URL || '';
+  const DEFAULT_RESULT_LIMIT = 1500;
+  const DATE_RESULT_LIMIT = 1500;
+  const MAX_VISIBLE_ROUTES = 6;
+  const MAX_TRIPS_PER_ROUTE = 5;
   
   // Active dynamic filters state
   let allTrips = []; // Raw trips retrieved from API
@@ -105,7 +109,11 @@
 
       if (from) params.set('from', from);
       if (to) params.set('to', to);
-      if (date) params.set('date', date);
+      if (date) {
+        params.set('date', date);
+        params.set('exact_date', '1');
+      }
+      params.set('limit', date ? DATE_RESULT_LIMIT : DEFAULT_RESULT_LIMIT);
 
       showLoadingState();
 
@@ -114,6 +122,7 @@
         const payload = await response.json();
         allTrips = payload.data || [];
         applyFiltersAndRender();
+        updateStatistics(allTrips);
       } catch (error) {
         console.error('Lỗi khi tải lịch trình:', error);
         showErrorState();
@@ -124,8 +133,21 @@
   async function loadInitialSchedules() {
     showLoadingState();
     try {
-      // Empty query loads all schedules from API
-      const response = await fetch(`${base}/api/trips/search`);
+      const params = new URLSearchParams();
+      const formData = new FormData(form);
+      const from = formData.get('from');
+      const to = formData.get('to');
+      const date = formData.get('date');
+
+      if (from) params.set('from', from);
+      if (to) params.set('to', to);
+      if (date) {
+        params.set('date', date);
+        params.set('exact_date', '1');
+      }
+      params.set('limit', date ? DATE_RESULT_LIMIT : DEFAULT_RESULT_LIMIT);
+
+      const response = await fetch(`${base}/api/trips/search?${params.toString()}`);
       const payload = await response.json();
       allTrips = payload.data || [];
       applyFiltersAndRender();
@@ -265,7 +287,58 @@
       return;
     }
 
-    renderRoutes(routeList);
+    routeList.sort((a, b) => {
+      const aFirst = a.trips[0]?.departure_time || '';
+      const bFirst = b.trips[0]?.departure_time || '';
+      return new Date(aFirst) - new Date(bFirst);
+    });
+
+    routeList.forEach(route => {
+      route.trips = route.trips.slice(0, MAX_TRIPS_PER_ROUTE);
+      route.minPrice = Math.min(...route.trips.map(trip => parseFloat(trip.price || 0)));
+    });
+
+    renderRoutes(selectVisibleRoutes(routeList));
+  }
+
+  function selectVisibleRoutes(routeList) {
+    const selectedDate = form ? new FormData(form).get('date') : '';
+    if (!selectedDate || activeTimeFilters.length > 0) {
+      return routeList.slice(0, MAX_VISIBLE_ROUTES);
+    }
+
+    const buckets = {
+      morning: [],
+      afternoon: [],
+      evening: []
+    };
+
+    routeList.forEach(route => {
+      const departure = route.trips[0]?.departure_time || '';
+      const hour = parseInt((departure.split(' ')[1] || '00:00:00').split(':')[0], 10);
+      if (hour < 12) {
+        buckets.morning.push(route);
+      } else if (hour < 18) {
+        buckets.afternoon.push(route);
+      } else {
+        buckets.evening.push(route);
+      }
+    });
+
+    const visible = [];
+    ['morning', 'afternoon', 'evening'].forEach(bucket => {
+      visible.push(...buckets[bucket].slice(0, 2));
+    });
+
+    if (visible.length < MAX_VISIBLE_ROUTES) {
+      routeList.forEach(route => {
+        if (visible.length < MAX_VISIBLE_ROUTES && !visible.includes(route)) {
+          visible.push(route);
+        }
+      });
+    }
+
+    return visible;
   }
 
   function renderEmptyState() {
@@ -348,7 +421,7 @@
             </div>
             <div class="d-flex align-items-center gap-3">
               <span class="badge bg-success-subtle text-success px-3 py-2 rounded-3 border border-success-subtle">
-                <strong>${route.trips.length}</strong> giờ chạy
+                <strong>${route.trips.length}</strong> chuyến gần nhất
               </span>
               <button class="btn btn-light rounded-circle shadow-sm border p-0 d-flex align-items-center justify-content-center chevron-btn" style="width: 38px; height: 38px;">
                 <i class="bi bi-chevron-down chevron-icon fs-6"></i>

@@ -337,7 +337,8 @@
 }
 
 .route-group-card.expanded .route-group-body {
-    max-height: 1200px; /* High enough to contain multiple rows */
+    max-height: 620px;
+    overflow-y: auto;
 }
 
 .chevron-icon {

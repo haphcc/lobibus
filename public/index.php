@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Core\App;
 use App\Core\Router;
+use App\Controllers\AboutController;
 use App\Controllers\AccountController;
 use App\Controllers\AuthController;
 use App\Controllers\BookingController;
@@ -81,6 +82,8 @@ $router->get('/chatbot', [ChatbotController::class, 'index']);
 $router->get('/recommendations', [RecommendationController::class, 'index']);
 $router->get('/news', [NewsController::class, 'index']);
 $router->get('/news/detail', [NewsController::class, 'detail']);
+$router->get('/about', [AboutController::class, 'index']);
+$router->post('/about/feedback', [AboutController::class, 'feedback']);
 $router->get('/admin', [DashboardController::class, 'index']);
 $router->get('/admin/users', [UserController::class, 'index']);
 $router->get('/admin/users/create', [UserController::class, 'create']);

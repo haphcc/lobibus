@@ -56,6 +56,7 @@ if (!function_exists('isNavActive')) {
             <a class="nav-link px-3 <?= isNavActive('/booking/history', $currentPath) ?>" href="<?= url('/booking/history') ?>">Tra cứu vé</a>
             <a class="nav-link px-3 <?= isNavActive('/recommendations', $currentPath) ?>" href="<?= url('/recommendations') ?>">Gợi ý chuyến</a>
             <a class="nav-link px-3 <?= isNavActive('/news', $currentPath) ?>" href="<?= url('/news') ?>">Tin tức</a>
+            <a class="nav-link px-3 <?= isNavActive('/about', $currentPath) ?>" href="<?= url('/about') ?>">Về chúng tôi</a>
         </nav>
 
         <div class="actions d-flex align-items-center gap-2">
@@ -129,6 +130,7 @@ if (!function_exists('isNavActive')) {
             <a class="drawer-link p-3 rounded text-decoration-none <?= isNavActive('/booking/history', $currentPath) ?>" href="<?= url('/booking/history') ?>">Tra cứu vé</a>
             <a class="drawer-link p-3 rounded text-decoration-none <?= isNavActive('/recommendations', $currentPath) ?>" href="<?= url('/recommendations') ?>">Gợi ý chuyến</a>
             <a class="drawer-link p-3 rounded text-decoration-none <?= isNavActive('/news', $currentPath) ?>" href="<?= url('/news') ?>">Tin tức</a>
+            <a class="drawer-link p-3 rounded text-decoration-none <?= isNavActive('/about', $currentPath) ?>" href="<?= url('/about') ?>">Về chúng tôi</a>
         </nav>
     </div>
 </div>
