@@ -86,6 +86,7 @@
               const nextTrip = t.trip_type === 'roundtrip'
                 ? list.find(item => item.direction && item.direction !== t.direction)
                 : null;
+              const canChooseSeat = t.trip_type !== 'roundtrip' || !!nextTrip;
               return `
                 <div class="list-group-item d-flex justify-content-between align-items-center py-3">
                   <div>
@@ -105,6 +106,7 @@
                             data-booking-group-code="${t.booking_group_code || ''}"
                             data-next-trip-id="${nextTrip ? nextTrip.id : ''}"
                             data-next-direction="${nextTrip ? nextTrip.direction : ''}"
+                            ${canChooseSeat ? '' : 'disabled'}
                             style="background-color: #0f766e; border-color: #0f766e;">Chọn ghế</button>
                     <button class="btn btn-sm btn-outline-danger js-remove-ticket" data-trip-id="${t.id}">Xóa</button>
                   </div>
@@ -339,6 +341,9 @@
       const tripId = goSeatBtn.getAttribute('data-trip-id');
       if (tripId) {
         const params = new URLSearchParams({ trip_id: tripId });
+        const selectedSeatCount = document.getElementById('seatsSelect')?.value || new URLSearchParams(window.location.search).get('seats') || '1';
+        params.set('seats', selectedSeatCount);
+        params.set('return_url', `${window.location.pathname}${window.location.search}`);
         const tripType = goSeatBtn.getAttribute('data-trip-type') || 'oneway';
         if (tripType === 'roundtrip') {
           params.set('trip_type', 'roundtrip');

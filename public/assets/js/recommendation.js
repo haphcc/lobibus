@@ -281,7 +281,7 @@
 
     const link = document.createElement('a');
     link.className = 'btn btn-success btn-sm';
-    link.href = `${base}/booking/select-seat?trip_id=${encodeURIComponent(item.trip_id || '')}`;
+    link.href = `${base}/booking/select-seat?trip_id=${encodeURIComponent(item.trip_id || '')}&return_url=${encodeURIComponent(`${window.location.pathname}${window.location.search}`)}`;
     link.textContent = 'Chọn ghế';
     footer.appendChild(link);
     card.appendChild(footer);

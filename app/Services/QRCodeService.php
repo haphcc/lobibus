@@ -18,6 +18,15 @@ final class QRCodeService
         $fileName = $safeCode . '.svg';
         $absolutePath = $directory . '/' . $fileName;
 
+        if (!class_exists(QRCode::class) || !class_exists(QROptions::class)) {
+            $svg = $this->fallbackSvg($content);
+            if (file_put_contents($absolutePath, $svg) === false) {
+                throw new \RuntimeException('Khong the ghi file QR code.');
+            }
+
+            return 'qrcodes/' . $fileName;
+        }
+
         $options = new QROptions;
         $options->outputBase64 = false;
         $options->svgAddXmlHeader = true;
@@ -31,5 +40,17 @@ final class QRCodeService
         }
 
         return 'qrcodes/' . $fileName;
+    }
+
+    private function fallbackSvg(string $content): string
+    {
+        $text = htmlspecialchars(substr($content, 0, 180), ENT_QUOTES, 'UTF-8');
+        return '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">'
+            . '<rect width="300" height="300" fill="#fff"/>'
+            . '<rect x="16" y="16" width="268" height="268" fill="none" stroke="#111" stroke-width="8"/>'
+            . '<text x="150" y="132" text-anchor="middle" font-family="monospace" font-size="18" fill="#111">LOBIBUS</text>'
+            . '<text x="150" y="165" text-anchor="middle" font-family="monospace" font-size="10" fill="#111">QR library missing</text>'
+            . '<text x="150" y="190" text-anchor="middle" font-family="monospace" font-size="8" fill="#333">' . $text . '</text>'
+            . '</svg>';
     }
 }

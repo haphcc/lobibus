@@ -111,13 +111,18 @@ ON bookings(booking_group_code);
 CREATE TABLE booking_details (
     id INT AUTO_INCREMENT PRIMARY KEY,
     booking_id INT NOT NULL,
+    trip_id INT NOT NULL,
     seat_id INT NOT NULL,
     price DECIMAL(12, 2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY uq_booking_seat (booking_id, seat_id),
     CONSTRAINT fk_booking_details_booking FOREIGN KEY (booking_id) REFERENCES bookings(id),
+    CONSTRAINT fk_booking_details_trip FOREIGN KEY (trip_id) REFERENCES trips(id),
     CONSTRAINT fk_booking_details_seat FOREIGN KEY (seat_id) REFERENCES seats(id)
 );
+
+CREATE INDEX idx_booking_details_trip_seat
+ON booking_details(trip_id, seat_id);
 
 CREATE TABLE tickets (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -162,17 +167,6 @@ CREATE TABLE chatbot_questions (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
--- thêm trip_id vào booking_details để đảm bảo mỗi chỗ chỉ được đặt một lần cho mỗi chuyến
-ALTER TABLE booking_details
-ADD COLUMN trip_id INT NOT NULL AFTER booking_id;
-
-ALTER TABLE booking_details
-ADD CONSTRAINT fk_booking_details_trip
-FOREIGN KEY (trip_id) REFERENCES trips(id);
-
-CREATE INDEX idx_booking_details_trip_seat
-ON booking_details(trip_id, seat_id);
 
 -- thêm check
 ALTER TABLE roles

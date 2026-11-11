@@ -287,6 +287,8 @@ $locations = isset($locations) && is_array($locations) ? $locations : [];
                         <option value="1">1 hành khách</option>
                         <option value="2">2 hành khách</option>
                         <option value="3">3 hành khách</option>
+                        <option value="4">4 hành khách</option>
+                        <option value="5">5 hành khách</option>
                     </select>
                     <label for="seatsSelect" class="text-secondary fw-semibold">Số lượng ghế</label>
                 </div>
