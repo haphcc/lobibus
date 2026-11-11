@@ -441,6 +441,135 @@
     }
 }
 
+/* Mobile booking tickets responsive styles */
+@media (max-width: 767.98px) {
+    .booking-history-panel {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+
+    .booking-mobile-card {
+        background: #fff;
+        border: 1px solid #e2ece7;
+        border-radius: 16px;
+        padding: 20px;
+        position: relative;
+        box-shadow: 0 8px 24px rgba(18, 56, 42, 0.05);
+        margin-bottom: 20px;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .booking-mobile-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(18, 56, 42, 0.08);
+    }
+
+    .ticket-code-label {
+        font-size: 10px;
+        font-weight: 700;
+        color: #8fa096;
+        letter-spacing: 0.05em;
+        display: block;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+    }
+
+    .ticket-code {
+        font-size: 18px;
+        font-weight: 800;
+        color: #10231d;
+    }
+
+    .ticket-divider {
+        position: relative;
+        margin: 20px -20px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+    }
+
+    .punch-hole {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        background: #f6faf8; /* matches section background */
+        border: 1px solid #e2ece7;
+        border-radius: 50%;
+        z-index: 2;
+    }
+
+    .punch-hole.left {
+        left: -9px;
+    }
+
+    .punch-hole.right {
+        right: -9px;
+    }
+
+    .punch-line {
+        width: 100%;
+        height: 0;
+        border-top: 1px dashed #cfe1d9;
+        margin: 0 12px;
+    }
+
+    .ticket-route {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .route-station {
+        flex: 1;
+    }
+
+    .station-label {
+        display: block;
+        font-size: 10px;
+        color: #8fa096;
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+
+    .station-name {
+        display: block;
+        font-size: 15px;
+        color: #10231d;
+        font-weight: 700;
+    }
+
+    .route-arrow {
+        padding: 0 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .ticket-details .detail-label {
+        display: block;
+        font-size: 10px;
+        color: #8fa096;
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .ticket-details .detail-value {
+        font-size: 13px;
+        color: #10231d;
+        font-weight: 600;
+    }
+
+    .ticket-footer {
+        display: flex;
+        gap: 10px;
+    }
+}
+
 .section-kicker {
     display: inline-flex;
     align-items: center;
