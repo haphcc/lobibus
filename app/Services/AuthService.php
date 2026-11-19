@@ -11,6 +11,7 @@ use Throwable;
 
 final class AuthService
 {
+    private const NAME_MAX_LENGTH = 120;
     private const PASSWORD_OTP_SESSION_KEY = 'account_password_otp';
     private const PASSWORD_OTP_TTL_SECONDS = 600;
     private const PASSWORD_OTP_MAX_ATTEMPTS = 5;
@@ -36,6 +37,10 @@ final class AuthService
 
         if ($name === '') {
             throw new InvalidArgumentException('Vui lòng nhập họ tên.');
+        }
+
+        if ($this->stringLength($name) > self::NAME_MAX_LENGTH) {
+            throw new InvalidArgumentException('Họ tên không được vượt quá ' . self::NAME_MAX_LENGTH . ' ký tự.');
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -308,6 +313,11 @@ final class AuthService
         }
 
         return $phone;
+    }
+
+    private function stringLength(string $value): int
+    {
+        return function_exists('mb_strlen') ? mb_strlen($value, 'UTF-8') : strlen($value);
     }
 
     public function forgotPassword(string $email): bool

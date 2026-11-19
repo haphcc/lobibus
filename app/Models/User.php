@@ -8,6 +8,8 @@ use App\Core\Model;
 
 final class User extends Model
 {
+    private const NAME_MAX_LENGTH = 120;
+
     public function allWithRoles(): array
     {
         $stmt = $this->db()->query(
@@ -49,6 +51,11 @@ final class User extends Model
 
     public function create(array $data): int
     {
+        $name = trim((string) ($data['name'] ?? ''));
+        if ($this->stringLength($name) > self::NAME_MAX_LENGTH) {
+            throw new \InvalidArgumentException('Họ tên không được vượt quá ' . self::NAME_MAX_LENGTH . ' ký tự.');
+        }
+
         $passwordHash = (string) ($data['password_hash'] ?? '');
         if ($passwordHash === '') {
             $passwordHash = password_hash((string) ($data['password'] ?? ''), PASSWORD_DEFAULT);
@@ -60,7 +67,7 @@ final class User extends Model
         );
         $stmt->execute([
             'role_id' => (int) ($data['role_id'] ?? 2),
-            'name' => trim((string) ($data['name'] ?? '')),
+            'name' => $name,
             'email' => strtolower(trim((string) ($data['email'] ?? ''))),
             'phone' => $this->nullable($data['phone'] ?? null),
             'password' => $passwordHash,
@@ -170,5 +177,10 @@ final class User extends Model
     {
         $value = trim((string) $value);
         return $value === '' ? null : $value;
+    }
+
+    private function stringLength(string $value): int
+    {
+        return function_exists('mb_strlen') ? mb_strlen($value, 'UTF-8') : strlen($value);
     }
 }
