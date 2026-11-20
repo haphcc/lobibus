@@ -6,3 +6,4 @@ public/assets/qrcodes/*
 !public/assets/qrcodes/.gitkeep
 *.log
 .DS_Store
+.env
